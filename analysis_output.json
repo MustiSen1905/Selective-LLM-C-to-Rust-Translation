@@ -1,0 +1,48 @@
+{
+    "functions": {
+        "add": {
+            "return_type": "int",
+            "start_line": 1,
+            "end_line": 3,
+            "parameters": [
+                [
+                    "a",
+                    "int"
+                ],
+                [
+                    "b",
+                    "int"
+                ]
+            ]
+        },
+        "mul": {
+            "return_type": "int",
+            "start_line": 5,
+            "end_line": 7,
+            "parameters": [
+                [
+                    "x",
+                    "int"
+                ],
+                [
+                    "y",
+                    "int"
+                ]
+            ]
+        },
+        "main": {
+            "return_type": "int",
+            "start_line": 9,
+            "end_line": 13,
+            "parameters": []
+        }
+    },
+    "call_graph": {
+        "add": [],
+        "mul": [],
+        "main": [
+            "add",
+            "mul"
+        ]
+    }
+}
