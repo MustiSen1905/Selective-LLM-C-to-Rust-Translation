@@ -11,27 +11,41 @@ def main(project_dir) -> None:
         
         print(f"Successfully opened project at: {project_dir}")
         
-        #Starting Analysis
-        print("Starting code analysis...")
-        static_analysis.main(f"C-projects/{project_dir}")
-        #Dividing C Code to unsafe and safe parts
-        print("Dividing C code into unsafe and safe parts...")
+        files = os.listdir(f"C-projects/{project_dir}")
+        files = [f for f in files if f.endswith('.c') or f.endswith('.h')]
+        print(f"Project files: {files}")
+        
+        for file in files:
         
         
-        
-        #Starting C2Rust Translation
-        print("Translating C code to unsafe Rust...")
+            #Starting Analysis
+            print("Starting code analysis...")
+            print(f"Analyzing file: {file}")
+            print(f"C-projects/{project_dir}/{file}")
+            static_analysis.main(f"C-projects/{project_dir}/{file}",f"cppcheck_report_{file}.xml",f"cppcheck_report_{file}.json")
+            #Dividing C Code to unsafe and safe parts
+            print("Dividing C code into unsafe and safe parts...")
+            
+            #Starting C2Rust Translation
+            print("Translating C code to unsafe Rust...")
 
-        #Starting unsafe Rust to safe Rust Translation
-        print("Translating unsafe Rust code to safe Rust...")
-        
-        #Starting Merging Translations
-        print("Merging translations into final Rust project...")
-        
-        #Starting Tests
-        print("Running tests on the final Rust project...")
-        
-        print("Project translation and testing completed successfully.")
+            #Starting unsafe Rust to safe Rust Translation
+            print("Translating unsafe Rust code to safe Rust...")
+            
+            
+            #Starting C2Rust Translation
+            print("Translating C code to unsafe Rust...")
+
+            #Starting unsafe Rust to safe Rust Translation
+            print("Translating unsafe Rust code to safe Rust...")
+            
+            #Starting Merging Translations
+            print("Merging translations into final Rust project...")
+            
+            #Starting Tests
+            print("Running tests on the final Rust project...")
+            
+            print("Project translation and testing completed successfully.")
         
         
         

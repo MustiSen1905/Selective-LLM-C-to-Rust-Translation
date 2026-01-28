@@ -1,0 +1,84 @@
+{
+  "functions": {
+    "c:@F@print_value": {
+      "name": "print_value",
+      "return_type": "void",
+      "location": {
+        "file": "C-projects/testfiles/example.c",
+        "start_line": 9,
+        "end_line": 13
+      },
+      "parameters": [
+        {
+          "name": "ptr",
+          "type": "int *",
+          "is_pointer": true
+        }
+      ],
+      "pointers": {}
+    },
+    "c:@F@create_node": {
+      "name": "create_node",
+      "return_type": "struct Node *",
+      "location": {
+        "file": "C-projects/testfiles/example.c",
+        "start_line": 15,
+        "end_line": 20
+      },
+      "parameters": [
+        {
+          "name": "val",
+          "type": "int",
+          "is_pointer": false
+        }
+      ],
+      "pointers": {
+        "n": {
+          "type": "struct Node *",
+          "initialized": true,
+          "assignments": [],
+          "dereferences": [],
+          "struct_fields": []
+        }
+      }
+    },
+    "c:@F@test": {
+      "name": "test",
+      "return_type": "void",
+      "location": {
+        "file": "C-projects/testfiles/example.c",
+        "start_line": 22,
+        "end_line": 30
+      },
+      "parameters": [],
+      "pointers": {
+        "p": {
+          "type": "int *",
+          "initialized": true,
+          "assignments": [],
+          "dereferences": [],
+          "struct_fields": []
+        },
+        "node": {
+          "type": "struct Node *",
+          "initialized": true,
+          "assignments": [],
+          "dereferences": [],
+          "struct_fields": []
+        }
+      }
+    }
+  },
+  "call_graph": {
+    "c:@F@print_value": [
+      "c:@F@printf"
+    ],
+    "c:@F@create_node": [
+      "c:@F@malloc"
+    ],
+    "c:@F@test": [
+      "c:@F@create_node",
+      "c:@F@print_value"
+    ]
+  }
+}
