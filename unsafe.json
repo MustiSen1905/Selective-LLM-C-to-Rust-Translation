@@ -1,0 +1,10 @@
+{
+  "unsafe": {
+    "abc.c": ["openIn","read_settings","add_frac","end_of","strip","stripcps","end_beam","new_symbol","save_two_bars","set_base","get_dnl","process_field","process_trailing","process_note","process_divisor","process_bar","process_tie","process_chlose_chord","process_open_slur","process_close_slur","process_open_close_slur","process_tuplet","process_abc"],
+    "fields.c": ["article","detex","interval","strip_path","main"],
+    "index.c": ["get_index","size_record","alloc_record","free_record","str_get","get_record","str_put","put_record"],
+    "search.c": ["hash_compare","get_abc_entry","main"],
+    "sort_in.c": ["compare","main"],
+    "tex.c": ["draw_text","draw_tempo","draw_slur","draw_size","key2tex","end_tune","tune2tex"]
+  }
+}

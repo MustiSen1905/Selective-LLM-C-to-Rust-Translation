@@ -1,6 +1,8 @@
 import sys
 import os
 import analysis.static_analysis as static_analysis
+from translation.c2rust import main as c2rust_main
+from analysis.graph import run_analysis
 
 def main(project_dir) -> None:
     try:
@@ -22,13 +24,19 @@ def main(project_dir) -> None:
             print("Starting code analysis...")
             print(f"Analyzing file: {file}")
             print(f"C-projects/{project_dir}/{file}")
+            run_analysis(f"C-projects/{project_dir}")  # Hier wird die Analyse auf das gesamte Projekt angewendet, nicht nur auf eine Datei
+            exit(0)  # Entferne diesen Exit, wenn du die Analyse für alle Dateien durchführen möchtest
             static_analysis.main(f"C-projects/{project_dir}/{file}",f"cppcheck_report_{file}.xml",f"cppcheck_report_{file}.json")
             #Dividing C Code to unsafe and safe parts
             print("Dividing C code into unsafe and safe parts...")
             
+            
             #Starting C2Rust Translation
             print("Translating C code to unsafe Rust...")
-
+            c2rust_main(["--input-dir",f"C-projects/{project_dir}",
+                          "--config",f"unsafe.json",
+                          "--out",f"Rust-Outcome/{project_dir}"
+                          ])
             #Starting unsafe Rust to safe Rust Translation
             print("Translating unsafe Rust code to safe Rust...")
             

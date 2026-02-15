@@ -1,0 +1,21 @@
+[
+    {
+        "id": "nullPointerRedundantCheck",
+        "severity": "warning",
+        "msg": "Either the condition '!list' is redundant or there is possible null pointer dereference: list.",
+        "locations": [
+            {
+                "file": "C-projects/abc2mtex/sort_in.c",
+                "line": 149,
+                "column": 2,
+                "info": "Null pointer dereference"
+            },
+            {
+                "file": "C-projects/abc2mtex/sort_in.c",
+                "line": 148,
+                "column": 2,
+                "info": "Assuming that condition '!list' is not redundant"
+            }
+        ]
+    }
+]

@@ -16,7 +16,7 @@
 #include <string.h>
 #include "index.h"
 
-void	g_error(char *fmt, ...)
+void	g_error(const char *fmt, ...)
 {
 	va_list	ap;
 	va_start(ap,fmt);

@@ -29,6 +29,7 @@ extern	char	*end_of(char*);
 extern	void	strip(char*,char*);
 extern	void	get_dnl(Record*);
 extern	void	output_transline(char*);
+char *gets(char *s);
 
 extern	void	open_TeX(char*,int);
 extern	void	close_TeX(void);

@@ -1,0 +1,60 @@
+[
+    {
+        "id": "getsCalled",
+        "severity": "warning",
+        "msg": "Obsolete function 'gets' called. It is recommended to use 'fgets' or 'gets_s' instead.",
+        "locations": [
+            {
+                "file": "C-projects/abc2mtex/fields.c",
+                "line": 247,
+                "column": 8,
+                "info": ""
+            }
+        ]
+    },
+    {
+        "id": "getsCalled",
+        "severity": "warning",
+        "msg": "Obsolete function 'gets' called. It is recommended to use 'fgets' or 'gets_s' instead.",
+        "locations": [
+            {
+                "file": "C-projects/abc2mtex/fields.c",
+                "line": 369,
+                "column": 10,
+                "info": ""
+            }
+        ]
+    },
+    {
+        "id": "getsCalled",
+        "severity": "warning",
+        "msg": "Obsolete function 'gets' called. It is recommended to use 'fgets' or 'gets_s' instead.",
+        "locations": [
+            {
+                "file": "C-projects/abc2mtex/fields.c",
+                "line": 379,
+                "column": 12,
+                "info": ""
+            }
+        ]
+    },
+    {
+        "id": "uninitvar",
+        "severity": "warning",
+        "msg": "Uninitialized variable: j",
+        "locations": [
+            {
+                "file": "C-projects/abc2mtex/fields.c",
+                "line": 67,
+                "column": 22,
+                "info": ""
+            },
+            {
+                "file": "C-projects/abc2mtex/fields.c",
+                "line": 54,
+                "column": 13,
+                "info": "Assuming condition is false"
+            }
+        ]
+    }
+]
