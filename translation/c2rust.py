@@ -109,17 +109,18 @@ def process_project(in_dir: Path, unsafe_cfg: dict, out_dir: Path):
 
         f_unsafe = [n for n in funcs_info if n in unsafe_funcs_list]
         f_safe = [n for n in funcs_info if n not in unsafe_funcs_list]
+        print(rel_path)
+        base_id = rel_path
         
-        base_id = rel_path.replace("/", "_").replace(".", "_")
 
         if f_safe:
-            path = out_dir / f"{base_id}_safe.c"
+            path = out_dir / f"safe_{base_id}"
             content = create_context_split(src, funcs_info, f_safe, is_unsafe_file=False)
             path.write_text(content, encoding="utf-8")
             safe_manifest.append(path.name)
 
         if f_unsafe:
-            path = out_dir / f"{base_id}_unsafe.c"
+            path = out_dir / f"{base_id}"
             content = create_context_split(src, funcs_info, f_unsafe, is_unsafe_file=True)
             path.write_text(content, encoding="utf-8")
             unsafe_manifest.append(path)
@@ -148,6 +149,9 @@ def main(args_list=None):
 
     # 2. Dateien splitten
     safe_files, unsafe_paths = process_project(in_dir, unsafe_cfg, work)
+    
+    print(safe_files)
+    print(unsafe_paths)
 
     # 3. Compile Commands
     cmds = []
@@ -169,9 +173,9 @@ def main(args_list=None):
     (rust_out / "src").mkdir(exist_ok=True)
     f_list = ", ".join([f'"{f}"' for f in safe_files])
     (rust_out / "build.rs").write_text(f"""fn main() {{
-    cc::Build::new().files([{f_list}]).include(".").flag("-std=gnu89").flag("-fcommon").warnings(false).compile("c_parts");
+    cc::Build::new().files([{f_list}]).include(".").flag("-std=c99").flag("-fcommon").warnings(false).compile("c_parts");
 }}""", encoding="utf-8")
-    (rust_out / "Cargo.toml").write_text("""[package]\nname = "hybrid_project"\nversion = "0.1.0"\nedition = "2021"\nbuild = "build.rs"\n[build-dependencies]\ncc = "1"\n""", encoding="utf-8")
+    (rust_out / "Cargo.toml").write_text("""[package]\nname = "hybrid_project"\nversion = "0.1.0"\nedition = "2021"\nbuild = "build.rs"\n[build-dependencies]\ncc = "1"\n[lib]\nname="hybrid_project"\npath= "lib.rs"\ncrate-type = ["staticlib", "rlib"]\n """, encoding="utf-8")
     
     for f in safe_files: shutil.copy2(work / f, rust_out / f)
     for h in in_dir.rglob("*.h"):

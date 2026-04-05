@@ -1,0 +1,22 @@
+{
+  "unsafe": {
+    "logger.c": [
+      "log_message",
+      "read_log_unsafe"
+    ],
+    "main.c": [
+      "main",
+      "if"
+    ],
+    "user_auth.c": [
+      "create_user",
+      "delete_user",
+      "if",
+      "elevate_privileges"
+    ],
+    "utils.c": [
+      "process_data",
+      "for"
+    ]
+  }
+}

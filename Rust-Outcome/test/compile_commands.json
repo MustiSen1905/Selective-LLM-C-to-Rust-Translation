@@ -1,0 +1,17 @@
+[
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/test",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c logger.c",
+    "file": "logger.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/test",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c main.c",
+    "file": "main.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/test",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c user_auth.c",
+    "file": "user_auth.c"
+  }
+]

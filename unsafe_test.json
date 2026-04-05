@@ -1,0 +1,16 @@
+{
+  "unsafe": {
+    "user_auth.c": [
+      "create_user",
+      "delete_user",
+      "elevate_privileges"
+    ],
+    "logger.c": [
+      "log_message",
+      "read_log_unsafe"
+    ],
+    "main.c": [
+      "main"
+    ]
+  }
+}

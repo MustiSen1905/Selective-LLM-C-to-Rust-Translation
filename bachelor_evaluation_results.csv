@@ -1,0 +1,452 @@
+2026-04-05 21:15:19,test,user_auth.rs:create_user,SUCCESS,3,"### ROLE
+You are an expert Rust Developer refactoring C2Rust-transpiled code.
+
+### INPUT DATA
+1. <c_context>: Original C code/types. Use ONLY for understanding logic.
+2. <unsafe_rust_function>: The specific Rust function to refactor.
+
+### STRICT GUIDING PRINCIPLES
+1. **NO RE-DEFINITIONS (CRITICAL)**: DO NOT output `struct`, `type`, or `extern ""C"" Ellipsis` blocks. You are writing ONLY the function body. Assume everything else is globally available.
+2. **MAINTAIN SIGNATURES**: DO NOT change the outer function signature.
+3. **IMPORTS**: Do NOT use `use std::...` statements. Use absolute paths directly in the code.
+
+### FFI & MEMORY RULES (CRITICAL)
+- **Allocation**: To dynamically allocate a struct and return a raw pointer, DO NOT use `std::alloc`. Use `Box::into_raw(Box::new(StructName { ... }))`.
+- **Deallocation**: To free a raw pointer, call the external `free(ptr as *mut _)` function.
+- **String Types & ASCII**: C `char` is often `i8`. Rust byte literals are `[u8]`. Cast them like this: `b""text\0"".as_ptr() as *const i8`. Byte literals (`b""...""`) MUST ONLY contain ASCII characters. For special characters like 'ö', use hex escapes (e.g., `\xF6`).
+- **Printing C-Strings**: Use `.to_string_lossy()`. Example: `println!(""{}"", CStr::from_ptr(ptr).to_string_lossy())`.
+- **Pointer Field Access**: To access a field of a raw pointer, you MUST dereference it first: `(*ptr).field_name`, NEVER `ptr.field_name`.
+- **C-Arrays to Pointers**: To pass a local array `let mut buf = [0; 32];` to a function expecting `*mut c_char`, use `buf.as_mut_ptr() as *mut i8`.
+- **Struct Initialization**: Use `std::ptr::null_mut()` for null pointers. Cast integer literals strictly (e.g., `0 as i32` or `0 as c_int`).
+
+### OUTPUT FORMAT
+Return EXACTLY ONE Rust function (the implementation). No markdown formatting like ```rust, no explanations, no use statements, no structs.
+
+---
+<c_context>
+ORIGINAL C FUNCTION:
+User* create_user(const char* name) {
+    User* u = (User*)malloc(sizeof(User));
+    // UNSAFE: strcpy ohne Längenprüfung auf u->username (16 Bytes)
+    strcpy(u->username, name);
+    u->isAdmin = 0;
+    u->session_token = (char*)malloc(32);
+    strcpy(u->session_token, ""INIT_TOKEN_ABC123"");
+    return u;
+}
+
+RELEVANT TYPE DEFINITIONS (RECURSIVE):
+// Definition of User:
+typedef struct {
+    char username[16];
+    int isAdmin;
+    char *session_token;
+} User
+
+CALLED EXTERNAL FUNCTIONS:
+malloc, strcpy
+</c_context>
+
+<unsafe_rust_function>
+#[no_mangle]
+pub unsafe extern ""C"" fn create_user(mut name: *const core::ffi::c_char) -> *mut User {
+    let mut u: *mut User = malloc(::core::mem::size_of::<User>() as size_t) as *mut User;
+    strcpy(((*u).username).as_mut_ptr(), name);
+    (*u).isAdmin = 0 as core::ffi::c_int;
+    (*u).session_token = malloc(32 as size_t) as *mut core::ffi::c_char;
+    strcpy(
+        (*u).session_token,
+        b""INIT_TOKEN_ABC123\0"" as *const u8 as *const core::ffi::c_char,
+    );
+    return u;
+}
+</unsafe_rust_function>
+
+### COMPILER ERROR:
+    Checking hybrid_project v0.1.0 (/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/test/rust_out)
+error[E0412]: cannot find type `c_char` in this scope
+  --> src/user_auth.rs:19:55
+   |
+19 | pub unsafe extern ""C"" fn create_user(mut name: *const c_char) -> *mut User {
+   |                                                       ^^^^^^
+   |
+help: a builtin type with a similar name exists
+   |
+19 | pub unsafe extern ""C"" fn create_user(mut name: *const char) -> *mut User {
+   |                                                       ~~~~
+help: consider importing one of these items
+   |
+1  | use core::ffi::c_char;
+   |
+1  | use std::ffi::c_char;
+   |
+1  | use std::os::raw::c_char;
+   |
+
+error[E0412]: cannot find type `c_int` in this scope
+  --> src/user_auth.rs:22:25
+   |
+22 |     (*u).isAdmin = 0 as c_int;
+   |                         ^^^^^ not found in this scope
+   |
+help: consider importing one of these items
+   |
+1  | use core::ffi::c_int;
+   |
+1  | use std::ffi::c_int;
+   |
+1  | use std::os::raw::c_int;
+   |
+
+error[E0412]: cannot find type `c_char` in this scope
+  --> src/user_auth.rs:23:66
+   |
+23 |     (*u).session_token = std::alloc::alloc(32 as size_t) as *mut c_char;
+   |                                                                  ^^^^^^
+   |
+help: a builtin type with a similar name exists
+   |
+23 |     (*u).session_token = std::alloc::alloc(32 as size_t) as *mut char;
+   |                                                                  ~~~~
+help: consider importing one of these items
+   |
+1  | use core::ffi::c_char;
+   |
+1  | use std::ffi::c_char;
+   |
+1  | use std::os::raw::c_char;
+   |
+
+warning: unnecessary parentheses around function argument
+  --> src/user_auth.rs:25:12
+   |
+25 |     strcpy(((*u).session_token), init_session_token[0]);
+   |            ^                  ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+25 -     strcpy(((*u).session_token), init_session_token[0]);
+25 +     strcpy((*u).session_token, init_session_token[0]);
+   |
+
+error[E0308]: mismatched types
+  --> src/user_auth.rs:20:46
+   |
+20 |     let mut u: *mut User = std::alloc::alloc(std::mem::size_of::<User>() as size_t) as *mut User;
+   |                            ----------------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected struct `Layout`, found `usize`
+   |                            |
+   |                            arguments to this function are incorrect
+   |
+note: function defined here
+
+error[E0308]: mismatched types
+  --> src/user_auth.rs:23:44
+   |
+23 |     (*u).session_token = std::alloc::alloc(32 as size_t) as *mut c_char;
+   |                          ----------------- ^^^^^^^^^^^^ expected struct `Layout`, found `usize`
+   |                          |
+   |                          arguments to this function are incorrect
+   |
+note: function defined here
+
+error[E0308]: mismatched types
+  --> src/user_auth.rs:25:34
+   |
+25 |     strcpy(((*u).session_token), init_session_token[0]);
+   |     ------                       ^^^^^^^^^^^^^^^^^^^^^ expected `i8`, found `u8`
+   |     |
+   |     arguments to this function are incorrect
+   |
+   = note: expected raw pointer `*const i8`
+              found raw pointer `*const u8`
+note: function defined here
+  --> src/user_auth.rs:4:8
+   |
+4  |     fn strcpy(
+   |        ^^^^^^
+
+Some errors have detailed explanations: E0308, E0412.
+For more information about an error, try `rustc --explain E0308`.
+warning: `hybrid_project` (lib) generated 1 warning
+error: could not compile `hybrid_project` due to 6 previous errors; 1 warning emitted
+",
+2026-04-05 21:15:49,test,user_auth.rs:delete_user,SUCCESS,1,"### ROLE
+You are an expert Rust Developer refactoring C2Rust-transpiled code.
+
+### INPUT DATA
+1. <c_context>: Original C code/types. Use ONLY for understanding logic.
+2. <unsafe_rust_function>: The specific Rust function to refactor.
+
+### STRICT GUIDING PRINCIPLES
+1. **NO RE-DEFINITIONS (CRITICAL)**: DO NOT output `struct`, `type`, or `extern ""C"" Ellipsis` blocks. You are writing ONLY the function body. Assume everything else is globally available.
+2. **MAINTAIN SIGNATURES**: DO NOT change the outer function signature.
+3. **IMPORTS**: Do NOT use `use std::...` statements. Use absolute paths directly in the code.
+
+### FFI & MEMORY RULES (CRITICAL)
+- **Allocation**: To dynamically allocate a struct and return a raw pointer, DO NOT use `std::alloc`. Use `Box::into_raw(Box::new(StructName { ... }))`.
+- **Deallocation**: To free a raw pointer, call the external `free(ptr as *mut _)` function.
+- **String Types & ASCII**: C `char` is often `i8`. Rust byte literals are `[u8]`. Cast them like this: `b""text\0"".as_ptr() as *const i8`. Byte literals (`b""...""`) MUST ONLY contain ASCII characters. For special characters like 'ö', use hex escapes (e.g., `\xF6`).
+- **Printing C-Strings**: Use `.to_string_lossy()`. Example: `println!(""{}"", CStr::from_ptr(ptr).to_string_lossy())`.
+- **Pointer Field Access**: To access a field of a raw pointer, you MUST dereference it first: `(*ptr).field_name`, NEVER `ptr.field_name`.
+- **C-Arrays to Pointers**: To pass a local array `let mut buf = [0; 32];` to a function expecting `*mut c_char`, use `buf.as_mut_ptr() as *mut i8`.
+- **Struct Initialization**: Use `std::ptr::null_mut()` for null pointers. Cast integer literals strictly (e.g., `0 as i32` or `0 as c_int`).
+
+### OUTPUT FORMAT
+Return EXACTLY ONE Rust function (the implementation). No markdown formatting like ```rust, no explanations, no use statements, no structs.
+
+---
+<c_context>
+ORIGINAL C FUNCTION:
+void delete_user(User* u) {
+    if (u) {
+        free(u->session_token);
+        free(u);
+    }
+    // UNSAFE: Double Free Gefahr, wenn diese Funktion zweimal aufgerufen wird
+    // oder Use-After-Free, wenn der Pointer in main.c nicht genullt wird.
+}
+
+RELEVANT TYPE DEFINITIONS (RECURSIVE):
+// Definition of User:
+typedef struct {
+    char username[16];
+    int isAdmin;
+    char *session_token;
+} User
+
+CALLED EXTERNAL FUNCTIONS:
+free
+</c_context>
+
+<unsafe_rust_function>
+#[no_mangle]
+pub unsafe extern ""C"" fn delete_user(mut u: *mut User) {
+    if !u.is_null() {
+        free((*u).session_token as *mut core::ffi::c_void);
+        free(u as *mut core::ffi::c_void);
+    }
+}
+</unsafe_rust_function>",
+2026-04-05 21:16:13,test,user_auth.rs:elevate_privileges,SUCCESS,1,"### ROLE
+You are an expert Rust Developer refactoring C2Rust-transpiled code.
+
+### INPUT DATA
+1. <c_context>: Original C code/types. Use ONLY for understanding logic.
+2. <unsafe_rust_function>: The specific Rust function to refactor.
+
+### STRICT GUIDING PRINCIPLES
+1. **NO RE-DEFINITIONS (CRITICAL)**: DO NOT output `struct`, `type`, or `extern ""C"" Ellipsis` blocks. You are writing ONLY the function body. Assume everything else is globally available.
+2. **MAINTAIN SIGNATURES**: DO NOT change the outer function signature.
+3. **IMPORTS**: Do NOT use `use std::...` statements. Use absolute paths directly in the code.
+
+### FFI & MEMORY RULES (CRITICAL)
+- **Allocation**: To dynamically allocate a struct and return a raw pointer, DO NOT use `std::alloc`. Use `Box::into_raw(Box::new(StructName { ... }))`.
+- **Deallocation**: To free a raw pointer, call the external `free(ptr as *mut _)` function.
+- **String Types & ASCII**: C `char` is often `i8`. Rust byte literals are `[u8]`. Cast them like this: `b""text\0"".as_ptr() as *const i8`. Byte literals (`b""...""`) MUST ONLY contain ASCII characters. For special characters like 'ö', use hex escapes (e.g., `\xF6`).
+- **Printing C-Strings**: Use `.to_string_lossy()`. Example: `println!(""{}"", CStr::from_ptr(ptr).to_string_lossy())`.
+- **Pointer Field Access**: To access a field of a raw pointer, you MUST dereference it first: `(*ptr).field_name`, NEVER `ptr.field_name`.
+- **C-Arrays to Pointers**: To pass a local array `let mut buf = [0; 32];` to a function expecting `*mut c_char`, use `buf.as_mut_ptr() as *mut i8`.
+- **Struct Initialization**: Use `std::ptr::null_mut()` for null pointers. Cast integer literals strictly (e.g., `0 as i32` or `0 as c_int`).
+
+### OUTPUT FORMAT
+Return EXACTLY ONE Rust function (the implementation). No markdown formatting like ```rust, no explanations, no use statements, no structs.
+
+---
+<c_context>
+ORIGINAL C FUNCTION:
+void elevate_privileges(User* u, int level) {
+    // UNSAFE: Integer Overflow Potential
+    // Wenn 'level' extrem groß ist, könnte die Addition negativ werden oder 
+    // unerwartete Werte annehmen, falls damit später gerechnet wird.
+    u->isAdmin += level; 
+    printf(""Privilegien auf %d gesetzt.\n"", u->isAdmin);
+}
+
+RELEVANT TYPE DEFINITIONS (RECURSIVE):
+// Definition of User:
+typedef struct {
+    char username[16];
+    int isAdmin;
+    char *session_token;
+} User
+
+CALLED EXTERNAL FUNCTIONS:
+printf
+</c_context>
+
+<unsafe_rust_function>
+#[no_mangle]
+pub unsafe extern ""C"" fn elevate_privileges(
+    mut u: *mut User,
+    mut level: core::ffi::c_int,
+) {
+    (*u).isAdmin += level;
+    printf(
+        b""Privilegien auf %d gesetzt.\n\0"" as *const u8 as *const core::ffi::c_char,
+        (*u).isAdmin,
+    );
+}
+</unsafe_rust_function>",
+2026-04-05 21:21:55,test,main.rs:main_0,SUCCESS,3,"### ROLE
+You are an expert Rust Developer refactoring C2Rust-transpiled code.
+
+### INPUT DATA
+1. <c_context>: Original C code/types. Use ONLY for understanding logic.
+2. <unsafe_rust_function>: The specific Rust function to refactor.
+
+### STRICT GUIDING PRINCIPLES
+1. **NO RE-DEFINITIONS (CRITICAL)**: DO NOT output `struct`, `type`, or `extern ""C"" Ellipsis` blocks. You are writing ONLY the function body. Assume everything else is globally available.
+2. **MAINTAIN SIGNATURES**: DO NOT change the outer function signature.
+3. **IMPORTS**: Do NOT use `use std::...` statements. Use absolute paths directly in the code.
+
+### FFI & MEMORY RULES (CRITICAL)
+- **Allocation**: To dynamically allocate a struct and return a raw pointer, DO NOT use `std::alloc`. Use `Box::into_raw(Box::new(StructName { ... }))`.
+- **Deallocation**: To free a raw pointer, call the external `free(ptr as *mut _)` function.
+- **String Types & ASCII**: C `char` is often `i8`. Rust byte literals are `[u8]`. Cast them like this: `b""text\0"".as_ptr() as *const i8`. Byte literals (`b""...""`) MUST ONLY contain ASCII characters. For special characters like 'ö', use hex escapes (e.g., `\xF6`).
+- **Printing C-Strings**: Use `.to_string_lossy()`. Example: `println!(""{}"", CStr::from_ptr(ptr).to_string_lossy())`.
+- **Pointer Field Access**: To access a field of a raw pointer, you MUST dereference it first: `(*ptr).field_name`, NEVER `ptr.field_name`.
+- **C-Arrays to Pointers**: To pass a local array `let mut buf = [0; 32];` to a function expecting `*mut c_char`, use `buf.as_mut_ptr() as *mut i8`.
+- **Struct Initialization**: Use `std::ptr::null_mut()` for null pointers. Cast integer literals strictly (e.g., `0 as i32` or `0 as c_int`).
+
+### OUTPUT FORMAT
+Return EXACTLY ONE Rust function (the implementation). No markdown formatting like ```rust, no explanations, no use statements, no structs.
+
+---
+<c_context>
+ORIGINAL C FUNCTION:
+int main() {
+    char input[128];
+    char log_buf[32]; // Kleiner Buffer für Demonstrationszwecke
+
+    printf(""Neuen Usernamen eingeben: "");
+    scanf(""%s"", input); // UNSAFE: Klassischer Overflow
+
+    User *currentUser = create_user(input);
+    log_message(input);
+
+    printf(""Soll der User gelöscht werden? (1=Ja): "");
+    int choice;
+    scanf(""%d"", &choice);
+
+    if (choice == 1) {
+        delete_user(currentUser);
+        // UNSAFE: currentUser wird hier NICHT auf NULL gesetzt.
+    }
+
+    // FEHLER: Use-After-Free
+    // Wenn choice 1 war, greifen wir hier auf bereits befreiten Speicher zu.
+    printf(""Session des Users %s ist noch aktiv.\n"", currentUser->username);
+
+    // FEHLER: Buffer Overflow durch Dateiinhalt
+    printf(""Lese letzten Log-Eintrag...\n"");
+    read_log_unsafe(log_buf); 
+    printf(""Log: %s\n"", log_buf);
+
+    return 0;
+}
+
+RELEVANT TYPE DEFINITIONS (RECURSIVE):
+// Definition of User:
+typedef struct {
+    char username[16];
+    int isAdmin;
+    char *session_token;
+} User
+
+CALLED EXTERNAL FUNCTIONS:
+log_message, create_user, read_log_unsafe, scanf, printf, delete_user
+</c_context>
+
+<unsafe_rust_function>
+unsafe fn main_0() -> core::ffi::c_int {
+    let mut input: [core::ffi::c_char; 128] = [0; 128];
+    let mut log_buf: [core::ffi::c_char; 32] = [0; 32];
+    printf(b""Neuen Usernamen eingeben: \0"" as *const u8 as *const core::ffi::c_char);
+    scanf(b""%s\0"" as *const u8 as *const core::ffi::c_char, input.as_mut_ptr());
+    let mut currentUser: *mut User = create_user(input.as_mut_ptr());
+    log_message(input.as_mut_ptr());
+    printf(
+        b""Soll der User gel\xC3\xB6scht werden? (1=Ja): \0"" as *const u8
+            as *const core::ffi::c_char,
+    );
+    let mut choice: core::ffi::c_int = 0;
+    scanf(
+        b""%d\0"" as *const u8 as *const core::ffi::c_char,
+        &mut choice as *mut core::ffi::c_int,
+    );
+    if choice == 1 as core::ffi::c_int {
+        delete_user(currentUser);
+    }
+    printf(
+        b""Session des Users %s ist noch aktiv.\n\0"" as *const u8
+            as *const core::ffi::c_char,
+        ((*currentUser).username).as_mut_ptr(),
+    );
+    printf(b""Lese letzten Log-Eintrag...\n\0"" as *const u8 as *const core::ffi::c_char);
+    read_log_unsafe(log_buf.as_mut_ptr());
+    printf(
+        b""Log: %s\n\0"" as *const u8 as *const core::ffi::c_char,
+        log_buf.as_mut_ptr(),
+    );
+    return 0 as core::ffi::c_int;
+}
+</unsafe_rust_function>
+
+### COMPILER ERROR:
+    Checking hybrid_project v0.1.0 (/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/test/rust_out)
+error[E0428]: the name `main` is defined multiple times
+  --> src/main.rs:48:1
+   |
+19 | unsafe fn main() -> i32 {
+   | ----------------------- previous definition of the value `main` here
+...
+48 | pub fn main() {
+   | ^^^^^^^^^^^^^ `main` redefined here
+   |
+   = note: `main` must be defined only once in the value namespace of this module
+
+error[E0425]: cannot find function `main_0` in this scope
+  --> src/main.rs:49:35
+   |
+19 | unsafe fn main() -> i32 {
+   | ----------------------- similarly named function `main` defined here
+...
+49 |     unsafe { ::std::process::exit(main_0() as i32) }
+   |                                   ^^^^^^ help: a function with a similar name exists: `main`
+
+warning: unused import: `std::ffi::CStr`
+  --> src/main.rs:16:5
+   |
+16 | use std::ffi::CStr;
+   |     ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` on by default
+
+warning: unused import: `CStr`
+  --> src/user_auth.rs:47:17
+   |
+47 | use core::ffi::{CStr, c_char};
+   |                 ^^^^
+
+error[E0308]: mismatched types
+  --> src/main.rs:27:17
+   |
+27 |     log_message(currentUser);
+   |     ----------- ^^^^^^^^^^^ expected `i8`, found struct `main::User`
+   |     |
+   |     arguments to this function are incorrect
+   |
+   = note: expected raw pointer `*const i8`
+              found raw pointer `*mut main::User`
+note: function defined here
+  --> src/main.rs:6:8
+   |
+6  |     fn log_message(msg: *const core::ffi::c_char);
+   |        ^^^^^^^^^^^
+
+Some errors have detailed explanations: E0308, E0425, E0428.
+For more information about an error, try `rustc --explain E0308`.
+warning: `hybrid_project` (lib) generated 2 warnings
+error: could not compile `hybrid_project` due to 3 previous errors; 2 warnings emitted
+",
