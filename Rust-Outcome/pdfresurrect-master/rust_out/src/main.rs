@@ -20,7 +20,32 @@ extern "C" {
         __format: *const core::ffi::c_char,
         ...
     ) -> core::ffi::c_int;
+    fn snprintf(
+        __s: *mut core::ffi::c_char,
+        __maxlen: size_t,
+        __format: *const core::ffi::c_char,
+        ...
+    ) -> core::ffi::c_int;
+    fn fread(
+        __ptr: *mut core::ffi::c_void,
+        __size: size_t,
+        __n: size_t,
+        __stream: *mut FILE,
+    ) -> core::ffi::c_ulong;
+    fn fwrite(
+        __ptr: *const core::ffi::c_void,
+        __size: size_t,
+        __n: size_t,
+        __s: *mut FILE,
+    ) -> core::ffi::c_ulong;
+    fn fseek(
+        __stream: *mut FILE,
+        __off: core::ffi::c_long,
+        __whence: core::ffi::c_int,
+    ) -> core::ffi::c_int;
+    fn ftell(__stream: *mut FILE) -> core::ffi::c_long;
     fn free(__ptr: *mut core::ffi::c_void);
+    fn exit(__status: core::ffi::c_int) -> !;
     fn strncmp(
         __s1: *const core::ffi::c_char,
         __s2: *const core::ffi::c_char,
@@ -29,6 +54,10 @@ extern "C" {
     fn strrchr(
         __s: *const core::ffi::c_char,
         __c: core::ffi::c_int,
+    ) -> *mut core::ffi::c_char;
+    fn strstr(
+        __haystack: *const core::ffi::c_char,
+        __needle: *const core::ffi::c_char,
     ) -> *mut core::ffi::c_char;
     fn strlen(__s: *const core::ffi::c_char) -> size_t;
     fn closedir(__dirp: *mut DIR) -> core::ffi::c_int;
@@ -43,14 +72,10 @@ extern "C" {
         name: *const core::ffi::c_char,
         flags: pdf_flag_t,
     );
-    fn usage();
-    fn write_version(
-        fp: *mut FILE,
-        fname: *const core::ffi::c_char,
-        dirname: *const core::ffi::c_char,
-        xref: *mut xref_t,
-    );
-    fn display_creator(fp: *mut FILE, pdf: *const pdf_t);
+    fn pdf_display_creator(
+        pdf: *const pdf_t,
+        xref_idx: core::ffi::c_int,
+    ) -> core::ffi::c_int;
     fn init_pdf(fp: *mut FILE, name: *const core::ffi::c_char) -> *mut pdf_t;
 }
 pub type size_t = usize;
@@ -136,6 +161,7 @@ pub struct _pdf_t {
     pub has_xref_streams: core::ffi::c_int,
 }
 pub type pdf_t = _pdf_t;
+pub const SEEK_SET: core::ffi::c_int = 0 as core::ffi::c_int;
 pub const NULL: *mut core::ffi::c_void = 0 as *mut core::ffi::c_void;
 pub const __S_IREAD: core::ffi::c_int = 0o400 as core::ffi::c_int;
 pub const __S_IWRITE: core::ffi::c_int = 0o200 as core::ffi::c_int;
@@ -143,6 +169,94 @@ pub const __S_IEXEC: core::ffi::c_int = 0o100 as core::ffi::c_int;
 pub const S_IRWXU: core::ffi::c_int = __S_IREAD | __S_IWRITE | __S_IEXEC;
 pub const PDF_FLAG_QUIET: core::ffi::c_int = 1 as core::ffi::c_int;
 pub const PDF_FLAG_DISP_CREATOR: core::ffi::c_int = 2 as core::ffi::c_int;
+unsafe extern "C" fn usage() {
+    printf(
+        b"-- pdfresurrect v0.24b --\nUsage: ./pdfresurrect <file.pdf> [-i] [-w] [-q]\n\t -i Display PDF creator information\n\t -w Write the PDF versions and summary to disk\n\t -q Display only the number of versions contained in the PDF\n\0"
+            as *const u8 as *const core::ffi::c_char,
+    );
+    exit(0 as core::ffi::c_int);
+}
+unsafe extern "C" fn write_version(
+    mut fp: *mut FILE,
+    mut fname: *const core::ffi::c_char,
+    mut dirname: *const core::ffi::c_char,
+    mut xref: *mut xref_t,
+) {
+    let mut start: core::ffi::c_long = 0;
+    let mut c: *mut core::ffi::c_char = 0 as *mut core::ffi::c_char;
+    let mut new_fname: *mut core::ffi::c_char = 0 as *mut core::ffi::c_char;
+    let mut data: core::ffi::c_char = 0;
+    let mut new_fp: *mut FILE = 0 as *mut FILE;
+    start = ftell(fp);
+    c = strstr(fname, b".pdf\0" as *const u8 as *const core::ffi::c_char);
+    if !c.is_null() {
+        *c = '\0' as i32 as core::ffi::c_char;
+    }
+    new_fname = safe_calloc(
+        (strlen(fname)).wrapping_add(strlen(dirname)).wrapping_add(32 as size_t),
+    ) as *mut core::ffi::c_char;
+    snprintf(
+        new_fname,
+        (strlen(fname)).wrapping_add(strlen(dirname)).wrapping_add(32 as size_t),
+        b"%s/%s-version-%d.pdf\0" as *const u8 as *const core::ffi::c_char,
+        dirname,
+        fname,
+        (*xref).version,
+    );
+    new_fp = fopen(new_fname, b"w\0" as *const u8 as *const core::ffi::c_char)
+        as *mut FILE;
+    if new_fp.is_null() {
+        fprintf(
+            stderr,
+            b"[pdfresurrect] -- Error -- Could not create file '%s'\n\0" as *const u8
+                as *const core::ffi::c_char,
+            new_fname,
+        );
+        fseek(fp, start, SEEK_SET);
+        free(new_fname as *mut core::ffi::c_void);
+        return;
+    }
+    fseek(fp, 0 as core::ffi::c_long, SEEK_SET);
+    while fread(
+        &mut data as *mut core::ffi::c_char as *mut core::ffi::c_void,
+        1 as size_t,
+        1 as size_t,
+        fp,
+    ) != 0
+    {
+        fwrite(
+            &mut data as *mut core::ffi::c_char as *const core::ffi::c_void,
+            1 as size_t,
+            1 as size_t,
+            new_fp,
+        );
+    }
+    fprintf(
+        new_fp,
+        b"\r\nstartxref\r\n%ld\r\n%%%%EOF\0" as *const u8 as *const core::ffi::c_char,
+        (*xref).start,
+    );
+    fclose(new_fp);
+    free(new_fname as *mut core::ffi::c_void);
+    fseek(fp, start, SEEK_SET);
+}
+unsafe extern "C" fn display_creator(mut fp: *mut FILE, mut pdf: *const pdf_t) {
+    let mut i: core::ffi::c_int = 0;
+    printf(
+        b"PDF Version: %d.%d\n\0" as *const u8 as *const core::ffi::c_char,
+        (*pdf).pdf_major_version as core::ffi::c_int,
+        (*pdf).pdf_minor_version as core::ffi::c_int,
+    );
+    i = 0 as core::ffi::c_int;
+    while i < (*pdf).n_xrefs {
+        if !((*((*pdf).xrefs).offset(i as isize)).version == 0) {
+            if pdf_display_creator(pdf, i) != 0 {
+                printf(b"\n\0" as *const u8 as *const core::ffi::c_char);
+            }
+        }
+        i += 1;
+    }
+}
 unsafe fn main_0(
     mut argc: core::ffi::c_int,
     mut argv: *mut *mut core::ffi::c_char,

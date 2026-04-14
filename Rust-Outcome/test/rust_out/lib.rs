@@ -11,4 +11,5 @@ pub mod src {
 pub mod logger;
 pub mod main;
 pub mod user_auth;
+pub mod utils;
 } // mod src

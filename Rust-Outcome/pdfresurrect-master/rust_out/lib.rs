@@ -9,4 +9,5 @@
 
 pub mod src {
 pub mod main;
+pub mod pdf;
 } // mod src

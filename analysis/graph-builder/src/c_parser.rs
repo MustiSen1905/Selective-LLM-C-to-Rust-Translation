@@ -29,6 +29,7 @@ typedef void* va_list;
 
 pub struct Function {
     pub name: String,
+    pub file: String, // NEU: Dateipfad hinzugefügt
     pub callees: Vec<String>,
 }
 
@@ -131,22 +132,32 @@ impl Program {
         Self { parses, function_set }
     }
 
-    pub fn functions(&self) -> BTreeMap<String, Function> {
+    pub fn functions(&self) -> BTreeMap<(String, String), Function> {
         let mut map = BTreeMap::new();
-        for parse in self.parses.values() {
-            struct Extractor<'a> { map: &'a mut BTreeMap<String, Function>, all_funcs: &'a BTreeSet<String> }
+        for (path_str, parse) in &self.parses {
+            struct Extractor<'a> { 
+                map: &'a mut BTreeMap<(String, String), Function>, 
+                all_funcs: &'a BTreeSet<String>,
+                current_file: String 
+            }
             impl<'ast, 'a> Visit<'ast> for Extractor<'a> {
                 fn visit_function_definition(&mut self, f: &'ast FunctionDefinition, _: &'ast Span) {
                     let name = get_declarator_name(&f.declarator.node).to_string();
                     if name != "unknown" {
-                        self.map.insert(name.clone(), Function {
+                        let file = self.current_file.clone();
+                        self.map.insert((name.clone(), file.clone()), Function {
                             name: name.clone(),
+                            file,
                             callees: get_callees(f, self.all_funcs),
                         });
                     }
                 }
             }
-            let mut ext = Extractor { map: &mut map, all_funcs: &self.function_set };
+            let mut ext = Extractor { 
+                map: &mut map, 
+                all_funcs: &self.function_set,
+                current_file: path_str.clone() 
+            };
             visit::visit_translation_unit(&mut ext, &parse.unit);
         }
         map

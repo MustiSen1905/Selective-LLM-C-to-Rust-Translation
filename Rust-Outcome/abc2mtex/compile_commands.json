@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c abc.c",
+    "file": "abc.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c fields.c",
+    "file": "fields.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c index.c",
+    "file": "index.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c search.c",
+    "file": "search.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c sort_in.c",
+    "file": "sort_in.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c tex.c",
+    "file": "tex.c"
+  }
+]

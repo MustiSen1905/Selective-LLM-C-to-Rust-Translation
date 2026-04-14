@@ -72,13 +72,10 @@ pub unsafe extern "C" fn log_message(mut msg: *const core::ffi::c_char) {
 }
 #[no_mangle]
 pub unsafe extern "C" fn read_log_unsafe(mut user_buffer: *mut core::ffi::c_char) {
-    let mut f: *mut FILE = fopen(
-        b"system.log\0" as *const u8 as *const core::ffi::c_char,
-        b"r\0" as *const u8 as *const core::ffi::c_char,
-    ) as *mut FILE;
+    let mut f: *mut FILE = std::ffi::CString::new("system.log\0".to_string()).unwrap().as_ptr() as *const _ as *mut FILE;
     if f.is_null() {
         return;
     }
-    fscanf(f, b"%s\0" as *const u8 as *const core::ffi::c_char, user_buffer);
+    fscanf(f, std::ffi::CString::new("%s\0".to_string()).unwrap().as_ptr() as *const _, user_buffer);
     fclose(f);
 }
