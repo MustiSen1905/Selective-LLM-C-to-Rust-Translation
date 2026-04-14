@@ -3,6 +3,7 @@ import sys
 import os
 import re
 import json
+import entities.FunctionObject as FunctionObject
 
 def load_unsafe_functions(json_path):
     """Lädt die Funktionsnamen aus der JSON-Datei in ein Set."""
@@ -46,13 +47,19 @@ def run_analysis(c_project_dir, json_path="unsafe_functions.json"):
             
             for line in lines:
                 # Extrahiert den Namen nach 'FUNC:'
-                match = re.search(r"FUNC:\s*([\w\d_]+)", line)
-                if match:
-                    func_name = match.group(1)
+                matches = re.finditer(r"FUNC:([^:]+):([\w\d_]+)", line)
+                for match in matches:
+                    file_path = match.group(1)
+                    func_name = match.group(2)
                     
-                    # FILTER: Nur übernehmen, wenn in der JSON-Liste enthalten
+                    # FILTER: Nur übernehmen, wenn der Funktionsname in der JSON-Liste ist
                     if func_name in allowed_functions:
-                        function_order.append(func_name)
+                        # Erstellt das Objekt mit dem extrahierten Dateinamen und Funktionsnamen
+                        func_obj = FunctionObject.FunctionObject(
+                            name=func_name, 
+                            file=os.path.basename(file_path)
+                        )
+                        function_order.append(func_obj)
             
     except Exception as e:
         print(f"[!] Fehler: {e}")

@@ -1,0 +1,107 @@
+[
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2.c",
+    "file": "jbig2.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2dec.c",
+    "file": "jbig2dec.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_arith.c",
+    "file": "jbig2_arith.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_arith_iaid.c",
+    "file": "jbig2_arith_iaid.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_arith_int.c",
+    "file": "jbig2_arith_int.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_generic.c",
+    "file": "jbig2_generic.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_halftone.c",
+    "file": "jbig2_halftone.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_huffman.c",
+    "file": "jbig2_huffman.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_image.c",
+    "file": "jbig2_image.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_image_pbm.c",
+    "file": "jbig2_image_pbm.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_image_png.c",
+    "file": "jbig2_image_png.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_mmr.c",
+    "file": "jbig2_mmr.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_page.c",
+    "file": "jbig2_page.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_refinement.c",
+    "file": "jbig2_refinement.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_segment.c",
+    "file": "jbig2_segment.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_symbol_dict.c",
+    "file": "jbig2_symbol_dict.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c jbig2_text.c",
+    "file": "jbig2_text.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c memcmp.c",
+    "file": "memcmp.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c memento.c",
+    "file": "memento.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c pbm2png.c",
+    "file": "pbm2png.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/jbig2dec-master",
+    "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c sha1.c",
+    "file": "sha1.c"
+  }
+]

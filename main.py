@@ -6,6 +6,7 @@ from analysis.graph import run_analysis
 from analysis.klee import analyze_ownership as collect_ownership_info
 from analysis.unsafe_functions import main as get_unsafe_functions
 from translation.translation import main as translate_unsafe_to_safe
+import entities.FunctionObject as FunctionObject
 
 def main(project_dir) -> None:
     try:
@@ -26,10 +27,9 @@ def main(project_dir) -> None:
         #Starting Analysis
         get_unsafe_functions(f"C-projects/{project_dir}/")
         print("Starting code analysis...")
-        print(collect_ownership_info(f"C-projects/{project_dir}"))
+        #print(collect_ownership_info(f"C-projects/{project_dir}"))
         order =[]
-        order = run_analysis(f"C-projects/{project_dir}") 
-        print(f"Function order: {order}")
+        order = run_analysis(f"C-projects/{project_dir}")
         # Hier wird die Analyse auf das gesamte Projekt angewendet, nicht nur auf eine Datei
         #static_analysis.main(f"C-projects/{project_dir}/{file}",f"cppcheck_report_{file}.xml",f"cppcheck_report_{file}.json")
         #Dividing C Code to unsafe and safe parts
@@ -39,7 +39,7 @@ def main(project_dir) -> None:
         #Starting C2Rust Translation
         print("Translating C code to unsafe Rust...")
         c2rust_main(["--input-dir",f"C-projects/{project_dir}",
-                        "--config",f"unsafe_test.json",
+                        "--config",f"unsafe_functions.json",
                         "--out",f"Rust-Outcome/{project_dir}"
                         ])
         #Starting unsafe Rust to safe Rust Translation

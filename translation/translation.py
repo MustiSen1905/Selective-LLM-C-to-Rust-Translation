@@ -5,6 +5,7 @@ import csv
 import time
 import re
 import sys
+import entities.FunctionObject as FunctionObject
 
 # Importiere die Funktion aus deiner create_prompt.py
 try:
@@ -15,7 +16,7 @@ except ImportError:
 # --- KONFIGURATION ---
 MODEL = "deepseek-coder:33b"
 C_SOURCE_BASE = "C-projects" 
-MAX_RETRIES = 5
+MAX_RETRIES = 3
 LOG_FILE = "bachelor_evaluation_results.csv"
 
 client = ollama.Client(host='http://localhost:11434')
@@ -41,19 +42,39 @@ def log_result(project, func_info, status, attempts, prompt, error=""):
             clean_error
         ])
 
-def map_functions_to_files(rust_src_path):
-    """Scannt das Projekt und erstellt ein Mapping: {funktion_name: datei_pfad}"""
+def map_c_functions_to_rust_files(function_objects, rust_src_path):
+    """
+    Erstellt eine Map {funktion_name: rust_datei_pfad}.
+    Nutzt die Liste der FunctionObjects, um gezielt nach den .rs-Pendanten zu suchen.
+    """
     func_map = {}
+    # 1. Wir erstellen zuerst einen Index aller vorhandenen Rust-Dateien im Projekt
+    # Key: "main", Value: "/pfad/zu/main.rs"
+    rust_file_index = {}
     for root, _, files in os.walk(rust_src_path):
         for file in files:
-            if file.endswith(".rs") and file != "lib.rs":
-                path = os.path.join(root, file)
-                with open(path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                # Findet Funktionsnamen (auch mit pub/unsafe/extern Attributen)
-                names = re.findall(r'fn\s+([a-zA-Z0-9_]+)\s*\(', content)
-                for name in names:
-                    func_map[name] = path
+            if file.endswith(".rs"):
+                base_name = os.path.splitext(file)[0]
+                rust_file_index[base_name] = os.path.join(root, file)
+
+    # 2. Wir gehen die Liste deiner FunctionObjects durch
+    print("Test")
+    
+    for obj in function_objects:
+        # Extrahiere Basisnamen der C-Datei (z.B. "logic" aus "logic.c")
+        c_base_name = os.path.splitext(obj.file)[0]
+        
+        
+        # Prüfen, ob wir eine passende Rust-Datei im Index haben
+        if c_base_name in rust_file_index:
+            rust_path = rust_file_index[c_base_name]
+            # Mapping: Funktionsname -> Pfad zur gefundenen .rs Datei
+            func_map[obj.name] = rust_path
+        else:
+            # Optional: Falls keine passende .rs Datei gefunden wurde
+            print(f"Warnung: Keine Rust-Datei für {obj.file} (Funktion: {obj.name}) gefunden.")
+
+    print(func_map)
     return func_map
 
 def get_function_range(content, func_name):
@@ -62,6 +83,7 @@ def get_function_range(content, func_name):
     pattern = r'(?P<start>(?:#\[[^\]]+\]\s*)*(?:pub\s+)?(?:unsafe\s+)?(?:extern\s+"C"\s+)?fn\s+' + re.escape(func_name) + r'\s*\()'
     match = re.search(pattern, content)
     if not match:
+        print("True1")
         return None, None
 
     start_idx = match.start()
@@ -73,10 +95,12 @@ def get_function_range(content, func_name):
             break
         if content[signature_end] == ';':
             # Es ist nur eine Deklaration (extern fn foo();), überspringen!
+            print("True2")
             return None, None
         signature_end += 1
 
     if signature_end >= len(content):
+        print("True3")
         return None, None
     
     # Jetzt zählen wir die Klammern, um das Ende der Funktion zu finden
@@ -93,7 +117,7 @@ def get_function_range(content, func_name):
 
 def run_cargo_check(project_root):
     try:
-        result = subprocess.run(["cargo", "check"], cwd=project_root, capture_output=True, text=True, timeout=300)
+        result = subprocess.run(["cargo", "check"], cwd=project_root, capture_output=True, text=True, timeout=600)
         return result.returncode == 0, result.stderr
     except Exception as e:
         return False, f"Error: {str(e)}"
@@ -174,19 +198,20 @@ def main(project_dir, function_order=None):
         return
 
     # HIER war der Fehler: Die Funktion muss definiert sein!
-    func_to_file = map_functions_to_files(rust_src)
+    func_to_file = map_c_functions_to_rust_files(function_order, rust_src)
     
     # Reihenfolge festlegen
     order = function_order if function_order else list(func_to_file.keys())
 
     print(f"--- Starte Übersetzung von {len(order)} Funktionen ---")
 
-    for func_name in order:
-        if func_name in func_to_file:
-            if func_name == "main":
+    for func in order:
+        if func.name in func_to_file:
+            
+            if func.name == "main":
                 print("  [*] Spezieller Fall: Main ersetzen mit main_0, um die ursprüngliche main-Funktion zu erhalten.")
-                process_single_function("main_0", func_to_file[func_name], project_name, cargo_root)
+                process_single_function("main_0", func_to_file[func.name], project_name, cargo_root)
             else:
-                process_single_function(func_name, func_to_file[func_name], project_name, cargo_root)
+                process_single_function(func.name, func_to_file[func.name], project_name, cargo_root)
         else:
-            print(f"  [!] Warnung: '{func_name}' nicht im Projekt gefunden.")
+            print(f"  [!] Warnung: '{func.name}' nicht im Projekt gefunden.")

@@ -105,11 +105,13 @@ def process_project(in_dir: Path, unsafe_cfg: dict, out_dir: Path):
         src = c_file.read_text(encoding="utf-8", errors="ignore")
         
         funcs_info = get_function_info(src)
+      
         if not funcs_info: continue
 
         f_unsafe = [n for n in funcs_info if n in unsafe_funcs_list]
+      
         f_safe = [n for n in funcs_info if n not in unsafe_funcs_list]
-        print(rel_path)
+       
         base_id = rel_path
         
 
@@ -120,6 +122,7 @@ def process_project(in_dir: Path, unsafe_cfg: dict, out_dir: Path):
             safe_manifest.append(path.name)
 
         if f_unsafe:
+           
             path = out_dir / f"{base_id}"
             content = create_context_split(src, funcs_info, f_unsafe, is_unsafe_file=True)
             path.write_text(content, encoding="utf-8")
@@ -146,12 +149,12 @@ def main(args_list=None):
         target = work / h.relative_to(in_dir)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(h, target)
+        
+   
 
     # 2. Dateien splitten
     safe_files, unsafe_paths = process_project(in_dir, unsafe_cfg, work)
     
-    print(safe_files)
-    print(unsafe_paths)
 
     # 3. Compile Commands
     cmds = []
@@ -171,10 +174,22 @@ def main(args_list=None):
 
     # 5. Cargo Setup
     (rust_out / "src").mkdir(exist_ok=True)
-    f_list = ", ".join([f'"{f}"' for f in safe_files])
-    (rust_out / "build.rs").write_text(f"""fn main() {{
-    cc::Build::new().files([{f_list}]).include(".").flag("-std=c99").flag("-fcommon").warnings(false).compile("c_parts");
-}}""", encoding="utf-8")
+    if safe_files:
+        file_calls = "".join([f'.file("{f}")' for f in safe_files])
+        build_script_content = f"""fn main() {{
+        cc::Build::new()
+            {file_calls}
+            .include(".")
+            .flag("-std=c99")
+            .flag("-fcommon")
+            .warnings(false)
+            .compile("c_parts");
+    }}"""
+    else:
+        # An empty main function so the build script exists but does nothing
+        build_script_content = "fn main() {}"
+
+    (rust_out / "build.rs").write_text(build_script_content, encoding="utf-8")
     (rust_out / "Cargo.toml").write_text("""[package]\nname = "hybrid_project"\nversion = "0.1.0"\nedition = "2021"\nbuild = "build.rs"\n[build-dependencies]\ncc = "1"\n[lib]\nname="hybrid_project"\npath= "lib.rs"\ncrate-type = ["staticlib", "rlib"]\n """, encoding="utf-8")
     
     for f in safe_files: shutil.copy2(work / f, rust_out / f)

@@ -1,22 +1,56 @@
 {
   "unsafe": {
-    "logger.c": [
-      "log_message",
-      "read_log_unsafe"
-    ],
-    "main.c": [
-      "main",
+    "aes.c": [
+      "getSBoxValue",
+      "KeyExpansion",
+      "for",
+      "if",
+      "if",
+      "AES_init_ctx",
+      "AES_init_ctx_iv",
+      "AES_ctx_set_iv",
+      "AddRoundKey",
+      "for",
+      "for",
+      "SubBytes",
+      "for",
+      "for",
+      "ShiftRows",
+      "xtime",
+      "MixColumns",
+      "for",
+      "Multiply",
+      "getSBoxInvert",
+      "InvMixColumns",
+      "for",
+      "InvSubBytes",
+      "for",
+      "for",
+      "InvShiftRows",
+      "Cipher",
+      "InvCipher",
+      "AES_ECB_encrypt",
+      "AES_ECB_decrypt",
+      "XorWithIv",
+      "AES_CBC_encrypt_buffer",
+      "for",
+      "AES_CBC_decrypt_buffer",
+      "for",
+      "AES_CTR_xcrypt_buffer",
+      "for",
       "if"
     ],
-    "user_auth.c": [
-      "create_user",
-      "delete_user",
-      "if",
-      "elevate_privileges"
-    ],
-    "utils.c": [
-      "process_data",
-      "for"
+    "test.c": [
+      "phex",
+      "test_encrypt_ecb_verbose",
+      "for",
+      "test_encrypt_ecb",
+      "test_decrypt_cbc",
+      "test_encrypt_cbc",
+      "test_encrypt_ctr",
+      "test_decrypt_ctr",
+      "test_xcrypt_ctr",
+      "test_decrypt_ecb"
     ]
   }
 }
