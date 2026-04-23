@@ -1,234 +1,79 @@
-extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
-    static mut stdout: *mut FILE;
-    static mut stderr: *mut FILE;
-    fn fclose(__stream: *mut FILE) -> core::ffi::c_int;
-    fn fopen(
-        __filename: *const core::ffi::c_char,
-        __modes: *const core::ffi::c_char,
-    ) -> *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const core::ffi::c_char,
-        ...
-    ) -> core::ffi::c_int;
-    fn printf(__format: *const core::ffi::c_char, ...) -> core::ffi::c_int;
-    fn sprintf(
-        __s: *mut core::ffi::c_char,
-        __format: *const core::ffi::c_char,
-        ...
-    ) -> core::ffi::c_int;
-    fn vfprintf(
-        __s: *mut FILE,
-        __format: *const core::ffi::c_char,
-        __arg: ::core::ffi::VaList,
-    ) -> core::ffi::c_int;
-    fn sscanf(
-        __s: *const core::ffi::c_char,
-        __format: *const core::ffi::c_char,
-        ...
-    ) -> core::ffi::c_int;
-    fn fgets(
-        __s: *mut core::ffi::c_char,
-        __n: core::ffi::c_int,
-        __stream: *mut FILE,
-    ) -> *mut core::ffi::c_char;
-    fn fputs(__s: *const core::ffi::c_char, __stream: *mut FILE) -> core::ffi::c_int;
-    fn atoi(__nptr: *const core::ffi::c_char) -> core::ffi::c_int;
-    fn calloc(__nmemb: size_t, __size: size_t) -> *mut core::ffi::c_void;
-    fn free(__ptr: *mut core::ffi::c_void);
-    fn exit(__status: core::ffi::c_int) -> !;
-    fn strcpy(
-        __dest: *mut core::ffi::c_char,
-        __src: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
-    fn strcat(
-        __dest: *mut core::ffi::c_char,
-        __src: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
-    fn strncmp(
-        __s1: *const core::ffi::c_char,
-        __s2: *const core::ffi::c_char,
-        __n: size_t,
-    ) -> core::ffi::c_int;
-    fn strchr(
-        __s: *const core::ffi::c_char,
-        __c: core::ffi::c_int,
-    ) -> *mut core::ffi::c_char;
-    fn strlen(__s: *const core::ffi::c_char) -> size_t;
-    fn g_error(_: *const core::ffi::c_char, ...);
-    fn getsIn(_: *mut core::ffi::c_char) -> *mut core::ffi::c_char;
-    fn tune2tex(
-        _: *mut [core::ffi::c_char; 99],
-        _: core::ffi::c_int,
-        _: *mut Record,
-        _: core::ffi::c_int,
-        _: *mut Symbol,
-        _: *mut Field,
-        _: *mut Field,
-        _: *mut Field,
-    );
-    fn end_beam();
-    fn new_symbol(type_0: core::ffi::c_int);
-    fn output_transpose();
-    fn set_base(meter: *mut Field);
-    fn sharps_flats(key: *mut Field);
-    fn process_field(str: *mut core::ffi::c_char);
-    fn process_trailing();
-    fn process_gchord(str: *mut core::ffi::c_char);
-    fn process_macro(c: core::ffi::c_char);
-    fn process_accent(c: core::ffi::c_char);
-    fn process_accidental(accidental: core::ffi::c_int);
-    fn process_note(pitch: core::ffi::c_int);
-    fn process_octaver(octaver: core::ffi::c_int);
-    fn process_length(length: core::ffi::c_int);
-    fn process_divisor(length: core::ffi::c_int);
-    fn process_broken(power: core::ffi::c_int);
-    fn process_bar(bar_type: core::ffi::c_int);
-    fn process_repeat(no: core::ffi::c_int);
-    fn process_space();
-    fn process_tie();
-    fn process_continuation();
-    fn process_newline();
-    fn process_open_chord();
-    fn process_close_chord();
-    fn process_open_close_chord();
-    fn process_open_grace();
-    fn process_close_grace();
-    fn process_open_slur();
-    fn process_close_slur();
-    fn process_open_close_slur();
-    fn process_tuplet(s: *mut core::ffi::c_char);
-    fn process_justify();
-    fn process_ampersand(level: core::ffi::c_int);
-    fn process_beams(n: core::ffi::c_int, s: *mut Symbol);
-    fn tune2hash(
-        key: *mut Field,
-        hash_array: *mut core::ffi::c_int,
-        force: core::ffi::c_int,
-    );
+impl SafeFrac {
+    pub unsafe fn from_ptr(ptr: *const frac) -> Self {
+        if ptr.is_null() {
+            return Self { n: "".to_string(), d: "".to_string() };
+        }
+        
+        let c_str = std::ffi::CStr::from_ptr(ptr);
+        let str_slice = c_str.to_bytes();
+        
+        // Convert C-strings to Rust Strings
+        let n = String::from_utf8_lossy(&str_slice[0..4]).into_owned();
+        let d = String::from_utf8_lossy(&str_slice[4..8]).into_owned();
+        
+        Self { n, d }
+    }
 }
-pub type __builtin_va_list = [__va_list_tag; 1];
+
+
+
+impl SafeNote {
+    pub unsafe fn from_ptr(ptr: *const Note) -> Self {
+        if ptr.is_null() {
+            return Self { length: 0, type_0: 0, pitch: 0, attributes: vec![], gchord: "".to_string(), chord: 0, tuplet: 0, start: vec![], end: vec![], n_notes: 0, iaccidental: 0, broken: SafeFrac { n: "".to_string(), d: "".to_string() } };
+        }
+        
+        let c_str = std::ffi::CStr::from_ptr(ptr);
+        let str_slice = c_str.to_bytes();
+        
+        // Convert C-strings to Rust Strings
+        let length = ptr.length;
+        let type_0 = ptr.type_0;
+        let pitch = ptr.pitch;
+        let attributes = str_slice[8..(9*26)].chunks(4).map(|bytes| String::from_utf8_lossy(&bytes).into_owned()).collect();
+        let gchord = String::from_utf8_lossy(&str_slice[(9*26)..((9*26)+4)]).into_owned();
+        let chord = ptr.chord;
+        let tuplet = ptr.tuplet;
+        let start = str_slice[((9*26)+4)..((9*26)+8+(9*3))].chunks(4).map(|bytes| String::from_utf8_lossy(&bytes).into_owned()).collect();
+        let end = str_slice[((9*26)+8+(9*3))..((9*26)+16+(9*3))].chunks(4).map(|bytes| String::from_utf8_lossy(&bytes).into_owned()).collect();
+        let n_notes = ptr.n_notes;
+        let iaccidental = ptr.iaccidental;
+        let broken = SafeFrac { n: String::from_utf8_lossy(&str_slice[((9*26)+16+(9*3))..((9*26)+24+(9*3))]).into_owned(), d: String::from_utf8_lossy(&str_slice[((9*26)+24+(9*3))..((9*26)+32+(9*3))]).into_owned() };
+        
+        Self { length, type_0, pitch, attributes, gchord, chord, tuplet, start, end, n_notes, iaccidental, broken }
+    }
+}
+
+
+ 
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct __va_list_tag {
-    pub gp_offset: core::ffi::c_uint,
-    pub fp_offset: core::ffi::c_uint,
-    pub overflow_arg_area: *mut core::ffi::c_void,
-    pub reg_save_area: *mut core::ffi::c_void,
-}
-pub type size_t = usize;
-pub type __gnuc_va_list = __builtin_va_list;
-pub type __off_t = core::ffi::c_long;
-pub type __off64_t = core::ffi::c_long;
+
+
+
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: core::ffi::c_int,
-    pub _IO_read_ptr: *mut core::ffi::c_char,
-    pub _IO_read_end: *mut core::ffi::c_char,
-    pub _IO_read_base: *mut core::ffi::c_char,
-    pub _IO_write_base: *mut core::ffi::c_char,
-    pub _IO_write_ptr: *mut core::ffi::c_char,
-    pub _IO_write_end: *mut core::ffi::c_char,
-    pub _IO_buf_base: *mut core::ffi::c_char,
-    pub _IO_buf_end: *mut core::ffi::c_char,
-    pub _IO_save_base: *mut core::ffi::c_char,
-    pub _IO_backup_base: *mut core::ffi::c_char,
-    pub _IO_save_end: *mut core::ffi::c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: core::ffi::c_int,
-    pub _flags2: core::ffi::c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: core::ffi::c_ushort,
-    pub _vtable_offset: core::ffi::c_schar,
-    pub _shortbuf: [core::ffi::c_char; 1],
-    pub _lock: *mut core::ffi::c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut core::ffi::c_void,
-    pub __pad5: size_t,
-    pub _mode: core::ffi::c_int,
-    pub _unused2: [core::ffi::c_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type va_list = __gnuc_va_list;
+
+
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct record {
-    pub fields: [*mut core::ffi::c_char; 26],
-    pub bars: *mut core::ffi::c_char,
-    pub next: *mut record,
-}
-pub type Record = record;
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct frac {
-    pub n: core::ffi::c_int,
-    pub d: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Note {
-    pub length: core::ffi::c_int,
-    pub type_0: core::ffi::c_int,
-    pub pitch: core::ffi::c_int,
-    pub attributes: [core::ffi::c_char; 9],
-    pub gchord: *mut core::ffi::c_char,
-    pub chord: core::ffi::c_int,
-    pub tuplet: core::ffi::c_int,
-    pub start: [core::ffi::c_char; 9],
-    pub end: [core::ffi::c_char; 9],
-    pub n_notes: core::ffi::c_int,
-    pub iaccidental: core::ffi::c_int,
-    pub broken: frac,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Setting {
-    pub gchords_above: core::ffi::c_int,
-    pub autobeam: core::ffi::c_int,
-    pub old_slurs: core::ffi::c_int,
-    pub old_chords: core::ffi::c_int,
-    pub old_repeats: core::ffi::c_int,
-    pub justification: core::ffi::c_int,
-    pub mine: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Barline {
-    pub type_0: core::ffi::c_int,
-    pub repeat_no: core::ffi::c_int,
-    pub bar_no: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Field {
-    pub string: *mut core::ffi::c_char,
-    pub info1: core::ffi::c_int,
-    pub info2: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Misc {
-    pub level: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct symbol {
-    pub type_0: core::ffi::c_int,
-    pub u: C2RustUnnamed,
-    pub newline: core::ffi::c_int,
-    pub justify: core::ffi::c_int,
-    pub next: *mut symbol,
-    pub prev: *mut symbol,
-}
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub union C2RustUnnamed {
@@ -237,7 +82,7 @@ pub union C2RustUnnamed {
     pub field: Field,
     pub misc: Misc,
 }
-pub type Symbol = symbol;
+
 pub const FIELD: symbol_types = 3;
 pub const NOTE: symbol_types = 2;
 pub const TWO_BARS_PLUS: two_bar_types = 4;
@@ -245,13 +90,7 @@ pub const TWO_BARS: two_bar_types = 2;
 pub const ONE_BAR_PLUS: two_bar_types = 3;
 pub const TEX_OUTPUT: output_types = 1;
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Output {
-    pub type_0: core::ffi::c_int,
-    pub transpose: core::ffi::c_int,
-    pub nbars: core::ffi::c_int,
-    pub warnings: core::ffi::c_int,
-}
+
 pub const NATURAL: accidental_types = 3;
 pub const FLAT: accidental_types = 2;
 pub const DBL_FLAT: accidental_types = 1;
@@ -269,19 +108,19 @@ pub const DBL_BAR: bar_types = 2;
 pub const INDEX_OUTPUT: output_types = 2;
 pub const NEWLINE_TKN: token_types = 16;
 pub const BAR_LINE: symbol_types = 1;
-pub type output_types = core::ffi::c_uint;
+
 pub const HASH_OUTPUT: output_types = 3;
 pub const NO_OUTPUT: output_types = 0;
-pub type two_bar_types = core::ffi::c_uint;
+
 pub const ONE_BAR: two_bar_types = 1;
 pub const NO_BARS: two_bar_types = 0;
-pub type symbol_types = core::ffi::c_uint;
+
 pub const MISC: symbol_types = 4;
 pub const UNDETERMINED: symbol_types = 0;
-pub type bar_types = core::ffi::c_uint;
-pub type accidental_types = core::ffi::c_uint;
+
+
 pub const NONE: accidental_types = 0;
-pub type token_types = core::ffi::c_uint;
+
 pub const MAX_TKNS: token_types = 25;
 pub const TRAILING_TKN: token_types = 24;
 pub const AMPERSAND_TKN: token_types = 23;
@@ -367,102 +206,196 @@ static mut beam_length: core::ffi::c_int = 0 as core::ffi::c_int;
 static mut continuation: core::ffi::c_int = 0 as core::ffi::c_int;
 static mut ignore: core::ffi::c_int = 0;
 #[no_mangle]
-pub unsafe extern "C" fn abc_warning(mut fmt: *mut core::ffi::c_char, mut args: ...) {
-    let mut ap: ::core::ffi::VaListImpl;
-    if output.warnings == 0 as core::ffi::c_int {
+pub unsafe extern "C" fn abc_warning(mut fmt: *const core::ffi::c_char) {
+    if output.warnings == std::os::raw::c_int(0) {
         return;
     }
-    ap = args.clone();
-    fprintf(
-        stdout,
-        b"WARNING: line no. %d - \0" as *const u8 as *const core::ffi::c_char,
-        input_line,
-    );
-    vfprintf(stdout, fmt, ap.as_va_list());
-    fprintf(stdout, b"\n\0" as *const u8 as *const core::ffi::c_char);
-}
-#[no_mangle]
-pub unsafe extern "C" fn abc_error(mut fmt: *const i8, mut args: ...) {
-    println!("{}", std::ffi::CStr::from_ptr(fmt).to_string_lossy()); // This assumes that the format string is ASCII. If not, additional steps are required to correctly handle encoding.
-    exit(1);
-}
-use std::ffi::CStr;
-#[no_mangle]
-pub unsafe extern "C" fn is_field(mut line: *mut core::ffi::c_char) -> core::ffi::c_int {
-    if *line.offset(1 as core::ffi::c_int as isize) as core::ffi::c_int == ':' as i32
-        && 'A' as i32 <= *line.offset(0 as core::ffi::c_int as isize) as core::ffi::c_int
-        && *line.offset(0 as core::ffi::c_int as isize) as core::ffi::c_int <= 'Z' as i32
-    {
-        return 1 as core::ffi::c_int
-    } else {
-        return 0 as core::ffi::c_int
+    let mut args = std::ffi::VaListImpl{};
+    
+    // Get the CStr from the pointer
+    let cstr_fmt = match std::ffi::CStr::from_ptr(fmt) {
+        Err(_) => return,
+        Ok(cstr) => cstr.to_bytes(),
     };
-}
-#[no_mangle]
-pub unsafe extern "C" fn strip(
-    mut str: *mut core::ffi::c_char,
-    mut comment: *mut core::ffi::c_char,
-) {
-    let mut c_ptr: *mut core::ffi::c_char = 0 as *mut core::ffi::c_char;
-    *comment.offset(0 as core::ffi::c_int as isize) = '\0' as i32 as core::ffi::c_char;
-    c_ptr = strchr(str, '%' as i32);
-    if c_ptr.is_null() {
-        c_ptr = strchr(str, '\n' as i32);
-    }
-    while c_ptr > str
-        && (*c_ptr.offset(-(1 as core::ffi::c_int as isize)) as core::ffi::c_int
-            == ' ' as i32
-            || *c_ptr.offset(-(1 as core::ffi::c_int as isize)) as core::ffi::c_int
-                == '\t' as i32)
-    {
-        c_ptr = c_ptr.offset(-1);
-    }
-    if !c_ptr.is_null() {
-        strcpy(comment, c_ptr);
-        *c_ptr = '\0' as i32 as core::ffi::c_char;
-    }
-}
-#[no_mangle]
-pub unsafe extern "C" fn stripcpy(mut out_str: *mut core::ffi::c_char, mut in_str: *mut core::ffi::c_char) {
-    static mut DUMMY: [core::ffi::c_char; 999] = [0; 999];
-    strip(in_str, DUMMY.as_mut_ptr());
-    strcpy(out_str, in_str);
-}
-#[no_mangle]
-pub unsafe extern "C" fn output_transline(s: *mut ::std::ffi::c_char) {
-    fputs(s, Trans);
-}
-#[no_mangle]
-pub unsafe extern "C" fn get_dnl(entry: *mut Record) {
-    let mut meter = [0 as core::ffi::c_char; 99];
-    let mut meter_field = Field{ string: &mut *meter.as_mut_ptr().offset(0 as core::ffi::c_int as isize), info1: 0, info2: 0 };
+    let fmt_string: String = String::from_utf8(cstr_fmt).unwrap();
     
-    strcpy(meter.as_mut_ptr(), b"M:\0".as_ptr() as *const u8 as *const core::ffi::c_char);
-    strcat(meter.as_mut_ptr(), (*entry).fields[12]);
+    println!("WARNING: line no. {} - {}", input_line as usize, fmt_string);
+}
+#[no_mangle]
+pub extern "C" fn abc_error(fmt: *const std::os::raw::c_char) {
+    let fmt = unsafe { std::ffi::CStr::from_ptr(fmt).to_str().unwrap() };
+
+    eprintln!("error in input file {}", abc_file);
+    println!("{}: line no. {} - {}", abc_file, input_line, fmt);
+    std::process::exit(1);
+}
+#[no_mangle]
+pub extern "C" fn read_settings() {
+    let fp = std::fs::File::open("settings").ok()?;
+    let mut reader = std::io::BufReader::new(fp);
+    let mut line = String::with_capacity(99);
+    
+    for result in reader.lines() {
+        match result {
+            Err(_) => break,
+            Ok(l) => line = l
+        };
+        
+        if &line[..8] == "justify\0" {
+            settings.justification = 1;
+        } else if &line[..12] == "gchords above\0" {
+            settings.gchords_above = 1;
+        } else if &line[..9] == "autobeam\0" {
+            settings.autobeam = 1;
+        } else if &line[..11] == "oldrepeats\0" {
+            settings.old_repeats = 1;
+        } else if &line[..10] == "oldchords\0" {
+            settings.old_chords = 1;
+        } else if &line[..9] == "oldslurs\0" {
+            settings.old_slurs = 1;
+        } else if &line[..5] == "mine\0" {
+            settings.mine = 1;
+        } else {
+            g_error("in settings – unrecognised line: %s", line);
+        }
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn is_field(line_ptr: *mut core::ffi::c_char) -> i32 {
+    let safe_line = SafeLine::from_ptr(line_ptr);
+    
+    if safe_line.get_char(1) == ':' && ('A'..='Z').contains(&safe_line.get_char(0)) {
+        1
+    } else {
+        0
+    }
+}
+
+pub struct SafeLine(*const core::ffi::c_char);
+impl SafeLine {
+    pub unsafe fn from_ptr(ptr: *mut core::ffi::c_char) -> Self {
+        if ptr.is_null() {
+            return Self(std::ptr::null());
+        } else {
+            let c_str = std::ffi::CStr::from_ptr(*ptr);
+            let str_slice = c_str.to_bytes();
+            
+            // Convert C-strings to Rust Strings
+            Self(&str_slice[0] as *const core::ffi::c_char)
+        }
+    }
+    
+    pub unsafe fn get_char(&self, index: usize) -> char {
+        let c = unsafe { *(self.0.offset(index as isize)) };
+        c as char
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn strip(str_ptr: *mut core::ffi::c_char, comment_ptr: *mut core::ffi::c_char) {
+    let mut str = std::ffi::CStr::from_ptr(str_ptr);
+    let mut comment = std::ffi::CStr::from_ptr(comment_ptr);
+    
+    // Convert C-strings to Rust Strings
+    let str: String = str.to_bytes().iter().map(|&c| c as char).collect();
+    let mut comment: Vec<char> = comment.to_bytes().iter().map(|&c| c as char).collect();
+    
+    // Remove trailing spaces and comments
+    if let Some(index) = str.rfind(|c| !matches_whitespace(c)) {
+        comment.clear();
+        
+        for c in &str[..=index] {
+            match *c {
+                '%' | '\n' => break,
+                ' ' | '\t' if comment.is_empty() => {},
+                _ => comment.push(*c),
+            }
+        }
+        
+        // Update the C-strings with the new values
+        let str = str[..=index].trim_end_matches(|c| matches_whitespace(c)).to_string();
+        let comment: String = comment.into_iter().collect();
+        
+        std::ffi::CString::new(str).unwrap().into_raw(*str_ptr);
+        std::ffi::CString::new(comment).unwrap().into_raw(*comment_ptr);
+    } else {
+        str.clear();
+        comment.clear();
+        
+        std::ffi::CString::new("").unwrap().into_raw(*str_ptr);
+        std::ffi::CString::new("").unwrap().into_raw(*comment_ptr);
+    }
+}
+pub unsafe extern "C" fn stripcpy(out_str: *mut core::ffi::c_char, in_str: *mut core::ffi::c_char) {
+    let safe_in_str = std::ffi::CStr::from_ptr(in_str);
+    let mut stripped = String::new();
+    for ch in safe_in_str.chars() {
+        if !ch.is_whitespace() {
+            stripped.push(ch);
+        }
+    }
+    let c_stripped = stripped.as_ptr();
+    strcpy(out_str, c_stripped as *mut core::ffi::c_char);
+}
+
+fn strcpy(dest: *mut core::ffi::c_char, src: *const core::ffi::c_char) {
+    let mut p1 = dest;
+    let p2 = src;
+    loop {
+        if unsafe { *p2 } == '\0' as i8 {
+            return;
+        } else {
+            unsafe {
+                *p1 = *p2;
+                p1 += 1;
+                p2 += 1;
+            }
+        }
+    }
+}
+pub fn output_transline(s: *mut core::ffi::c_char) -> i32 {
+    let nblanks = 0 as isize;
+    
+    match unsafe { CString::from_raw(s) } {
+        Err(_) => return 1,
+        Ok(s) => {
+            if fputs(s.as_ptr(), Trans) == std::ptr::null() {
+                return 1;
+            }
+        },
+    };
+    0
+}
+#[no_mangle]
+pub unsafe extern "C" fn get_dnl(entry: &mut Record) {
+    let mut meter = ["0".repeat(98).as_bytes(), b'\0'];
+    let mut meter_field: Field = Field::new();
+    *meter_field.string() = meter.as_ptr().cast();
+    unsafe {
+        strcpy(*meter_field.string().cast_mut(), b"M:\0".as_ptr());
+        strcat(*meter_field.string().cast_mut(), entry.fields[12]);
+    }
     set_base(&mut meter_field);
-    
-    sprintf((*entry).fields[11], b"1/%d\0".as_ptr() as *const u8 as *const core::ffi::c_char, 32 / dnl);
+    sprintf(entry.fields[11], b"1/%d\0", 32 / dnl);
 }
 #[no_mangle]
 pub unsafe extern "C" fn set_dnl(mut dnl_str: *mut core::ffi::c_char) {
-    let mut const_DNL = 0; // Defining const_DNL as a mutable variable 
-
-    while *dnl_str as core::ffi::c_int == ' ' as i32 {
+    while *dnl_str as i32 == ' ' as i32 {
         dnl_str = dnl_str.offset(1);
     }
     
-    if strncmp(dnl_str, b"1/4\0".as_ptr() as *const _, 3) == 0 as core::ffi::c_int {
-        const_DNL = CROTCHET;
-    } else if strncmp(dnl_str, b"1/8\0".as_ptr() as *const _, 3) == 0 as core::ffi::c_int {
-        const_DNL = QUAVER;
-    } else if strncmp(dnl_str, b"1/16\0".as_ptr() as *const _, 4) == 0 as core::ffi::c_int {
-        const_DNL = SEMIQUAVER;
-    } else if strncmp(dnl_str, b"1/32\0".as_ptr() as *const _, 5) == 0 as core::ffi::c_int {
-        const_DNL = DEMISEMIQUAVER;
+    let sdl_str = std::ffi::CStr::from_ptr(dnl_str).to_bytes();
+    if sdl_str[0..4] == b"1/4 " {
+        *const_cast::<core::ffi::c_char>(dnl_str) = 6; // dnl = CROTCHET
+    } else if sdl_str[0..4] == b"1/8 " {
+        *const_cast::<core::ffi::c_char>(dnl_str) = 5; // dnl = QUAVER
+    } else if sdl_str[0..5] == b"1/16 " {
+        *const_cast::<core::ffi::c_char>(dnl_str) = 4; // dnl = SEMIQUAVER
+    } else if sdl_str[0..5] == b"1/32 " {
+        *const_cast::<core::ffi::c_char>(dnl_str) = 3; // dnl = DEMISEMIQUAVER
     } else {
-        printf(b"default note length not recognised\n\0".as_ptr() as *const _);
-        const_DNL = QUAVER;
-    }
+        printf(b"default note length not recognised\n\0".as_ptr() as _, );
+        *const_cast::<core::ffi::c_char>(dnl_str) = 5; // dnl = QUAVER
+    };
 }
 #[no_mangle]
 pub unsafe extern "C" fn range(
@@ -470,98 +403,105 @@ pub unsafe extern "C" fn range(
     mut last: *mut core::ffi::c_int,
     mut yfirst: *mut core::ffi::c_int,
     mut ylast: *mut core::ffi::c_int,
-    mut input: *mut *mut core::ffi::c_char,
+    mut input: *mut *const u8,
 ) -> core::ffi::c_int {
-    *ylast = 4999 as core::ffi::c_int;
-    if **input as core::ffi::c_int == '\0' as i32 {
-        *first = 4999 as core::ffi::c_int;
-        *last = 4999 as core::ffi::c_int;
-        *yfirst = 4999 as core::ffi::c_int;
-        return 1 as core::ffi::c_int;
+    let format = b"%d\0".as_ptr() as *const i8;
+
+    *ylast = 4999;
+    
+    if **input == '\0' as u8 {
+        *first = 4999;
+        *last = 4999;
+        *yfirst = 4999;
+        return 1;
     }
-    if **input as core::ffi::c_int == '-' as i32 {
-        *first = 1 as core::ffi::c_int;
-        *yfirst = 1 as core::ffi::c_int;
-    } else if **input as core::ffi::c_int >= '0' as i32
-        && **input as core::ffi::c_int <= '9' as i32
-    {
-        sscanf(*input, b"%d\0" as *const u8 as *const core::ffi::c_char, first);
-        while **input as core::ffi::c_int >= '0' as i32
-            && **input as core::ffi::c_int <= '9' as i32
-        {
+
+    let input_str = std::ffi::CStr::from_ptr(unsafe { *input });
+    
+    if input_str.as_bytes()[0] == b'-'[0] as u8 {
+        *first = 1;
+        *yfirst = 1;
+    } else if input_str.as_bytes()[0].is_numeric() {
+        unsafe { sscanf(input, format, first); }
+        
+        while input_str.as_bytes()[0].is_numeric() {
             *input = (*input).offset(1);
+            let input_str = std::ffi::CStr::from_ptr(unsafe { *input });
         }
-        if **input as core::ffi::c_int == '.' as i32 {
+
+        if input_str.as_bytes()[0] == b'.'[0] as u8 {
             *input = (*input).offset(1);
-            if **input as core::ffi::c_int >= '1' as i32
-                && **input as core::ffi::c_int <= '9' as i32
-            {
-                *yfirst = **input as core::ffi::c_int - '0' as i32;
-            } else if **input as core::ffi::c_int >= 'a' as i32
-                && **input as core::ffi::c_int <= 'z' as i32
-            {
-                *yfirst = **input as core::ffi::c_int - 'a' as i32
-                    + 10 as core::ffi::c_int;
+            
+            if input_str.as_bytes()[0].is_numeric() {
+                *yfirst = (input_str.as_bytes()[0] - b'0'[0]) as i32;
+            } else if input_str.as_bytes()[0] >= b'a'[0] as u8 && input_str.as_bytes()[0] <= b'z'[0] as u8 {
+                *yfirst = (input_str.as_bytes()[0] - b'a'[0] + 10) as i32;
             } else {
-                return 0 as core::ffi::c_int
+                return 0;
             }
+            
             *input = (*input).offset(1);
         } else {
-            *yfirst = 0 as core::ffi::c_int;
+            *yfirst = 0;
         }
     } else {
-        return 0 as core::ffi::c_int
+        return 0;
     }
-    if **input as core::ffi::c_int == '-' as i32 {
+
+    let input_str = std::ffi::CStr::from_ptr(unsafe { *input });
+    
+    if input_str.as_bytes()[0] == b'-'[0] as u8 {
         *input = (*input).offset(1);
-        if **input as core::ffi::c_int == '\0' as i32 {
-            *last = 4999 as core::ffi::c_int;
-        } else if **input as core::ffi::c_int >= '0' as i32
-            && **input as core::ffi::c_int <= '9' as i32
-        {
-            sscanf(*input, b"%d\0" as *const u8 as *const core::ffi::c_char, last);
-            while **input as core::ffi::c_int >= '0' as i32
-                && **input as core::ffi::c_int <= '9' as i32
-            {
+        
+        if input_str.as_bytes()[0] == '\0' as u8 {
+            *last = 4999;
+        } else if input_str.as_bytes()[0].is_numeric() {
+            unsafe { sscanf(input, format, last); }
+            
+            while input_str.as_bytes()[0].is_numeric() {
                 *input = (*input).offset(1);
+                let input_str = std::ffi::CStr::from_ptr(unsafe { *input });
             }
-            if **input as core::ffi::c_int == '.' as i32 {
+
+            if input_str.as_bytes()[0] == b'.'[0] as u8 {
                 *input = (*input).offset(1);
-                if **input as core::ffi::c_int >= '1' as i32
-                    && **input as core::ffi::c_int <= '9' as i32
-                {
-                    *ylast = **input as core::ffi::c_int - '0' as i32;
-                } else if **input as core::ffi::c_int >= 'a' as i32
-                    && **input as core::ffi::c_int <= 'z' as i32
-                {
-                    *ylast = **input as core::ffi::c_int - 'a' as i32
-                        + 10 as core::ffi::c_int;
+                
+                if input_str.as_bytes()[0].is_numeric() {
+                    *ylast = (input_str.as_bytes()[0] - b'0'[0]) as i32;
+                } else if input_str.as_bytes()[0] >= b'a'[0] as u8 && input_str.as_bytes()[0] <= b'z'[0] as u8 {
+                    *ylast = (input_str.as_bytes()[0] - b'a'[0] + 10) as i32;
                 } else {
-                    return 0 as core::ffi::c_int
+                    return 0;
                 }
+                
                 *input = (*input).offset(1);
             }
-            if **input as core::ffi::c_int == ',' as i32 {
+            
+            if input_str.as_bytes()[0] == b','[0] as u8 {
                 *input = (*input).offset(1);
             }
         } else {
-            return 0 as core::ffi::c_int
+            return 0;
         }
-    } else if **input as core::ffi::c_int == ',' as i32 {
+    } else if input_str.as_bytes()[0] == b','[0] as u8 {
         *last = *first;
-        if *yfirst != 0 as core::ffi::c_int {
+        
+        if *yfirst != 0 {
             *ylast = *yfirst;
         }
+        
         *input = (*input).offset(1);
-    } else if **input as core::ffi::c_int == '\0' as i32 {
+    } else if input_str.as_bytes()[0] == '\0' as u8 {
         *last = *first;
-        if *yfirst != 0 as core::ffi::c_int {
+        
+        if *yfirst != 0 {
             *ylast = *yfirst;
         }
     } else {
-        return 0 as core::ffi::c_int
+        return 0;
     }
-    return 1 as core::ffi::c_int;
+    
+    return 1;
 }
 #[no_mangle]
 pub unsafe extern "C" fn process_abc(

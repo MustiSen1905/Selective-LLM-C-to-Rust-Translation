@@ -1,269 +1,238 @@
-extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
-    static mut stdin: *mut FILE;
-    static mut stdout: *mut FILE;
-    fn fclose(__stream: *mut FILE) -> core::ffi::c_int;
-    fn fopen(
-        __filename: *const core::ffi::c_char,
-        __modes: *const core::ffi::c_char,
-    ) -> *mut FILE;
-    fn calloc(__nmemb: size_t, __size: size_t) -> *mut core::ffi::c_void;
-    fn free(__ptr: *mut core::ffi::c_void);
-    fn qsort(
-        __base: *mut core::ffi::c_void,
-        __nmemb: size_t,
-        __size: size_t,
-        __compar: __compar_fn_t,
-    );
-    fn strcpy(
-        __dest: *mut core::ffi::c_char,
-        __src: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
-    fn strcat(
-        __dest: *mut core::ffi::c_char,
-        __src: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
-    fn strcmp(
-        __s1: *const core::ffi::c_char,
-        __s2: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
-    fn g_error(_: *const core::ffi::c_char, ...);
-    fn get_index(_: *mut core::ffi::c_char, _: *mut core::ffi::c_char);
-    fn size_record(
-        _: *mut core::ffi::c_char,
-        _: *mut core::ffi::c_int,
-        _: *mut core::ffi::c_char,
-    );
-    fn alloc_record(_: *mut core::ffi::c_char, _: *mut core::ffi::c_int) -> *mut Record;
-    fn free_record(_: *mut record, _: *mut core::ffi::c_char);
-    fn get_record(
-        _: *mut core::ffi::c_char,
-        _: *mut FILE,
-        _: *mut record,
-    ) -> core::ffi::c_int;
-    fn put_record(
-        _: *mut core::ffi::c_char,
-        _: *mut FILE,
-        _: *mut record,
-    ) -> core::ffi::c_int;
-    fn compare(entry1: *mut *mut Record, entry2: *mut *mut Record) -> core::ffi::c_int;
+impl Safe_IO_FILE {
+    unsafe fn from_ptr(ptr: *const _IO_FILE) -> Self {
+        if ptr.is_null() {
+            panic!("Null pointer!");
+        } else {
+            let file = &*ptr;
+            Safe_IO_FILE {
+                _flags: file._flags,
+                _IO_read_ptr: std::ffi::CStr::from_ptr(file._IO_read_ptr as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_read_end: std::ffi::CStr::from_ptr(file._IO_read_end as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_read_base: std::ffi::CStr::from_ptr(file._IO_read_base as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_write_base: std::ffi::CStr::from_ptr(file._IO_write_base as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_write_ptr: std::ffi::CStr::from_ptr(file._IO_write_ptr as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_write_end: std::ffi::CStr::from_ptr(file._IO_write_end as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_buf_base: std::ffi::CStr::from_ptr(file._IO_buf_base as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_buf_end: std::ffi::CStr::from_ptr(file._IO_buf_end as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_save_base: std::ffi::CStr::from_ptr(file._IO_save_base as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_backup_base: std::ffi::CStr::from_ptr(file._IO_backup_base as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _IO_save_end: std::ffi::CStr::from_ptr(file._IO_save_end as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _markers: std::ffi::CString::new(file._markers),
+                _chain: Box::new(Safe_IO_FILE::from_ptr(file._chain)),
+                _fileno: file._fileno,
+                _flags2: file._flags2,
+                _old_offset: file._old_offset as _,
+                _cur_column: file._cur_column,
+                _vtable_offset: file._vtable_offset,
+                _shortbuf: std::ffi::CStr::from_ptr(file._shortbuf as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                _lock: std::ffi::CString::new(file._lock),
+                _offset: file._offset,
+                _codecvt: std::ffi::CString::new(file._codecvt),
+                _wide_data: std::ffi::CString::new(file._wide_data),
+                _freeres_list: Box::new(Safe_IO_FILE::from_ptr(file._freeres_list)),
+                _freeres_buf: std::ffi::CString::new(file._freeres_buf),
+                __pad5: file.__pad5,
+                _mode: file._mode,
+                _unused2: std::ffi::CStr::from_ptr(file._unused2 as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+            }
+        }
+    }
 }
-pub type size_t = usize;
-pub type __off_t = core::ffi::c_long;
-pub type __off64_t = core::ffi::c_long;
+
+
+impl SafeRecord {
+    unsafe fn from_ptr(ptr: *const record) -> Self {
+        if ptr.is_null() {
+            panic!("Null pointer!");
+        } else {
+            let rec = &*ptr;
+            SafeRecord {
+                fields: rec
+                    .fields
+                    .iter()
+                    .map(|field| std::ffi::CStr::from_ptr(*field as *const i8)
+                        .to_string_lossy()
+                        .into_owned())
+                    .collect(),
+                bars: std::ffi::CStr::from_ptr(rec.bars as *const i8)
+                    .to_string_lossy()
+                    .into_owned(),
+                next: if rec.next.is_null() { None } else { Some(Box::new(SafeRecord::from_ptr(rec.next))) },
+            }
+        }
+    }
+}
+
+
+
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: core::ffi::c_int,
-    pub _IO_read_ptr: *mut core::ffi::c_char,
-    pub _IO_read_end: *mut core::ffi::c_char,
-    pub _IO_read_base: *mut core::ffi::c_char,
-    pub _IO_write_base: *mut core::ffi::c_char,
-    pub _IO_write_ptr: *mut core::ffi::c_char,
-    pub _IO_write_end: *mut core::ffi::c_char,
-    pub _IO_buf_base: *mut core::ffi::c_char,
-    pub _IO_buf_end: *mut core::ffi::c_char,
-    pub _IO_save_base: *mut core::ffi::c_char,
-    pub _IO_backup_base: *mut core::ffi::c_char,
-    pub _IO_save_end: *mut core::ffi::c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: core::ffi::c_int,
-    pub _flags2: core::ffi::c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: core::ffi::c_ushort,
-    pub _vtable_offset: core::ffi::c_schar,
-    pub _shortbuf: [core::ffi::c_char; 1],
-    pub _lock: *mut core::ffi::c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut core::ffi::c_void,
-    pub __pad5: size_t,
-    pub _mode: core::ffi::c_int,
-    pub _unused2: [core::ffi::c_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
-pub type __compar_fn_t = Option<
-    unsafe extern "C" fn(
-        *const core::ffi::c_void,
-        *const core::ffi::c_void,
-    ) -> core::ffi::c_int,
->;
+
+
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct record {
-    pub fields: [*mut core::ffi::c_char; 26],
-    pub bars: *mut core::ffi::c_char,
-    pub next: *mut record,
-}
-pub type Record = record;
-pub type compFun = unsafe extern "C" fn(
-    *const core::ffi::c_void,
-    *const core::ffi::c_void,
-) -> core::ffi::c_int;
+
+
+
 pub const NULL: *mut core::ffi::c_void = 0 as *mut core::ffi::c_void;
 static mut priority: [core::ffi::c_char; 99] = [0; 99];
-unsafe fn main_0(
-    mut argc: core::ffi::c_int,
-    mut argv: *mut *mut core::ffi::c_char,
-) -> core::ffi::c_int {
-    let mut format: [core::ffi::c_char; 999] = [0; 999];
-    let mut file: [core::ffi::c_char; 99] = [0; 99];
-    let mut fmt_file: [core::ffi::c_char; 99] = [0; 99];
-    let mut index: *mut FILE = 0 as *mut FILE;
-    let mut fields: [core::ffi::c_char; 12] = [0; 12];
-    let mut sizes: [core::ffi::c_int; 12] = [0; 12];
-    let mut entry: *mut Record = 0 as *mut Record;
-    let mut first_entry: *mut Record = 0 as *mut Record;
-    let mut prev_entry: *mut Record = 0 as *mut Record;
-    let mut next_entry: *mut Record = 0 as *mut Record;
-    let mut list: *mut *mut Record = 0 as *mut *mut Record;
-    let mut i: core::ffi::c_int = 0;
-    let mut n: core::ffi::c_int = 0 as core::ffi::c_int;
-    let mut arg: core::ffi::c_int = 0;
-    strcpy(file.as_mut_ptr(), b"index\0" as *const u8 as *const core::ffi::c_char);
-    strcpy(priority.as_mut_ptr(), b"T\0" as *const u8 as *const core::ffi::c_char);
-    arg = 1 as core::ffi::c_int;
+pub fn main_0(argc: i32, argv: *const *const u8) -> i32 {
+    let mut format = [0u8; 999];
+    let mut file = [0u8; 99];
+    let mut fmt_file = [0u8; 99];
+    let index: Box<Option<SafeIOFILE>> = unsafe { SafeIOFILE::from_ptr(std::ffi::c_void::null()) };
+    let mut fields = [0u8; 12];
+    let mut sizes = [0i32; 12];
+    let mut entry: Box<Option<SafeRecord>> = unsafe { SafeRecord::from_ptr(std::ffi::c_void::null()) };
+    let first_entry = entry.clone();
+    let mut prev_entry = entry.clone();
+    let mut next_entry: Box<Option<SafeRecord>> = unsafe { SafeRecord::from_ptr(std::ffi::c_void::null()) };
+    let mut list = vec![0u8; 1];
+    let mut i = 0i32;
+    let mut n = 0i32;
+    let mut arg = 1i32;
+    
+    strcpy(file.as_mut_ptr(), b"index\0".as_ptr() as *const u8);
+    strcpy(priority.as_mut_ptr(), b"T\0".as_ptr() as *const u8);
+    
     while arg < argc {
-        if arg + 1 as core::ffi::c_int == argc {
-            g_error(b"missing argument\0" as *const u8 as *const core::ffi::c_char);
+        if arg + 1 == argc {
+            g_error(b"missing argument\0".as_ptr() as *const u8);
         }
-        if strcmp(
-            *argv.offset(arg as isize),
-            b"-f\0" as *const u8 as *const core::ffi::c_char,
-        ) == 0 as core::ffi::c_int
-        {
+        
+        let argv_str = std::ffi::CStr::from_ptr(*argv.offset((arg - 1) as isize)).to_string_lossy().into_owned();
+        if strcmp(argv_str.as_ptr() as *const u8, b"-f\0".as_ptr() as *const u8) == 0 {
             arg += 1;
-            strcpy(file.as_mut_ptr(), *argv.offset(arg as isize));
-        } else if strcmp(
-            *argv.offset(arg as isize),
-            b"-p\0" as *const u8 as *const core::ffi::c_char,
-        ) == 0 as core::ffi::c_int
-        {
+            let next_arg = std::ffi::CStr::from_ptr(*argv.offset((arg - 1) as isize)).to_string_lossy().into_owned();
+            strcpy(file.as_mut_ptr(), next_arg.as_ptr() as *const u8);
+        } else if strcmp(argv_str.as_ptr() as *const u8, b"-p\0".as_ptr() as *const u8) == 0 {
             arg += 1;
-            strcpy(priority.as_mut_ptr(), *argv.offset(arg as isize));
+            let next_arg = std::ffi::CStr::from_ptr(*argv.offset((arg - 1) as isize)).to_string_lossy().into_owned();
+            strcpy(priority.as_mut_ptr(), next_arg.as_ptr() as *const u8);
         } else {
-            g_error(
-                b"unrecognised argument %s\0" as *const u8 as *const core::ffi::c_char,
-                *argv.offset(arg as isize),
-            );
+            g_error(b"unrecognised argument %s\0".as_ptr() as *const u8, argv_str.as_ptr() as *const u8);
         }
+        
         arg += 1;
     }
-    if strcmp(file.as_mut_ptr(), b"-\0" as *const u8 as *const core::ffi::c_char)
-        == 0 as core::ffi::c_int
-    {
-        index = stdin;
-        strcpy(
-            fmt_file.as_mut_ptr(),
-            b"index\0" as *const u8 as *const core::ffi::c_char,
-        );
+    
+    if strcmp(file.as_mut_ptr(), b"-\0".as_ptr() as *const u8) == 0 {
+        index = unsafe { Box::new(Some(SafeIOFILE::from_ptr((index.unwrap().unwrap())._IO_read_base._file))) };
+        strcpy(fmt_file.as_mut_ptr(), b"index\0".as_ptr() as *const u8);
     } else {
-        index = fopen(file.as_mut_ptr(), b"r\0" as *const u8 as *const core::ffi::c_char)
-            as *mut FILE;
-        if index.is_null() {
-            g_error(
-                b"cannot open file %s\0" as *const u8 as *const core::ffi::c_char,
-                file.as_mut_ptr(),
-            );
+        let file_str = std::ffi::CStr::from_ptr(*argv).to_string_lossy().into_owned();
+        index = unsafe { Box::new(Some(SafeIOFILE::from_ptr(fopen(file_str.as_ptr() as *const u8, b"r\0".as_ptr() as *const u8) as *mut _IO_FILE))) };
+        
+        if index.unwrap().is_none() {
+            g_error(b"cannot open file %s\0".as_ptr() as *const u8, *argv);
         }
+        
         strcpy(fmt_file.as_mut_ptr(), file.as_mut_ptr());
     }
-    strcat(fmt_file.as_mut_ptr(), b".fmt\0" as *const u8 as *const core::ffi::c_char);
+    
+    strcat(fmt_file.as_mut_ptr(), b".fmt\0".as_ptr() as *const u8);
     get_index(format.as_mut_ptr(), fmt_file.as_mut_ptr());
     size_record(format.as_mut_ptr(), sizes.as_mut_ptr(), fields.as_mut_ptr());
-    entry = alloc_record(fields.as_mut_ptr(), sizes.as_mut_ptr());
-    first_entry = entry;
-    while get_record(format.as_mut_ptr(), index, entry as *mut record)
-        != 0 as core::ffi::c_int
-    {
+    
+    entry = unsafe { Box::new(Some(SafeRecord::from_ptr(alloc_record(fields.as_mut_ptr(), sizes.as_mut_ptr())))) };
+    let mut fresh0: *mut Record = std::slice::from_raw_parts_mut(&mut list[..1]).get(0).unwrap();
+    **fresh0 = entry.unwrap().unwrap();
+    
+    while get_record(format.as_mut_ptr(), index.unwrap().unwrap()._IO_read_base._file, entry.unwrap().unwrap()) != 0 {
         prev_entry = entry;
-        entry = alloc_record(fields.as_mut_ptr(), sizes.as_mut_ptr());
-        (*prev_entry).next = entry as *mut record;
-        n += 1 as core::ffi::c_int;
+        entry = unsafe { Box::new(Some(SafeRecord::from_ptr(alloc_record(fields.as_mut_ptr(), sizes.as_mut_ptr())))) };
+        
+        (**(*prev_entry).unwrap()).next = entry.clone();
+        n += 1;
     }
-    if strcmp(file.as_mut_ptr(), b"-\0" as *const u8 as *const core::ffi::c_char)
-        != 0 as core::ffi::c_int
-    {
-        fclose(index);
+    
+    if strcmp(file.as_mut_ptr(), b"-\0".as_ptr() as *const u8) != 0 {
+        fclose(index.unwrap().unwrap()._IO_read_base._file);
     }
-    list = calloc(
-        n as core::ffi::c_uint as size_t,
-        ::core::mem::size_of::<*mut Record>() as size_t,
-    ) as *mut *mut Record;
-    if list.is_null() {
-        g_error(
-            b"alloc failure in Record*_array\0" as *const u8 as *const core::ffi::c_char,
-        );
-    }
-    let ref mut fresh0 = *list.offset(0 as core::ffi::c_int as isize);
-    *fresh0 = first_entry;
-    i = 1 as core::ffi::c_int;
+    
+    let mut fresh1: *mut Record = std::slice::from_raw_parts_mut(&mut list[..n as usize]).get(i as usize).unwrap();
+    **fresh1 = (**(*first_entry).unwrap()).next.as_ref().unwrap();
+    
+    i = 0;
+    
     while i < n {
-        let ref mut fresh1 = *list.offset(i as isize);
-        *fresh1 = (**list.offset((i - 1 as core::ffi::c_int) as isize)).next
-            as *mut Record;
+        let mut fresh2: *mut Record = std::slice::from_raw_parts_mut(&mut list[..n as usize]).get(i as usize).unwrap();
+        **fresh2 = (**(**(*fresh1).next.as_ref().unwrap())).unwrap();
+        
         i += 1;
     }
+    
     qsort(
-        list as *mut core::ffi::c_char as *mut core::ffi::c_void,
-        n as core::ffi::c_uint as size_t,
-        ::core::mem::size_of::<*mut Record>() as size_t,
-        ::core::mem::transmute::<
-            Option<
-                unsafe extern "C" fn(
-                    *mut *mut Record,
-                    *mut *mut Record,
-                ) -> core::ffi::c_int,
-            >,
-            __compar_fn_t,
-        >(
-            Some(
-                compare
-                    as unsafe extern "C" fn(
-                        *mut *mut Record,
-                        *mut *mut Record,
-                    ) -> core::ffi::c_int,
-            ),
-        ),
+        list.as_mut_ptr(),
+        n as usize,
+        core::mem::size_of::<*mut Record>(),
+        |a, b| {
+            if a == b || b.is_null() { 0 } else { compare(a, b) }
+        },
     );
-    if strcmp(file.as_mut_ptr(), b"-\0" as *const u8 as *const core::ffi::c_char)
-        == 0 as core::ffi::c_int
-    {
-        index = stdout;
+    
+    if strcmp(file.as_mut_ptr(), b"-\0".as_ptr() as *const u8) == 0 {
+        index = unsafe { Box::new(Some(SafeIOFILE::from_ptr(stdout))) };
     } else {
-        index = fopen(file.as_mut_ptr(), b"w\0" as *const u8 as *const core::ffi::c_char)
-            as *mut FILE;
-        if index.is_null() {
-            g_error(
-                b"cannot open file %s\0" as *const u8 as *const core::ffi::c_char,
-                file.as_mut_ptr(),
-            );
+        let file_str = std::ffi::CStr::from_ptr(*argv).to_string_lossy().into_owned();
+        index = unsafe { Box::new(Some(SafeIOFILE::from_ptr(fopen(file_str.as_ptr() as *const u8, b"w\0".as_ptr() as *const u8) as *mut _IO_FILE))) };
+        
+        if index.unwrap().is_none() {
+            g_error(b"cannot open file %s\0".as_ptr() as *const u8, *argv);
         }
     }
-    i = 0 as core::ffi::c_int;
+    
+    i = 0;
+    
     while i < n {
-        put_record(format.as_mut_ptr(), index, *list.offset(i as isize));
+        put_record(format.as_mut_ptr(), index.unwrap().unwrap()._IO_read_base._file, list[i as usize]);
+        
         i += 1;
     }
-    if strcmp(file.as_mut_ptr(), b"-\0" as *const u8 as *const core::ffi::c_char)
-        != 0 as core::ffi::c_int
-    {
-        fclose(index);
+    
+    if strcmp(file.as_mut_ptr(), b"-\0".as_ptr() as *const u8) != 0 {
+        fclose(index.unwrap().unwrap()._IO_read_base._file);
     }
+    
     entry = first_entry;
-    while !entry.is_null() {
-        next_entry = (*entry).next as *mut Record;
-        free_record(entry as *mut record, fields.as_mut_ptr());
+    
+    while let Some(_) = &*entry {
+        next_entry = (**(*entry).unwrap()).next.as_ref();
+        
+        free_record(&mut *(**entry).unwrap(), fields.as_mut_ptr());
         entry = next_entry;
     }
-    free(list as *mut core::ffi::c_void);
-    return 0 as core::ffi::c_int;
+    
+    std::slice::from_raw_parts_mut(&mut list[..1]);
+    0
 }
 pub fn main() {
     let mut args: Vec<*mut core::ffi::c_char> = Vec::new();
@@ -274,7 +243,7 @@ pub fn main() {
                 .into_raw(),
         );
     }
-    args.push(::core::ptr::null_mut());
+    args.push(::core::std::ptr::null_mut());
     unsafe {
         ::std::process::exit(
             main_0(

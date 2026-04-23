@@ -27,7 +27,7 @@ def main(project_dir) -> None:
         #Starting Analysis
         get_unsafe_functions(f"C-projects/{project_dir}/")
         print("Starting code analysis...")
-        #print(collect_ownership_info(f"C-projects/{project_dir}"))
+        collect_ownership_info(f"C-projects/{project_dir}")
         order =[]
         order = run_analysis(f"C-projects/{project_dir}")
         # Hier wird die Analyse auf das gesamte Projekt angewendet, nicht nur auf eine Datei

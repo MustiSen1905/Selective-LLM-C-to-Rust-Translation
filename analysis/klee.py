@@ -77,7 +77,7 @@ def analyze_ownership(project_dir):
         data["files"][filename] = file_info
 
     # Dynamischer Dateiname
-    output_filename = f"ownership_{project_name}.json"
+    output_filename = f"ownership.json"
     with open(output_filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
     

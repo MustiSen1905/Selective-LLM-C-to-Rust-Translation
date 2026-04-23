@@ -1,3 +1,7 @@
+import json
+from posixpath import basename
+from posixpath import basename
+
 import clang.cindex
 import os
 from clang.cindex import Config
@@ -94,11 +98,54 @@ class CContextExtractor:
         
         context["calls"] = list(set(context["calls"]))
         return context
+    
+def get_global_symbols(c_file):
+    """
+    Extrahiert Namen globaler Variablen aus der C-Datei und filtert 
+    Standard-Systemsymbole sowie Duplikate.
+    """
+    # Liste von Symbolen, die wir NICHT filtern wollen (Standard-C/POSIX)
+    standard_c_symbols = {
+        'stderr', 'stdout', 'stdin', 'errno', 'environ', 
+        'optarg', 'optind', 'opterr', 'optopt'
+    }
 
-def build_final_prompt(c_file, function_name, unsafe_rust_snippet):
+    index = clang.cindex.Index.create()
+    # Wir parsen ohne komplexe Includes, um nur die lokalen Statics zu finden
+    tu = index.parse(c_file, args=['-fsyntax-only'])
+    global_vars = set()
+
+    for node in tu.cursor.get_children():
+        # Nur Variablen-Deklarationen auf Modulebene (Global/Static)
+        if node.kind == clang.cindex.CursorKind.VAR_DECL:
+            name = node.spelling
+            # Filter: Nur hinzufügen, wenn nicht in Standard-Liste
+            if name and name not in standard_c_symbols:
+                global_vars.add(name)
+            
+    return sorted(list(global_vars))
+
+def build_final_prompt(c_file, function_name, unsafe_rust_snippet, safe_struct_context=""):
     """Erstellt den Prompt basierend auf dem C-Kontext und dem Rust-Snippet."""
     extractor = CContextExtractor(c_file)
     ctx = extractor.get_full_context(function_name)
+    globals_list = get_global_symbols(c_file)
+    globals_formatted = ", ".join(globals_list) if globals_list else "None identified"
+    
+    basename = os.path.basename(c_file) # Ergibt "main.c"
+    ownership_file = "ownership.json"
+    file_info = None
+    if os.path.exists(ownership_file):
+        with open(ownership_file, 'r') as f:
+            data = json.load(f)
+            
+        # Hier holst du dir die Infos für die spezifische Datei
+        # Wir nutzen .get(), falls die Datei mal nicht im JSON existiert
+        file_info = data.get("files", {}).get(basename)
+        file_info = json.dumps(file_info, indent=2) if file_info else "No ownership info available for this file."
+    else:
+        file_info = "Ownership info file not found."
+   
     
     # Falls die C-Funktion nicht gefunden wird, nutzen wir nur das Rust-Snippet
     c_info_block = "Original C context not found for this function."
@@ -113,30 +160,81 @@ RELEVANT TYPE DEFINITIONS (RECURSIVE):
 CALLED EXTERNAL FUNCTIONS:
 {', '.join(ctx['calls'])}"""
 
+    #4. **IMPORTS**: Do NOT use `use` statements. Use absolute paths (e.g., `std::collections::HashMap`).
     # Der finale, hoch-präzise Prompt
     prompt = f"""### ROLE
-You are an expert Rust Developer refactoring C2Rust-transpiled code.
+You are an expert Rust Developer refactoring C2Rust-transpiled code into IDIOMATIC SAFE RUST while using SHADOW STRUCTS.
+
+### TASK
+Refactor the function `{function_name}`. 
+- **SIGNATURE**: Change parameters to use Safe-types (e.g., `&SafeUser` instead of `*mut User`).
+- **BRIDGE**: If the function receives a raw pointer from the old system, use the `SafeX::from_ptr(ptr)` bridge at the start.
+- **LOGIC**: 100% Safe Rust. No `unsafe` keyword. Replace C-logic (strcpy, malloc) with idiomatic Rust.
+
+### SAFE STRUCT DEFINITIONS (USE THESE)
+{safe_struct_context}
 
 ### INPUT DATA
 1. <c_context>: Original C code/types. Use ONLY for understanding logic.
 2. <unsafe_rust_function>: The specific Rust function to refactor.
+3. <existing_global_symbols>: {globals_formatted}
 
 ### STRICT GUIDING PRINCIPLES
-1. **NO RE-DEFINITIONS (CRITICAL)**: DO NOT output `struct`, `type`, or `extern "C" { ... }` blocks. You are writing ONLY the function body. Assume everything else is globally available.
-2. **MAINTAIN SIGNATURES**: DO NOT change the outer function signature.
-3. **IMPORTS**: Do NOT use `use std::...` statements. Use absolute paths directly in the code.
+1. **TOTAL SAFETY (CRITICAL)**: The output MUST NOT contain the `unsafe` keyword. Not in the function body, and NOT in the function header.
+2. **SAFE SIGNATURES**: Change the function signature to use safe Rust types. 
+   - Convert `*mut T` or `*const T` to `&mut T`, `&T`, or `Option<&T>`.
+   - Convert C-style arrays/pointer pairs to Slices (`&[T]`) or `Vec<T>`.
+   - Convert `*mut c_char` to `&str` or `String`.
+3. **NO RE-DEFINITIONS**: DO NOT output `struct`, `type`, or `extern` blocks. Assume they exist or are handled by safe wrappers.
+4. **IMPORTS**: Do NOT use `use` statements. Use absolute paths (e.g., `std::collections::HashMap`).
+5. **CONST & STATICS**: If a global variable is used as a lookup table (like an S-Box), convert it to a `const` or an immutable `static`. DO NOT use `static mut`.
+6. **ITERATOR PREFERENCE**: Instead of `for i in 0..len {{ slice[i] = ... }}`, prefer using `.iter_mut()`, `.chunks_exact()`, or `.zip()`. This is CRITICAL for performance as it eliminates bounds checks.
+7. **FIXED SIZES**: If the C-code uses a fixed-size block (e.g., AES_BLOCKLEN), use fixed-size array references `&mut [u8; 16]` to assist the compiler with optimizations.
+8. **NO SHADOWING**: Do NOT use names from <existing_global_symbols> for function parameters or local variables. If a name conflicts, append an underscore (e.g., `abc_file` -> `abc_file_`).
+9. **PRINTF TO MACRO**: Replace `fprintf(stderr, ...)` or `printf` with `std::eprintln!` or `std::println!`. 
+   - **CRITICAL**: Rust macros require a string literal. Do NOT pass a variable as the first argument. Use `println!("{{}}", var)` instead of `println!(var)`.
+10. **ABSOLUTE PATHS FOR FFI**: You MUST use `std::ffi::CStr` and `std::ffi::c_char`. Never use just `CStr`.
+11. **VARIADIC FUNCTIONS**: If the original function uses `...` (variadic arguments), do NOT use the unicode ellipsis character `…`. You must translate it to a valid Rust pattern (like a slice `&[&dyn std::any::Any]`, a macro, or keep the `...` if it's an extern "C" block, but ensure valid ASCII syntax).
+12. **BRIDGE CASE SENSITIVITY**: Use the `SafeX::from_ptr(ptr)` bridge. Make sure to use the EXACT case-sensitive name of the Safe struct (e.g., if the original was `frac`, use `Safefrac`, not `SafeFrac`).
+13. **NO ASSIGNMENTS IN CONDITIONS (CRITICAL)**: Rust forbids `if a = b {{ ... }}`. You MUST extract the assignment outside the condition: `a = b; if a != 0 {{ ... }}`.
+14. **SYSTEM POINTERS EXCEPTION**: Do NOT use the `SafeX::from_ptr()` bridge for system types like `FILE`, `_IO_FILE`, `va_list`, or `__va_list_tag`. Leave these as raw pointers (`*mut T` or `*mut core::ffi::c_void`) or use them contextually. Do NOT invent a `SafeIOFILE`.
+15. **C-STRING CASTING**: If you must pass a string literal to a legacy C function (like `strcpy`), always cast it correctly: `b"text\\0".as_ptr() as *const core::ffi::c_char`. Do not pass `u8` pointers where `i8` (`c_char`) is expected.
+16. **C-STRING CASTING (CRITICAL)**: When converting byte string literals to raw pointers for C-functions or `CStr::from_ptr`, you MUST cast them to `c_char` like this: `b"text\\0".as_ptr() as *const core::ffi::c_char`. Do NOT just use `.as_bytes().as_ptr()`.
+17. **STRING INDEXING**: In Rust, `String` cannot be indexed by `usize` (e.g., `s[i]`). If you need to access a character by index like in C, use `s.as_bytes()[i] as char` or `s.chars().nth(i).unwrap()`.
+18. **C-INT CASTING FOR CHARACTERS (CRITICAL)**: Many legacy C functions (like `strchr`, `isalpha`, `toupper`) take characters as `int`. If you extract a `c_char` (which is `i8`) and pass it to such a function, you MUST cast it: `my_char as core::ffi::c_int`. Never pass an `i8` directly to a function expecting `i32` or `c_int`.
 
-### FFI & MEMORY RULES (CRITICAL)
-- **Allocation**: To dynamically allocate a struct and return a raw pointer, DO NOT use `std::alloc`. Use `Box::into_raw(Box::new(StructName {{ ... }}))`.
-- **Deallocation**: To free a raw pointer, call the external `free(ptr as *mut _)` function.
-- **String Types & ASCII**: C `char` is often `i8`. Rust byte literals are `[u8]`. Cast them like this: `b"text\\0".as_ptr() as *const i8`. Byte literals (`b"..."`) MUST ONLY contain ASCII characters. For special characters like 'ö', use hex escapes (e.g., `\\xF6`).
-- **Printing C-Strings**: Use `.to_string_lossy()`. Example: `println!("{{}}", CStr::from_ptr(ptr).to_string_lossy())`.
-- **Pointer Field Access**: To access a field of a raw pointer, you MUST dereference it first: `(*ptr).field_name`, NEVER `ptr.field_name`.
-- **C-Arrays to Pointers**: To pass a local array `let mut buf = [0; 32];` to a function expecting `*mut c_char`, use `buf.as_mut_ptr() as *mut i8`.
-- **Struct Initialization**: Use `std::ptr::null_mut()` for null pointers. Cast integer literals strictly (e.g., `0 as i32` or `0 as c_int`).
+### MEMORY & LOGIC RULES
+- **Ownership**: Use `Box<T>` for heap allocation instead of raw pointers. Let Rust's RAII handle deallocation (no explicit `free`).
+- **Error Handling**: Replace error codes (int) with `Result` or `Option` if appropriate for the logic, otherwise maintain the return type but ensure internal safety.
+- **Strings**: Use `std::ffi::CStr` only if necessary to convert, but prefer passing `&str`. For printing, use `println!("{{}}", s)`.
+- **Slices & Iterators**: Replace manual `while` loops and pointer increments with safe iterators (`.iter()`, `.chunks()`, etc.) or indexed access on slices.
+- **Null-Safety**: Use `Option` to represent nullable pointers. Use `.as_ref()` or `.as_mut()` to safely access them.
+
+### EXAMPLES OF THE BRIDGE PATTERN (CRITICAL)
+Here is exactly how you must isolate unsafe boundaries using the Shadow Struct bridge function.
+
+[BAD RUST - DO NOT DO THIS]
+pub fn process_user(u: *mut User) {{
+    unsafe {{
+        if !u.is_null() {{
+            println!("Admin: {{}}", (*u).isAdmin);
+        }}
+    }}
+}}
+
+[GOOD RUST - DO EXACTLY THIS]
+pub fn process_user(u_ptr: *mut User) {{
+    // 1. ISOLATE UNSAFE BOUNDARY: Convert immediately using the bridge
+    let safe_u = unsafe {{ SafeUser::from_ptr(u_ptr) }};
+    
+    // 2. PURE SAFE LOGIC: No more raw pointers below this line!
+    if safe_u.is_admin != 0 {{
+        println!("Admin state active.");
+    }}
+}}
 
 ### OUTPUT FORMAT
-Return EXACTLY ONE Rust function (the implementation). No markdown formatting like ```rust, no explanations, no use statements, no structs.
+Return EXACTLY ONE Rust function. No markdown formatting (no ```rust), no explanations, no use statements, no structs. The function must be 100% safe Rust.
 
 ---
 <c_context>
@@ -148,3 +246,34 @@ Return EXACTLY ONE Rust function (the implementation). No markdown formatting li
 </unsafe_rust_function>"""
 
     return prompt
+
+def build_struct_prompt(c_file, unsafe_structs_snippet):
+    """Erstellt Safe-Shadow-Structs inklusive Brücken-Funktionen (from_unsafe)."""
+    return f"""### ROLE
+You are a Rust Refactoring Expert. Create SAFE SHADOW STRUCTS and BRIDGE FUNCTIONS.
+
+### TASK
+For each C-style struct, create a 100% safe Rust version with the prefix 'Safe'.
+Additionally, implement a bridge function `from_unsafe` to convert the raw C-pointer version into the safe version.
+
+### RULES
+1. **NAMING**: `User` -> `SafeUser`.
+1. **NAMING**: Prefix the EXACT original struct name with 'Safe'. Do NOT change the capitalization of the original name. (e.g., `frac` -> `Safefrac`, `User` -> `SafeUser`).
+2. **FIELDS**: Replace `*mut c_char` with `String`, `*mut T` with `Box<SafeT>` or `Vec<SafeT>`.
+3. **BRIDGE FUNCTION**: For each struct, implement:
+   `impl SafeUser {{ pub unsafe fn from_ptr(ptr: *const User) -> Self {{ ... }} }}`
+   Inside this function:
+   - Handle null pointers (provide defaults or use Option).
+   - Convert C-strings to Rust Strings using `CStr::from_ptr(...).to_string_lossy().into_owned()`.
+   - Deep-copy any nested pointers into their 'Safe' versions.
+4. **NO DERIVE ON ALIASES**: Do not put #[derive] on 'type' definitions.
+5. **SMART CLONE**: Use `#[derive(Debug, Clone)]`. Do NOT use `Copy` for structs with heap data.
+6. **SYSTEM & OPAQUE TYPES**: Do NOT create safe versions or bridge functions for system structs like `_IO_FILE`, `FILE`, `va_list`, or `__va_list_tag`. If a struct contains a pointer to a system type, leave it as a raw pointer `*mut T` or use an opaque wrapper. Deep-copying file handles or va_lists is invalid.
+7. **ABSOLUTE PATHS ONLY**: When using `CStr`, `String`, or `Vec` inside the bridge function, use fully qualified absolute paths (e.g., `std::ffi::CStr`). No `use` statements are allowed.
+
+### INPUT
+{unsafe_structs_snippet}
+
+### OUTPUT FORMAT
+Return ONLY the new Safe-Structs and their impl blocks.
+"""

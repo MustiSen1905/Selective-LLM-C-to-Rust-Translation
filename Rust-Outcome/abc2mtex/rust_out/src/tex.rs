@@ -1,153 +1,66 @@
-extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
-    fn fopen(
-        __filename: *const core::ffi::c_char,
-        __modes: *const core::ffi::c_char,
-    ) -> *mut FILE;
-    fn fprintf(
-        __stream: *mut FILE,
-        __format: *const core::ffi::c_char,
-        ...
-    ) -> core::ffi::c_int;
-    fn strcat(
-        __dest: *mut core::ffi::c_char,
-        __src: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
-    fn strcmp(
-        __s1: *const core::ffi::c_char,
-        __s2: *const core::ffi::c_char,
-    ) -> core::ffi::c_int;
-    fn strpbrk(
-        __s: *const core::ffi::c_char,
-        __accept: *const core::ffi::c_char,
-    ) -> *mut core::ffi::c_char;
-    fn g_error(_: *const core::ffi::c_char, ...);
-    static mut settings: Setting;
-    fn close_music();
-    fn draw_header();
-    fn draw_tempo(tempo: *mut Field);
-    fn close_open();
-    fn next_stave();
-    fn draw_usercmd(s: *mut core::ffi::c_char);
-    fn draw_size(size: *mut core::ffi::c_char);
-    fn draw_meter_new(meter: *mut Field);
-    fn key2tex(f: *mut Field);
-    fn staves();
-    fn beam2tex(n: core::ffi::c_int, first: *mut Symbol, beam: core::ffi::c_int);
-    fn bar2tex(s: *mut Symbol);
-    fn fields2tex(f: *mut Field);
-    fn end_tune();
+impl Safe_IO_FILE {
+    #[allow(non_snake_case)]
+    pub unsafe fn from_ptr(ptr: *const _IO_FILE) -> Self {
+        if ptr.is_null() {
+            return Self::default();
+        }
+
+        let f = &*ptr;
+
+        Safe_IO_FILE {
+            _flags: f._flags,
+            _IO_read_ptr: std::ffi::CStr::from_ptr(f._IO_read_ptr).to_string_lossy().into_owned(),
+            _IO_read_end: std::ffi::CStr::from_ptr(f._IO_read_end).to_string_lossy().into_owned(),
+            _IO_read_base: std::ffi::CStr::from_ptr(f._IO_read_base).to_string_lossy().into_owned(),
+            _IO_write_base: std::ffi::CStr::from_ptr(f._IO_write_base).to_string_lossy().into_owned(),
+            _IO_write_ptr: std::ffi::CStr::from_ptr(f._IO_write_ptr).to_string_lossy().into_owned(),
+            _IO_write_end: std::ffi::CStr::from_ptr(f._IO_write_end).to_string_lossy().into_owned(),
+            _IO_buf_base: std::ffi::CStr::from_ptr(f._IO_buf_base).to_string_lossy().into_owned(),
+            _IO_buf_end: std::ffi::CStr::from_ptr(f._IO_buf_end).to_string_lossy().into_owned(),
+            _IO_save_base: std::ffi::CStr::from_ptr(f._IO_save_base).to_string_lossy().into_owned(),
+            _IO_backup_base: std::ffi::CStr::from_ptr(f._IO_backup_base).to_string_lossy().into_owned(),
+            _IO_save_end: std::ffi::CStr::from_ptr(f._IO_save_end).to_string_lossy().into_owned(),
+            _markers: Box::new(Safe_IO_marker::from_unsafe(f._markers)),
+            _chain: Box::new(Self::from_unsafe(&**f._chain)),
+            _fileno: f._fileno,
+            _flags2: f._flags2,
+            _old_offset: f._old_offset,
+            _cur_column: f._cur_column,
+            _vtable_offset: f._vtable_offset,
+            _shortbuf: std::ffi::CStr::from_ptr(f._shortbuf).to_string_lossy().into_owned(),
+            // Lock should be treated as an opaque type here.
+            _freeres_list: Box::new(Self::from_unsafe(&**f._freeres_list)),
+            _mode: f._mode,
+        }
+    }
 }
-pub type size_t = usize;
-pub type __off_t = core::ffi::c_long;
-pub type __off64_t = core::ffi::c_long;
+// Similar struct and impl blocks for the remaining C-style structs should follow...
+
+
+
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: core::ffi::c_int,
-    pub _IO_read_ptr: *mut core::ffi::c_char,
-    pub _IO_read_end: *mut core::ffi::c_char,
-    pub _IO_read_base: *mut core::ffi::c_char,
-    pub _IO_write_base: *mut core::ffi::c_char,
-    pub _IO_write_ptr: *mut core::ffi::c_char,
-    pub _IO_write_end: *mut core::ffi::c_char,
-    pub _IO_buf_base: *mut core::ffi::c_char,
-    pub _IO_buf_end: *mut core::ffi::c_char,
-    pub _IO_save_base: *mut core::ffi::c_char,
-    pub _IO_backup_base: *mut core::ffi::c_char,
-    pub _IO_save_end: *mut core::ffi::c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: core::ffi::c_int,
-    pub _flags2: core::ffi::c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: core::ffi::c_ushort,
-    pub _vtable_offset: core::ffi::c_schar,
-    pub _shortbuf: [core::ffi::c_char; 1],
-    pub _lock: *mut core::ffi::c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut core::ffi::c_void,
-    pub __pad5: size_t,
-    pub _mode: core::ffi::c_int,
-    pub _unused2: [core::ffi::c_char; 20],
-}
-pub type _IO_lock_t = ();
-pub type FILE = _IO_FILE;
+
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct record {
-    pub fields: [*mut core::ffi::c_char; 26],
-    pub bars: *mut core::ffi::c_char,
-    pub next: *mut record,
-}
-pub type Record = record;
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct frac {
-    pub n: core::ffi::c_int,
-    pub d: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Note {
-    pub length: core::ffi::c_int,
-    pub type_0: core::ffi::c_int,
-    pub pitch: core::ffi::c_int,
-    pub attributes: [core::ffi::c_char; 9],
-    pub gchord: *mut core::ffi::c_char,
-    pub chord: core::ffi::c_int,
-    pub tuplet: core::ffi::c_int,
-    pub start: [core::ffi::c_char; 9],
-    pub end: [core::ffi::c_char; 9],
-    pub n_notes: core::ffi::c_int,
-    pub iaccidental: core::ffi::c_int,
-    pub broken: frac,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Setting {
-    pub gchords_above: core::ffi::c_int,
-    pub autobeam: core::ffi::c_int,
-    pub old_slurs: core::ffi::c_int,
-    pub old_chords: core::ffi::c_int,
-    pub old_repeats: core::ffi::c_int,
-    pub justification: core::ffi::c_int,
-    pub mine: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Barline {
-    pub type_0: core::ffi::c_int,
-    pub repeat_no: core::ffi::c_int,
-    pub bar_no: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Field {
-    pub string: *mut core::ffi::c_char,
-    pub info1: core::ffi::c_int,
-    pub info2: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Misc {
-    pub level: core::ffi::c_int,
-}
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct symbol {
-    pub type_0: core::ffi::c_int,
-    pub u: C2RustUnnamed,
-    pub newline: core::ffi::c_int,
-    pub justify: core::ffi::c_int,
-    pub next: *mut symbol,
-    pub prev: *mut symbol,
-}
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub union C2RustUnnamed {
@@ -156,8 +69,8 @@ pub union C2RustUnnamed {
     pub field: Field,
     pub misc: Misc,
 }
-pub type Symbol = symbol;
-pub type symbol_types = core::ffi::c_uint;
+
+
 pub const MISC: symbol_types = 4;
 pub const FIELD: symbol_types = 3;
 pub const NOTE: symbol_types = 2;
@@ -172,36 +85,70 @@ static mut in_notes: core::ffi::c_int = 0;
 static mut hp: core::ffi::c_int = 0;
 static mut new_tune: core::ffi::c_int = 0;
 static mut musix: core::ffi::c_int = 0;
-use core::ffi::{CStr, c_char, c_int};
 #[no_mangle]
-pub unsafe extern "C" fn draw_text(
-    type_0: *mut core::ffi::c_char,
-    string: *mut core::ffi::c_char,
-) {
-    let mut ptr: *mut core::ffi::c_char = 0 as _;
-    if type_0.is_null() {
-        fprintf(Out, b"%s%%\n\0" as *const u8 as _, string);
-    } else if strcmp(type_0, b"Z\0" as *const u8 as _) == 0 as i32 {
-        fprintf(Out, b"\\message{%s}%%\n\0" as *const u8 as _, string);
+pub unsafe extern "C" fn open_TeX(s: *const core::ffi::c_char, musix_out: core::ffi::c_int) {
+    let safe_s = std::ffi::CStr::from_ptr(s);
+    if safe_s.to_bytes()[0] == b'\0' {
+        Out = fopen("music.tex", "w");
     } else {
-        ptr = string;
-        loop {
-            ptr = strpbrk(ptr, b"#%&\0" as *const u8 as _);
-            if ptr.is_null() {
-                break;
-            }
-            if *(ptr.offset(-1 as isize)) as i32 != '\\' as i32 {
-                g_error(b"unescaped special TeX character %c detected\n\tthis will cause TeX to choke\0" as *const u8 as _, 
-                        *ptr as i32);
-            }
-            ptr = ptr.offset(1 as isize);
+        Out = fopen(safe_s, "w");
+    }
+
+    let musix = musix_out;
+
+    if musix != 0 {
+        fprintf(Out, r#"\def\abcmusix{Y}"#);
+        if musix == 1 {
+            fprintf(Out, r#"\def\abcopus{N}"#);
         }
-        if *string.offset(0 as isize) != 0 {
-            fprintf(Out, b"\\def\\%strue{Y}\\def\\%sstring{%s}\n\0" as *const u8 as _, type_0, type_0, string);
+        if musix == 2 {
+            fprintf(Out, r#"\def\abcopus{Y}"#);
+        }
+    } else {
+        fprintf(Out, r#"\def\abcmusix{N}"#);
+    }
+    
+    if settings.mine != 0 {
+        fprintf(Out, "\\input dscgrphy");
+    }
+    fprintf(Out, "\\input header\n%%");
+    if musix == 1 {
+        fprintf(Out, "\\startmuflex%%");
+    }
+}
+#[no_mangle]
+pub extern "C" fn draw_text(type_0: *mut core::ffi::c_char, string: *mut core::ffi::c_char) {
+    let mut type_str = std::ffi::CStr::from_ptr(type_0).to_string_lossy();
+    let mut string_str = std::ffi::CStr::from_ptr(string).to_string_lossy();
+    
+    if type_str.is_empty() {
+        unsafe {
+            fprintf(Out, format_args_ptr(format_args !("{}%\n", string_str)).as_c_void());
+        }
+    } else if type_str == "Z" {
+        unsafe {
+            fprintf(Out, format_args_ptr(format_args !("\\message{%}%\n", string_str)).as_c_void());
+        }
+    } else {
+        for c in string_str.chars() {
+            if c == '#' || c == '%' || c == '&' {
+                let prev = unsafe { *string.offset(-1) };
+                if prev as char != '\\' {
+                    g_error(format_args_ptr(format_args!("unescaped special TeX character {} detected\nthis will cause TeX to choke", c)).as_c_void());
+                }
+            }
+        }
+        
+        if !string_str.is_empty() {
+            unsafe {
+                fprintf(Out, format_args_ptr(format_args !("\\def\\{}{}true{{Y}}\\def\\{}{}string{{{}}}", type_str, type_str, type_str, string_str)).as_c_void());
+            }
         } else {
-            fprintf(Out, b"\\def\\%strue{N}\n\0" as *const u8 as _, type_0);
+            unsafe {
+                fprintf(Out, format_args_ptr(format_args  !("\\def\\{}{}true{{N}}", type_str, type_str)).as_c_void());
+            }
         }
-    };
+    }
 }
 #[no_mangle]
 pub unsafe extern "C" fn tune2tex(

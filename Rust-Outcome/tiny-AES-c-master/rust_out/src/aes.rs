@@ -1,20 +1,24 @@
-extern "C" {
-    fn memcpy(
-        __dest: *mut core::ffi::c_void,
-        __src: *const core::ffi::c_void,
-        __n: size_t,
-    ) -> *mut core::ffi::c_void;
+impl SafeAES_ctx  {
+    pub unsafe fn from_ptr(ptr: *const AES_ctx) -> Option<Self>  {
+        if ptr.is_null() {
+            None
+        } else {
+            let ctx = &*ptr;
+            Some(SafeAES_ctx {
+                RoundKey: Vec::from(ctx.RoundKey),
+                Iv: Vec::from(ctx.Iv),
+            })
+        }
+    }
 }
-pub type size_t = usize;
-pub type __uint8_t = u8;
-pub type uint8_t = __uint8_t;
+
+
+
+
+
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct AES_ctx {
-    pub RoundKey: [uint8_t; 176],
-    pub Iv: [uint8_t; 16],
-}
-pub type state_t = [[uint8_t; 4]; 4];
+
+ 4]; 4];
 pub const AES_BLOCKLEN: core::ffi::c_int = 16 as core::ffi::c_int;
 pub const Nb: core::ffi::c_int = 4 as core::ffi::c_int;
 pub const Nk: core::ffi::c_int = 4 as core::ffi::c_int;
@@ -548,594 +552,319 @@ static mut Rcon: [uint8_t; 11] = [
     0x1b as core::ffi::c_int as uint8_t,
     0x36 as core::ffi::c_int as uint8_t,
 ];
-unsafe extern "C" fn KeyExpansion(mut RoundKey: *mut uint8_t, mut Key: *const uint8_t) {
-    let mut i: core::ffi::c_uint = 0;
-    let mut j: core::ffi::c_uint = 0;
-    let mut k: core::ffi::c_uint = 0;
-    let mut tempa: [uint8_t; 4] = [0; 4];
-    i = 0 as core::ffi::c_uint;
-    while i < Nk as core::ffi::c_uint {
-        *RoundKey
-            .offset(
-                i
-                    .wrapping_mul(4 as core::ffi::c_uint)
-                    .wrapping_add(0 as core::ffi::c_uint) as isize,
-            ) = *Key
-            .offset(
-                i
-                    .wrapping_mul(4 as core::ffi::c_uint)
-                    .wrapping_add(0 as core::ffi::c_uint) as isize,
-            );
-        *RoundKey
-            .offset(
-                i
-                    .wrapping_mul(4 as core::ffi::c_uint)
-                    .wrapping_add(1 as core::ffi::c_uint) as isize,
-            ) = *Key
-            .offset(
-                i
-                    .wrapping_mul(4 as core::ffi::c_uint)
-                    .wrapping_add(1 as core::ffi::c_uint) as isize,
-            );
-        *RoundKey
-            .offset(
-                i
-                    .wrapping_mul(4 as core::ffi::c_uint)
-                    .wrapping_add(2 as core::ffi::c_uint) as isize,
-            ) = *Key
-            .offset(
-                i
-                    .wrapping_mul(4 as core::ffi::c_uint)
-                    .wrapping_add(2 as core::ffi::c_uint) as isize,
-            );
-        *RoundKey
-            .offset(
-                i
-                    .wrapping_mul(4 as core::ffi::c_uint)
-                    .wrapping_add(3 as core::ffi::c_uint) as isize,
-            ) = *Key
-            .offset(
-                i
-                    .wrapping_mul(4 as core::ffi::c_uint)
-                    .wrapping_add(3 as core::ffi::c_uint) as isize,
-            );
-        i = i.wrapping_add(1);
-    }
-    i = Nk as core::ffi::c_uint;
-    while i < (Nb * (Nr + 1 as core::ffi::c_int)) as core::ffi::c_uint {
-        k = i.wrapping_sub(1 as core::ffi::c_uint).wrapping_mul(4 as core::ffi::c_uint);
-        tempa[0 as core::ffi::c_int as usize] = *RoundKey
-            .offset(k.wrapping_add(0 as core::ffi::c_uint) as isize);
-        tempa[1 as core::ffi::c_int as usize] = *RoundKey
-            .offset(k.wrapping_add(1 as core::ffi::c_uint) as isize);
-        tempa[2 as core::ffi::c_int as usize] = *RoundKey
-            .offset(k.wrapping_add(2 as core::ffi::c_uint) as isize);
-        tempa[3 as core::ffi::c_int as usize] = *RoundKey
-            .offset(k.wrapping_add(3 as core::ffi::c_uint) as isize);
-        if i.wrapping_rem(Nk as core::ffi::c_uint) == 0 as core::ffi::c_uint {
-            let u8tmp: uint8_t = tempa[0 as core::ffi::c_int as usize];
-            tempa[0 as core::ffi::c_int as usize] = tempa[1 as core::ffi::c_int
-                as usize];
-            tempa[1 as core::ffi::c_int as usize] = tempa[2 as core::ffi::c_int
-                as usize];
-            tempa[2 as core::ffi::c_int as usize] = tempa[3 as core::ffi::c_int
-                as usize];
-            tempa[3 as core::ffi::c_int as usize] = u8tmp;
-            tempa[0 as core::ffi::c_int as usize] = sbox[tempa[0 as core::ffi::c_int
-                as usize] as usize];
-            tempa[1 as core::ffi::c_int as usize] = sbox[tempa[1 as core::ffi::c_int
-                as usize] as usize];
-            tempa[2 as core::ffi::c_int as usize] = sbox[tempa[2 as core::ffi::c_int
-                as usize] as usize];
-            tempa[3 as core::ffi::c_int as usize] = sbox[tempa[3 as core::ffi::c_int
-                as usize] as usize];
-            tempa[0 as core::ffi::c_int as usize] = (tempa[0 as core::ffi::c_int
-                as usize] as core::ffi::c_int
-                ^ Rcon[i.wrapping_div(Nk as core::ffi::c_uint) as usize]
-                    as core::ffi::c_int) as uint8_t;
-        }
-        j = i.wrapping_mul(4 as core::ffi::c_uint);
-        k = i.wrapping_sub(Nk as core::ffi::c_uint).wrapping_mul(4 as core::ffi::c_uint);
-        *RoundKey.offset(j.wrapping_add(0 as core::ffi::c_uint) as isize) = (*RoundKey
-            .offset(k.wrapping_add(0 as core::ffi::c_uint) as isize) as core::ffi::c_int
-            ^ tempa[0 as core::ffi::c_int as usize] as core::ffi::c_int) as uint8_t;
-        *RoundKey.offset(j.wrapping_add(1 as core::ffi::c_uint) as isize) = (*RoundKey
-            .offset(k.wrapping_add(1 as core::ffi::c_uint) as isize) as core::ffi::c_int
-            ^ tempa[1 as core::ffi::c_int as usize] as core::ffi::c_int) as uint8_t;
-        *RoundKey.offset(j.wrapping_add(2 as core::ffi::c_uint) as isize) = (*RoundKey
-            .offset(k.wrapping_add(2 as core::ffi::c_uint) as isize) as core::ffi::c_int
-            ^ tempa[2 as core::ffi::c_int as usize] as core::ffi::c_int) as uint8_t;
-        *RoundKey.offset(j.wrapping_add(3 as core::ffi::c_uint) as isize) = (*RoundKey
-            .offset(k.wrapping_add(3 as core::ffi::c_uint) as isize) as core::ffi::c_int
-            ^ tempa[3 as core::ffi::c_int as usize] as core::ffi::c_int) as uint8_t;
-        i = i.wrapping_add(1);
-    }
-}
-#[no_mangle]
-pub unsafe extern "C" fn AES_init_ctx(mut ctx: *mut AES_ctx, mut key: *const uint8_t) {
-    KeyExpansion(((*ctx).RoundKey).as_mut_ptr(), key);
-}
-use std::mem;
+pub fn key_expansion(round_key: &mut [u8; 240], key: &[u8; 32]) {
+    let mut i = 0;
+    let mut j = 0;
+    let mut k = 0;
+    let mut tempa = [0 as u8; 4];
 
-#[no_mangle]
-pub unsafe extern "C" fn AES_init_ctx_iv(
-    ctx: *mut AES_ctx,
-    key: *const uint8_t,
-    iv: *const uint8_t,
-) {
-    KeyExpansion(((*ctx).RoundKey).as_mut_ptr(), key);
-    memcpy(
-        ((*ctx).Iv).as_mut_ptr() as *mut core::ffi::c_void,
-        iv as  *const core::ffi::c_void,
-        AES_BLOCKLEN as size_t,
-    );
-}
-#[no_mangle]
-pub unsafe extern "C" fn AES_ctx_set_iv(mut ctx: *mut AES_ctx, mut iv: *const uint8_t) {
-    memcpy(
-        (*ctx).Iv.as_mut_ptr() as *mut core::ffi::c_void,
-        iv as *const core::ffi::c_void,
-        AES_BLOCKLEN.try_into().unwrap(), // This line was corrected
-    );
-}
-unsafe extern "C" fn AddRoundKey(
-    mut round: uint8_t,
-    mut state: *mut state_t,
-    mut RoundKey: *const uint8_t,
-) {
-    let mut i: uint8_t = 0;
-    let mut j: uint8_t = 0;
-    i = 0 as uint8_t;
-    while (i as core::ffi::c_int) < 4 as core::ffi::c_int {
-        j = 0 as uint8_t;
-        while (j as core::ffi::c_int) < 4 as core::ffi::c_int {
-            (*state)[i as usize][j as usize] = ((*state)[i as usize][j as usize]
-                as core::ffi::c_int
-                ^ *RoundKey
-                    .offset(
-                        (round as core::ffi::c_int * Nb * 4 as core::ffi::c_int
-                            + i as core::ffi::c_int * Nb + j as core::ffi::c_int)
-                            as isize,
-                    ) as core::ffi::c_int) as uint8_t;
-            j = j.wrapping_add(1);
-        }
-        i = i.wrapping_add(1);
+    for i in 0..Nk {
+        round_key[i * 4 + 0] = key[i * 4 + 0];
+        round_key[i * 4 + 1] = key[i * 4 + 1];
+        round_key[i * 4 + 2] = key[i * 4 + 2];
+        round_key[i * 4 + 3] = key[i * 4 + 3];
     }
-}
-unsafe extern "C" fn SubBytes(mut state: *mut state_t) {
-    let mut i: uint8_t = 0;
-    let mut j: uint8_t = 0;
-    i = 0 as uint8_t;
-    while (i as core::ffi::c_int) < 4 as core::ffi::c_int {
-        j = 0 as uint8_t;
-        while (j as core::ffi::c_int) < 4 as core::ffi::c_int {
-            (*state)[j as usize][i as usize] = sbox[(*state)[j as usize][i as usize]
-                as usize];
-            j = j.wrapping_add(1);
-        }
-        i = i.wrapping_add(1);
-    }
-}
-unsafe extern "C" fn ShiftRows(state: *mut [[u8; 4]; 4]) {
-    let temp: u8 = unsafe { (*state)[0][1] };
-    unsafe {
-        (*state)[0][1] = (*state)[1][1];
-        (*state)[1][1] = (*state)[2][1];
-        (*state)[2][1] = (*state)[3][1];
-        (*state)[3][1] = temp;
-        
-        let temp: u8 = unsafe { (*state)[0][2] };
-        (*state)[0][2] = (*state)[2][2];
-        (*state)[2][2] = temp;
-        
-        let temp: u8 = unsafe { (*state)[1][2] };
-        (*state)[1][2] = (*state)[3][2];
-        (*state)[3][2] = temp;
-        
-        let temp: u8 = unsafe { (*state)[0][3] };
-        (*state)[0][3] = (*state)[3][3];
-        (*state)[3][3] = (*state)[2][3];
-        (*state)[2][3] = (*state)[1][3];
-        (*state)[1][3] = temp;
-    }
-}
-unsafe extern "C" fn xtime(x: u8) -> u8 {
-    ((x as i32) << 1 as i32 ^ (((x as i32 >> 7) & 1) * 0x1b)) as u8
-}
-unsafe extern "C" fn MixColumns(mut state: *mut state_t) {
-    let mut i: uint8_t = 0;
-    let mut Tmp: uint8_t = 0;
-    let mut Tm: uint8_t = 0;
-    let mut t: uint8_t = 0;
-    i = 0 as uint8_t;
-    while (i as core::ffi::c_int) < 4 as core::ffi::c_int {
-        t = (*state)[i as usize][0 as core::ffi::c_int as usize];
-        Tmp = ((*state)[i as usize][0 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (*state)[i as usize][1 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (*state)[i as usize][2 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (*state)[i as usize][3 as core::ffi::c_int as usize] as core::ffi::c_int)
-            as uint8_t;
-        Tm = ((*state)[i as usize][0 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (*state)[i as usize][1 as core::ffi::c_int as usize] as core::ffi::c_int)
-            as uint8_t;
-        Tm = xtime(Tm);
-        (*state)[i as usize][0 as core::ffi::c_int as usize] = ((*state)[i
-            as usize][0 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (Tm as core::ffi::c_int ^ Tmp as core::ffi::c_int)) as uint8_t;
-        Tm = ((*state)[i as usize][1 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (*state)[i as usize][2 as core::ffi::c_int as usize] as core::ffi::c_int)
-            as uint8_t;
-        Tm = xtime(Tm);
-        (*state)[i as usize][1 as core::ffi::c_int as usize] = ((*state)[i
-            as usize][1 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (Tm as core::ffi::c_int ^ Tmp as core::ffi::c_int)) as uint8_t;
-        Tm = ((*state)[i as usize][2 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (*state)[i as usize][3 as core::ffi::c_int as usize] as core::ffi::c_int)
-            as uint8_t;
-        Tm = xtime(Tm);
-        (*state)[i as usize][2 as core::ffi::c_int as usize] = ((*state)[i
-            as usize][2 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (Tm as core::ffi::c_int ^ Tmp as core::ffi::c_int)) as uint8_t;
-        Tm = ((*state)[i as usize][3 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ t as core::ffi::c_int) as uint8_t;
-        Tm = xtime(Tm);
-        (*state)[i as usize][3 as core::ffi::c_int as usize] = ((*state)[i
-            as usize][3 as core::ffi::c_int as usize] as core::ffi::c_int
-            ^ (Tm as core::ffi::c_int ^ Tmp as core::ffi::c_int)) as uint8_t;
-        i = i.wrapping_add(1);
-    }
-}
-unsafe extern "C" fn InvMixColumns(mut state: *mut state_t) {
-    let mut i: core::ffi::c_int = 0;
-    let mut a: uint8_t = 0;
-    let mut b: uint8_t = 0;
-    let mut c: uint8_t = 0;
-    let mut d: uint8_t = 0;
-    i = 0 as core::ffi::c_int;
-    while i < 4 as core::ffi::c_int {
-        a = (*state)[i as usize][0 as core::ffi::c_int as usize];
-        b = (*state)[i as usize][1 as core::ffi::c_int as usize];
-        c = (*state)[i as usize][2 as core::ffi::c_int as usize];
-        d = (*state)[i as usize][3 as core::ffi::c_int as usize];
-        (*state)[i as usize][0 as core::ffi::c_int as usize] = ((0xe as core::ffi::c_int
-            & 1 as core::ffi::c_int) * a as core::ffi::c_int
-            ^ (0xe as core::ffi::c_int >> 1 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(a) as core::ffi::c_int
-            ^ (0xe as core::ffi::c_int >> 2 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(a)) as core::ffi::c_int
-            ^ (0xe as core::ffi::c_int >> 3 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(xtime(a))) as core::ffi::c_int
-            ^ (0xe as core::ffi::c_int >> 4 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(xtime(xtime(a)))) as core::ffi::c_int
-            ^ ((0xb as core::ffi::c_int & 1 as core::ffi::c_int) * b as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(b) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(b)) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(b))) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(b)))) as core::ffi::c_int)
-            ^ ((0xd as core::ffi::c_int & 1 as core::ffi::c_int) * c as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(c) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(c)) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(c))) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(c)))) as core::ffi::c_int)
-            ^ ((0x9 as core::ffi::c_int & 1 as core::ffi::c_int) * d as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(d) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(d)) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(d))) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(d)))) as core::ffi::c_int)) as uint8_t;
-        (*state)[i as usize][1 as core::ffi::c_int as usize] = ((0x9 as core::ffi::c_int
-            & 1 as core::ffi::c_int) * a as core::ffi::c_int
-            ^ (0x9 as core::ffi::c_int >> 1 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(a) as core::ffi::c_int
-            ^ (0x9 as core::ffi::c_int >> 2 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(a)) as core::ffi::c_int
-            ^ (0x9 as core::ffi::c_int >> 3 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(xtime(a))) as core::ffi::c_int
-            ^ (0x9 as core::ffi::c_int >> 4 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(xtime(xtime(a)))) as core::ffi::c_int
-            ^ ((0xe as core::ffi::c_int & 1 as core::ffi::c_int) * b as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(b) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(b)) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(b))) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(b)))) as core::ffi::c_int)
-            ^ ((0xb as core::ffi::c_int & 1 as core::ffi::c_int) * c as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(c) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(c)) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(c))) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(c)))) as core::ffi::c_int)
-            ^ ((0xd as core::ffi::c_int & 1 as core::ffi::c_int) * d as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(d) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(d)) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(d))) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(d)))) as core::ffi::c_int)) as uint8_t;
-        (*state)[i as usize][2 as core::ffi::c_int as usize] = ((0xd as core::ffi::c_int
-            & 1 as core::ffi::c_int) * a as core::ffi::c_int
-            ^ (0xd as core::ffi::c_int >> 1 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(a) as core::ffi::c_int
-            ^ (0xd as core::ffi::c_int >> 2 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(a)) as core::ffi::c_int
-            ^ (0xd as core::ffi::c_int >> 3 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(xtime(a))) as core::ffi::c_int
-            ^ (0xd as core::ffi::c_int >> 4 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(xtime(xtime(a)))) as core::ffi::c_int
-            ^ ((0x9 as core::ffi::c_int & 1 as core::ffi::c_int) * b as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(b) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(b)) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(b))) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(b)))) as core::ffi::c_int)
-            ^ ((0xe as core::ffi::c_int & 1 as core::ffi::c_int) * c as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(c) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(c)) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(c))) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(c)))) as core::ffi::c_int)
-            ^ ((0xb as core::ffi::c_int & 1 as core::ffi::c_int) * d as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(d) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(d)) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(d))) as core::ffi::c_int
-                ^ (0xb as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(d)))) as core::ffi::c_int)) as uint8_t;
-        (*state)[i as usize][3 as core::ffi::c_int as usize] = ((0xb as core::ffi::c_int
-            & 1 as core::ffi::c_int) * a as core::ffi::c_int
-            ^ (0xb as core::ffi::c_int >> 1 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(a) as core::ffi::c_int
-            ^ (0xb as core::ffi::c_int >> 2 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(a)) as core::ffi::c_int
-            ^ (0xb as core::ffi::c_int >> 3 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(xtime(a))) as core::ffi::c_int
-            ^ (0xb as core::ffi::c_int >> 4 as core::ffi::c_int & 1 as core::ffi::c_int)
-                * xtime(xtime(xtime(xtime(a)))) as core::ffi::c_int
-            ^ ((0xd as core::ffi::c_int & 1 as core::ffi::c_int) * b as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(b) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(b)) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(b))) as core::ffi::c_int
-                ^ (0xd as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(b)))) as core::ffi::c_int)
-            ^ ((0x9 as core::ffi::c_int & 1 as core::ffi::c_int) * c as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(c) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(c)) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(c))) as core::ffi::c_int
-                ^ (0x9 as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(c)))) as core::ffi::c_int)
-            ^ ((0xe as core::ffi::c_int & 1 as core::ffi::c_int) * d as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 1 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(d) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 2 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(d)) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 3 as core::ffi::c_int
-                    & 1 as core::ffi::c_int) * xtime(xtime(xtime(d))) as core::ffi::c_int
-                ^ (0xe as core::ffi::c_int >> 4 as core::ffi::c_int
-                    & 1 as core::ffi::c_int)
-                    * xtime(xtime(xtime(xtime(d)))) as core::ffi::c_int)) as uint8_t;
-        i += 1;
-    }
-}
-unsafe extern "C" fn InvSubBytes(mut state: *mut state_t) {
-    let mut i: uint8_t = 0;
-    let mut j: uint8_t = 0;
     
-    while (i as core::ffi::c_int) < 4 as core::ffi::c_int {
-        j = 0 as uint8_t;
+    for i in Nk..(Nb * (Nr + 1)) {
+        k = (i - 1) * 4;
         
-        while (j as core::ffi::c_int) < 4 as core::ffi::c_int {
-            (*state)[j as usize][i as usize] = rsbox[(*state)[j as usize][i as usize] as usize];
-            j = j.wrapping_add(1);
+        tempa[0] = round_key[k as usize + 0];
+        tempa[1] = round_key[k as usize + 1];
+        tempa[2] = round_key[k as usize + 2];
+        tempa[3] = round_key[k as usize + 3];
+        
+        if i % Nk == 0 {
+            let u8tmp = tempa[0];
+            
+            for j in 0..3 {
+                tempa[j] = tempa[j + 1];
+            }
+            
+            tempa[3] = u8tmp;
+            
+            for j in 0..4 {
+                tempa[j] = sbox[tempa[j] as usize];
+            }
+            
+            tempa[0] ^= Rcon[(i / Nk) as usize];
         }
         
-        i = i.wrapping_add(1);
+        #if defined(AES256) && (AES256 == 1)
+        if i % Nk == 4 {
+            for j in 0..4 {
+                tempa[j] = sbox[tempa[j] as usize];
+            }
+        }
+        #endif
+        
+        j = i * 4;
+        k = (i - Nk) * 4;
+        
+        for j in 0..4 {
+            round_key[j as usize + k as usize] ^= tempa[j as usize];
+        }
     }
 }
-unsafe extern "C" fn InvShiftRows(mut state: *mut state_t) {
-    let mut temp: uint8_t = 0;
-    temp = (*state)[3 as core::ffi::c_int as usize][1 as core::ffi::c_int as usize];
-    (*state)[3 as core::ffi::c_int as usize][1 as core::ffi::c_int as usize] = (*state)[2
-        as core::ffi::c_int as usize][1 as core::ffi::c_int as usize];
-    (*state)[2 as core::ffi::c_int as usize][1 as core::ffi::c_int as usize] = (*state)[1
-        as core::ffi::c_int as usize][1 as core::ffi::c_int as usize];
-    (*state)[1 as core::ffi::c_int as usize][1 as core::ffi::c_int as usize] = (*state)[0
-        as core::ffi::c_int as usize][1 as core::ffi::c_int as usize];
-    (*state)[0 as core::ffi::c_int as usize][1 as core::ffi::c_int as usize] = temp;
-    temp = (*state)[0 as core::ffi::c_int as usize][2 as core::ffi::c_int as usize];
-    (*state)[0 as core::ffi::c_int as usize][2 as core::ffi::c_int as usize] = (*state)[2
-        as core::ffi::c_int as usize][2 as core::ffi::c_int as usize];
-    (*state)[2 as core::ffi::c_int as usize][2 as core::ffi::c_int as usize] = temp;
-    temp = (*state)[1 as core::ffi::c_int as usize][2 as core::ffi::c_int as usize];
-    (*state)[1 as core::ffi::c_int as usize][2 as core::ffi::c_int as usize] = (*state)[3
-        as core::ffi::c_int as usize][2 as core::ffi::c_int as usize];
-    (*state)[3 as core::ffi::c_int as usize][2 as core::ffi::c_int as usize] = temp;
-    temp = (*state)[0 as core::ffi::c_int as usize][3 as core::ffi::c_int as usize];
-    (*state)[0 as core::ffi::c_int as usize][3 as core::ffi::c_int as usize] = (*state)[1
-        as core::ffi::c_int as usize][3 as core::ffi::c_int as usize];
-    (*state)[1 as core::ffi::c_int as usize][3 as core::ffi::c_int as usize] = (*state)[2
-        as core::ffi::c_int as usize][3 as core::ffi::c_int as usize];
-    (*state)[2 as core::ffi::c_int as usize][3 as core::ffi::c_int as usize] = (*state)[3
-        as core::ffi::c_int as usize][3 as core::ffi::c_int as usize];
-    (*state)[3 as core::ffi::c_int as usize][3 as core::ffi::c_int as usize] = temp;
-}
-unsafe extern "C" fn Cipher(mut state: *mut state_t, mut RoundKey: *const uint8_t) {
-    let mut round: uint8_t = 0 as uint8_t;
-    AddRoundKey(0 as uint8_t, state, RoundKey);
-    round = 1 as uint8_t;
-    loop {
-        SubBytes(state);
-        ShiftRows(state);
-        if round as core::ffi::c_int == Nr {
-            break;
-        }
-        MixColumns(state);
-        AddRoundKey(round, state, RoundKey);
-        round = round.wrapping_add(1);
+pub fn AES_init_ctx(mut ctx: Option<&mut SafeAES_ctx>, key: &[u8]) -> Result<(), ()>  {
+    match SafeAES_ctx::from_ptr(ctx as *mut _) {
+        Some(mut safe_ctx) => {
+            KeyExpansion(&mut (safe_ctx.RoundKey)[..], key);
+            Ok(())
+        },
+        None => Err(()),
     }
-    AddRoundKey(Nr as uint8_t, state, RoundKey);
 }
-unsafe extern "C" fn InvCipher(mut state: *mut [[u8; 4]; 4], mut RoundKey: *const u8) {
-    let mut round: u8 = 0;
-
-    AddRoundKey(Nr as u8, state, RoundKey);
-
-    round = (Nr - 1) as u8;
-    loop {
-        InvShiftRows(state);
-        InvSubBytes(state);
-        AddRoundKey(round, state, RoundKey);
-        if round == 0 {
-            break;
+#[no_mangle]
+pub unsafe extern "C" fn AES_init_ctx_iv(mut ctx: *mut AES_ctx, key: *const uint8_t, iv: *const uint8_t) {
+    let safe_ctx = SafeAES_ctx::from_ptr(ctx).unwrap();
+    KeyExpansion((*safe_ctx.RoundKey).as_mut_ptr(), key);
+    memcpy(
+        (*safe_ctx.Iv).as_mut_ptr() as *mut c_void, 
+        iv as *const c_void, 
+        AES_BLOCKLEN as size_t
+    );
+}
+#[no_mangle]
+pub unsafe extern "C" fn AES_ctx_set_iv(mut ctx_ptr: *mut AES_ctx, iv_ptr: *const uint8_t) {
+    let safe_ctx = match SafeAES_ctx::from_ptr(ctx_ptr) {
+        Some(safe_ctx) => safe_ctx,
+        None => return,
+    };
+    
+    let iv = std::slice::from_raw_parts(iv_ptr, AES_BLOCKLEN as usize);
+    
+    for i in 0..AES_BLOCKLEN {
+        safe_ctx.Iv[i as usize] = unsafe { *iv.get_unchecked(i as usize) };
+    }
+}
+pub fn add_round_key(mut round: u8, state: &mut [[u8; 4]; 4], round_key: &[u8]) {
+    for i in 0..4 {
+        for j in 0..4 {
+            let idx = (round * NB * 4 + (i * NB) + j) as usize; // NB is assumed to be the size of a round key block
+            state[i][j] ^= round_key.get(idx).unwrap_or(&0);
         }
-        InvMixColumns(state);
+    }
+}
+pub extern "C" fn SubBytes(state: *mut state_t) {
+    if let Some(safe_state) = SafeState::from_ptr(state) {
+        for i in 0..4 {
+            for j in 0..4 {
+                safe_state.data[j as usize][i as usize] = sbox[safe_state.data[j as usize][i as usize] as usize];
+            }
+        }
+    }
+}
+pub fn shift_rows(mut state: *mut [[u8; 4]; 4]) {
+    let mut temp = unsafe { (*state)[0][1] };
+    (*state)[0][1] = (*state)[1][1];
+    (*state)[1][1] = (*state)[2][1];
+    (*state)[2][1] = (*state)[3][1];
+    (*state)[3][1] = temp;
+    
+    let mut temp = unsafe { (*state)[0][2] };
+    (*state)[0][2] = (*state)[2][2];
+    (*state)[2][2] = temp;
+    
+    let mut temp = unsafe { (*state)[1][2] };
+    (*state)[1][2] = (*state)[3][2];
+    (*state)[3][2] = temp;
+    
+    let mut temp = unsafe { (*state)[0][3] };
+    (*state)[0][3] = (*state)[3][3];
+    (*state)[3][3] = (*state)[2][3];
+    (*state)[2][3] = (*state)[1][3];
+    (*state)[1][3] = temp;
+}
+fn xtime(x: u8) -> u8 {
+    (x << 1) ^ ((x >> 7 & 1) * 0x1b)
+}
+pub extern "C" fn MixColumns(state: *mut state_t) {
+    let mut state = unsafe { std::slice::from_raw_parts_mut((*state).as_mut(), 4) };
+
+    for i in 0..4 {
+        let t = state[i][0];
+        let Tmp: u8 = (state[i][0] ^ state[i][1] ^ state[i][2] ^ state[i][3]) as u8;
+        let mut Tm: u8 = (state[i][0] ^ state[i][1]) as u8;
+        Tm = xtime(Tm);
+        state[i][0] ^= Tm ^ Tmp;
+        Tm = (state[i][1] ^ state[i][2]) as u8;
+        Tm = xtime(Tm);
+        state[i][1] ^= Tm ^ Tmp;
+        Tm = (state[i][2] ^ state[i][3]) as u8;
+        Tm = xtime(Tm);
+        state[i][2] ^= Tm ^ Tmp;
+        Tm = (state[i][3] ^ t) as u8;
+        Tm = xtime(Tm);
+        state[i][3] ^= Tm ^ Tmp;
+    }
+}
+pub fn inv_mix_columns(mut state: &mut [u8; 4]) {
+    let mut a = [0; 4];
+    let mut b = [0; 4];
+    for i in 0..4 {
+        a[i] = state[i][0];
+        b[i] = ((0xE * (a[i] as u32) << 1)) ^ ((a[i] as u32 >> 7) * 0x1B);
+        state[i][0] = b[i] as u8;
+    }
+
+    for i in 0..4 {
+        a[i] = state[i][1];
+        b[i] = ((0xE * (a[i] as u32) << 1)) ^ ((a[i] as u32 >> 7) * 0x1B);
+        state[i][1] = b[i] as u8;
+    }
+
+    for i in 0..4 {
+        a[i] = state[i][2];
+        b[i] = ((0xE * (a[i] as u32) << 1)) ^ ((a[i] as u32 >> 7) * 0x1B);
+        state[i][2] = b[i] as u8;
+    }
+
+    for i in 0..4 {
+        a[i] = state[i][3];
+        b[i] = ((0xE * (a[i] as u32) << 1)) ^ ((a[i] as u32 >> 7) * 0x1B);
+        state[i][3] = b[i] as u8;
+    }
+}
+pub fn inv_sub_bytes(state: &mut SafeState) {
+    for i in 0..4usize {
+        for j in 0..4usize {
+            state[j][i] = rsbox[state[j][i] as usize];
+        }
+    }
+}
+pub unsafe fn InvShiftRows(mut state: *mut [[MaybeUninit<u8>; 4]; 4]) {
+    let mut temp = state[3][1].as_ptr() as *mut u8;
+    
+    swap(&mut *state[3][1], &mut *state[2][1]);
+    swap(&mut *state[2][1], &mut *state[1][1]);
+    swap(&mut *state[1][1], &mut *state[0][1]);
+    
+    let mut temp = state[0][2].as_ptr() as *mut u8;
+    swap(&mut *state[0][2], &mut *state[2][2]);
+    
+    let mut temp = state[1][2].as_ptr() as *mut u8;
+    swap(&mut *state[1][2], &mut *state[3][2]);
+    
+    let mut temp = state[0][3].as_ptr() as *mut u8;
+    swap(&mut *state[0][3], &mut *state[1][3]);
+    swap(&mut *state[1][3], &mut *state[2][3]);
+    swap(&mut *state[2][3], &mut *state[3][3]);
+}
+pub fn process_user(u_ptr: *mut User) {
+    // 1. ISOLATE UNSAFE BOUNDARY: Convert immediately using the bridge
+    let safe_u = unsafe { SafeUser::from_ptr(u_ptr) };
+
+    // 2. PURE SAFE LOGIC: No more raw pointers below this line!
+    match safe_u {
+        Some(safe_u) => {
+            if safe_u.is_admin != 0 {
+                println!("Admin state active.");
+            }
+        },
+        None => {}
+    }
+}
+impl SafeState {
+    pub unsafe fn from_ptr(ptr: *const state_t) -> Option<Self> {
+        if ptr.is_null() {
+            None
+        } else {
+            let state = &*ptr;
+            Some(SafeState {
+                data: Vec::from(*state),
+            })
+        }
+    }
+}
+
+fn inv_cipher(mut state: &mut SafeState, mut round_key: &[u8]) {
+    let nr = NR as u8;
+    let mut round = 0;
+
+    add_round_key(nr, &mut state.data, round_key);
+
+    loop {
+        round = if round == 0 { break };
+        inv_shift_rows(&mut state.data);
+        inv_sub_bytes(&mut state.data);
+        add_round_key(round, &mut state.data, round_key);
+        if round != 0 {
+            inv_mix_columns(&mut state.data);
+        }
         round -= 1;
-    }
+    };
 }
 #[no_mangle]
 pub unsafe extern "C" fn AES_ECB_encrypt(mut ctx: *const AES_ctx, mut buf: *mut uint8_t) {
-    Cipher(buf as *mut state_t, ((*ctx).RoundKey).as_ptr());
+    let safe_ctx = match SafeAES_ctx::from_ptr(ctx) {
+        Some(safe_ctx) => safe_ctx,
+        None => return,
+    };
+    
+    Cipher(buf as *mut state_t, safe_ctx.RoundKey.as_ptr());
 }
 #[no_mangle]
-pub unsafe extern "C" fn AES_ECB_decrypt(mut ctx: *const AES_ctx, mut buf: *mut uint8_t) {
-    InvCipher(buf as *mut state_t, ((*ctx).RoundKey).as_ptr());
+pub unsafe extern "C" fn AES_ECB_decrypt(ctx: &mut SafeAES_ctx, buf: &mut [u8]) {
+    let state = slice::from_raw_parts_mut(buf.as_mut_ptr() as *mut _, 16);
+    InvCipher(&mut state, ctx.RoundKey.as_slice());
 }
-extern "C" fn XorWithIv(mut buf: *mut u8, mut Iv: *const u8) {
-    let mut i = 0;
-    while i < AES_BLOCKLEN {
-        unsafe {
-            *buf.offset(i as isize) ^= *Iv.offset(i as isize);
+pub fn xor_with_iv(buf: &mut [u8], iv: &[u8]) {
+    for (i, v) in buf.iter_mut().zip(iv).enumerate() {
+        *v ^= i as u8 % AES_BLOCKLEN;
+    }
+}
+#[no_mangle]
+pub unsafe extern "C" fn AES_CBC_encrypt_buffer(ctx: &mut SafeAES_ctx, buf: *mut u8, length: usize) {
+    let mut iv = ctx.Iv.as_slice();
+    
+    for chunk in buf.to_bytes().chunks_exact_mut(AES_BLOCKLEN as usize) {
+        XorWithIv(&mut *chunk, &iv);
+        Cipher(chunk.cast::<state_t>(), ctx.RoundKey.as_slice());
+        
+        iv = chunk;
+    }
+    
+    for (dst, src) in ctx.Iv.iter_mut().zip(iv) {
+        *dst = *src;
+    }
+}
+#[no_mangle]
+pub fn AES_CBC_decrypt_buffer(ctx: &mut SafeAES_ctx, buf: &mut [u8], length: usize) {
+    let mut storeNextIv = vec![0; 16];
+    
+    for i in (0..length).step_by(16) {
+        storeNextIv.copy_from_slice(&buf[i..i+16]);
+        
+        InvCipher(&mut buf[i..i+16].chunks_exact_mut(4).collect::<Vec<&mut [u8; 4]>>(), &ctx.RoundKey);
+        
+        XorWithIv(&mut buf[i..i+16], &ctx.Iv);
+        
+        ctx.Iv.copy_from_slice(&storeNextIv);
+    }
+}
+#[no_mangle]
+pub fn AES_CTR_xcrypt_buffer(ctx: &mut SafeAES_ctx, buf: &mut Vec<u8>) -> std::result::Result<(), &'static str>  {
+    let mut buffer = [0; 16];
+    
+    for (i, bi) in (0..buf.len()).zip((0..16).cycle()) {
+        if bi == 0 {
+            // Copying Iv to a local variable is safe because we have control over the size of SafeAES_ctx::Iv
+            let iv = ctx.Iv.clone();
+            
+            // memcpy replaced with clone operation
+            buffer = iv;
+            
+            // Assuming that Cipher function has been implemented and accepts a &mut state_t
+            Cipher(&mut buffer, &ctx.RoundKey);
+
+            // Updating the Iv (incrementing) without overflow is safe because we are controlling the value of i
+            let increment = |x: u8| -> u8 { if x == 255 { 0 } else { x + 1 } };
+            ctx.Iv = ctx.Iv.into_iter().map(increment).collect();
         }
-        i += 1;
+        
+        // XOR operation replaced with bitwise XOR operator ^
+        buf[i] ^= buffer[bi];
     }
-}
-#[no_mangle]
-pub unsafe extern "C" fn AES_CBC_encrypt_buffer(
-    mut ctx: *mut AES_ctx,
-    mut buf: *mut uint8_t,
-    mut length: size_t,
-) {
-    let mut i: size_t = 0;
-    let mut Iv: *mut uint8_t = ((*ctx).Iv).as_mut_ptr();
-    i = 0 as size_t;
-    while i < length {
-        XorWithIv(buf, Iv);
-        Cipher(buf as *mut state_t, ((*ctx).RoundKey).as_mut_ptr());
-        Iv = buf;
-        buf = buf.offset(AES_BLOCKLEN as isize);
-        i = i.wrapping_add(AES_BLOCKLEN as size_t);
-    }
-    memcpy(
-        ((*ctx).Iv).as_mut_ptr() as *mut core::ffi::c_void,
-        Iv as *const core::ffi::c_void,
-        AES_BLOCKLEN as size_t,
-    );
-}
-#[no_mangle]
-pub unsafe extern "C" fn AES_CBC_decrypt_buffer(
-    mut ctx: *mut AES_ctx,
-    mut buf: *mut uint8_t,
-    mut length: size_t,
-) {
-    let mut i: size_t = 0;
-    let mut storeNextIv: [uint8_t; 16] = [0; 16];
-    i = 0 as size_t;
-    while i < length {
-        memcpy(
-            storeNextIv.as_mut_ptr() as *mut core::ffi::c_void,
-            buf as *const core::ffi::c_void,
-            AES_BLOCKLEN as size_t,
-        );
-        InvCipher(buf as *mut state_t, ((*ctx).RoundKey).as_mut_ptr());
-        XorWithIv(buf, ((*ctx).Iv).as_mut_ptr());
-        memcpy(
-            ((*ctx).Iv).as_mut_ptr() as *mut core::ffi::c_void,
-            storeNextIv.as_mut_ptr() as *const core::ffi::c_void,
-            AES_BLOCKLEN as size_t,
-        );
-        buf = buf.offset(AES_BLOCKLEN as isize);
-        i = i.wrapping_add(AES_BLOCKLEN as size_t);
-    }
-}
-#[no_mangle]
-pub unsafe extern "C" fn AES_CTR_xcrypt_buffer(
-    mut ctx: *mut AES_ctx,
-    mut buf: *mut uint8_t,
-    mut length: size_t,
-) {
-    let mut buffer: [uint8_t; 16] = [0; 16];
-    let mut i: size_t = 0;
-    let mut bi: core::ffi::c_int = 0;
-    i = 0 as size_t;
-    bi = AES_BLOCKLEN;
-    while i < length {
-        if bi == AES_BLOCKLEN {
-            memcpy(
-                buffer.as_mut_ptr() as *mut core::ffi::c_void,
-                ((*ctx).Iv).as_mut_ptr() as *const core::ffi::c_void,
-                AES_BLOCKLEN as size_t,
-            );
-            Cipher(buffer.as_mut_ptr() as *mut state_t, ((*ctx).RoundKey).as_mut_ptr());
-            bi = AES_BLOCKLEN - 1 as core::ffi::c_int;
-            while bi >= 0 as core::ffi::c_int {
-                if (*ctx).Iv[bi as usize] as core::ffi::c_int == 255 as core::ffi::c_int
-                {
-                    (*ctx).Iv[bi as usize] = 0 as uint8_t;
-                    bi -= 1;
-                } else {
-                    (*ctx).Iv[bi as usize] = ((*ctx).Iv[bi as usize] as core::ffi::c_int
-                        + 1 as core::ffi::c_int) as uint8_t;
-                    break;
-                }
-            }
-            bi = 0 as core::ffi::c_int;
-        }
-        *buf.offset(i as isize) = (*buf.offset(i as isize) as core::ffi::c_int
-            ^ buffer[bi as usize] as core::ffi::c_int) as uint8_t;
-        i = i.wrapping_add(1);
-        bi += 1;
-    }
+    
+    Ok(())
 }

@@ -1,3 +1,10 @@
+#[derive(Debug, Clone)]
+pub struct User {
+    pub username: String,
+    pub isAdmin: bool,
+    pub session_token: Option<String>,
+}
+
 extern "C" {
     fn printf(__format: *const core::ffi::c_char, ...) -> core::ffi::c_int;
     fn scanf(__format: *const core::ffi::c_char, ...) -> core::ffi::c_int;
@@ -7,12 +14,7 @@ extern "C" {
     fn read_log_unsafe(buffer: *mut core::ffi::c_char);
 }
 #[derive(Copy, Clone)]
-#[repr(C)]
-pub struct User {
-    pub username: [core::ffi::c_char; 16],
-    pub isAdmin: core::ffi::c_int,
-    pub session_token: *mut core::ffi::c_char,
-}
+
 unsafe fn main_0() -> core::ffi::c_int {
     let mut input: [core::ffi::c_char; 128] = [0; 128];
     let mut log_buf: [core::ffi::c_char; 32] = [0; 32];
