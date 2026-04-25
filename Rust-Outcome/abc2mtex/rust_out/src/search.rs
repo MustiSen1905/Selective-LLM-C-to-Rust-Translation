@@ -144,8 +144,9 @@ pub const CONTINUE: results = 2;
 pub const SUCCESS: results = 1;
 pub const FAILURE: results = 0;
 pub const NULL: *mut core::ffi::c_void = 0 as *mut core::ffi::c_void;
-#[no_mangle]
-pub static mut _stklen: core::ffi::c_uint = 8192 as core::ffi::c_uint;
+// _stklen already defined in fields.rs (c2rust emits it per-translation-unit;
+// when modules are linked into a single Rust crate, only one definition is allowed).
+// pub static mut _stklen: core::ffi::c_uint = 8192 as core::ffi::c_uint;
 pub const DEFAULT_FORMAT_SIZE: [core::ffi::c_char; 45] = unsafe {
     ::core::mem::transmute::<
         [u8; 45],

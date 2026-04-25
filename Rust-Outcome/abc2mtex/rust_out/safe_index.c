@@ -44,7 +44,7 @@ Record	*alloc_record(char *fmt, int *size)
 void	free_record(Record *entry, char *fmt)
 ;
 
-static	void	str_get(char *string, char *fmt, int *f, char *index, int *i)
+void	str_get(char *string, char *fmt, int *f, char *index, int *i)
 {
 	int	c;
 	int	n;
@@ -81,7 +81,7 @@ static	void	str_get(char *string, char *fmt, int *f, char *index, int *i)
 int	get_record(char *fmt, FILE *In, Record *entry)
 ;
 
-static	void	str_put(char *string, char *fmt, int *f, char *index, int *i)
+void	str_put(char *string, char *fmt, int *f, char *index, int *i)
 {
 	int	c;
 	int	n;
