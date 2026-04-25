@@ -8,8 +8,12 @@ from clang.cindex import Config
 
 # Pfad zur libclang (angepasst an dein System LLVM 18)
 CLANG_LIB_PATH = '/usr/lib/llvm-18/lib'
-if not Config.library_path and os.path.exists(CLANG_LIB_PATH):
-    Config.set_library_path(CLANG_LIB_PATH)
+CLANG_LIB_PATH_WIN = r'C:\Program Files\LLVM\bin'
+if not Config.library_path:
+    if os.path.exists(CLANG_LIB_PATH):
+        Config.set_library_path(CLANG_LIB_PATH)
+    elif os.path.exists(CLANG_LIB_PATH_WIN):
+        Config.set_library_path(CLANG_LIB_PATH_WIN)
 
 class CContextExtractor:
     def __init__(self, file_path, include_paths=None):
@@ -202,6 +206,8 @@ Refactor the function `{function_name}`.
 16. **C-STRING CASTING (CRITICAL)**: When converting byte string literals to raw pointers for C-functions or `CStr::from_ptr`, you MUST cast them to `c_char` like this: `b"text\\0".as_ptr() as *const core::ffi::c_char`. Do NOT just use `.as_bytes().as_ptr()`.
 17. **STRING INDEXING**: In Rust, `String` cannot be indexed by `usize` (e.g., `s[i]`). If you need to access a character by index like in C, use `s.as_bytes()[i] as char` or `s.chars().nth(i).unwrap()`.
 18. **C-INT CASTING FOR CHARACTERS (CRITICAL)**: Many legacy C functions (like `strchr`, `isalpha`, `toupper`) take characters as `int`. If you extract a `c_char` (which is `i8`) and pass it to such a function, you MUST cast it: `my_char as core::ffi::c_int`. Never pass an `i8` directly to a function expecting `i32` or `c_int`.
+19. **PRESERVE FUNCTION NAME (CRITICAL)**: The Rust function name MUST be BYTE-IDENTICAL to `{function_name}`. Do NOT rename to snake_case (e.g., `MixColumns` stays `MixColumns`, NOT `mix_columns`; `XorWithIv` stays `XorWithIv`). Callers in other translation units still use the original name. Rust's `#[allow(non_snake_case)]` handles the convention warning.
+20. **PRESERVE FUNCTION SIGNATURE (CRITICAL)**: The parameter types and return type MUST match the original c2rust-generated signature EXACTLY. Do NOT change `*mut u8` to `&mut [u8]`, `*const c_char` to `&str`, or `*mut T` to `Box<T>`. Legacy callers in other translation units still pass raw pointers — changing the signature breaks them with E0308. Keep `unsafe extern "C" fn` where present, keep raw-pointer parameters. Do all Safe-wrapping INTERNALLY by calling `SafeX::from_ptr(ptr)` in the FIRST LINE of the function body and operating on the Safe-Shadow from there. The signature is the public boundary; only the body changes.
 
 ### MEMORY & LOGIC RULES
 - **Ownership**: Use `Box<T>` for heap allocation instead of raw pointers. Let Rust's RAII handle deallocation (no explicit `free`).
@@ -270,6 +276,8 @@ Additionally, implement a bridge function `from_unsafe` to convert the raw C-poi
 5. **SMART CLONE**: Use `#[derive(Debug, Clone)]`. Do NOT use `Copy` for structs with heap data.
 6. **SYSTEM & OPAQUE TYPES**: Do NOT create safe versions or bridge functions for system structs like `_IO_FILE`, `FILE`, `va_list`, or `__va_list_tag`. If a struct contains a pointer to a system type, leave it as a raw pointer `*mut T` or use an opaque wrapper. Deep-copying file handles or va_lists is invalid.
 7. **ABSOLUTE PATHS ONLY**: When using `CStr`, `String`, or `Vec` inside the bridge function, use fully qualified absolute paths (e.g., `std::ffi::CStr`). No `use` statements are allowed.
+8. **NEVER USE `char` FOR C BYTE FIELDS (CRITICAL)**: Rust's `char` is a 32-bit Unicode scalar and is NOT compatible with C's `c_char`/`i8`/`u8` byte fields. If a C struct field is `c_char` (byte tag, flag character, etc.), the Safe field MUST be `i8` (or `u8` for unsigned). Example: C `char f_or_n;` -> Safe `pub f_or_n: i8,` (NOT `char`). Reason: `orig.f_or_n` is `i8`; assigning it to a `char` field causes E0308 "expected `char`, found `i8`".
+9. **NULL-BRANCH ISOLATION IN from_ptr (CRITICAL)**: Inside `impl SafeA {{ pub unsafe fn from_ptr(ptr: *const A) -> Self }}`, if you need a fallback `SafeB` value (e.g. for a nullable nested field), NEVER pass the outer `ptr` to `SafeB::from_ptr(ptr)` -- `ptr` has type `*const A`, not `*const B`, and this causes E0308. Always pass a NULL pointer of the correct type: `SafeB::from_ptr(std::ptr::null::<B>())` or equivalently `SafeB::from_ptr(core::ptr::null())`. The inner `from_ptr` handles null internally.
 
 ### INPUT
 {unsafe_structs_snippet}
