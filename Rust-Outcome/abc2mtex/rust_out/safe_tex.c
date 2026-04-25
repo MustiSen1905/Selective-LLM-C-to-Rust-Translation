@@ -29,19 +29,19 @@ FILE	*Out;
 
 enum	scan_types { SCAN_METER, SCAN_ALL };
 
-static	int	in_tune = 0;
-static	int	in_bar = 0;
-static	int	bar_no, change_context, change_signature;
-static	int	in_notes, hp, new_tune, *old_beam = NULL;
-static	int	tempo_length = 0, bpm = 0;
-static	int	stave;
-static	int	slur_level = 0;
-static	int	musix;
+int	in_tune = 0;
+int	in_bar = 0;
+int	bar_no, change_context, change_signature;
+int	in_notes, hp, new_tune, *old_beam = NULL;
+int	tempo_length = 0, bpm = 0;
+int	stave;
+int	slur_level = 0;
+int	musix;
 
-static	const	char	*mtex ={"ABCDEFGHIJKLMNabcdefghijklmnopqrstuvwxyz"};
-static	const	char	*Accidental[] = { "", "<", "_", "=", "^", ">" };
+const	char	*mtex ={"ABCDEFGHIJKLMNabcdefghijklmnopqrstuvwxyz"};
+const	char	*Accidental[] = { "", "<", "_", "=", "^", ">" };
 
-static	int	abclog2(int x)
+int	abclog2(int x)
 {
 	int	log = 0;
 	while (x > 1) {
@@ -54,31 +54,31 @@ static	int	abclog2(int x)
 void	open_TeX(char *s, int musix_out)
 ;
 
-static	void	open_grace(void)
+void	open_grace(void)
 {
 	(void) fprintf(Out,"\\grace");
 	in_notes = 1;
 }
 
-static	void	open_music(void)
+void	open_music(void)
 {
 	(void) fprintf(Out,"\\notes");
 	in_notes = 1;
 }
 
-static	void	close_grace(void)
+void	close_grace(void)
 {
 	(void) fprintf(Out,"\\egrace%%\n");
 	in_notes = 0;
 }
 
-static	void	close_music(void)
+void	close_music(void)
 {
 	(void) fprintf(Out,"\\enotes%%\n");
 	in_notes = 0;
 }
 
-static	void	open_tune(void)
+void	open_tune(void)
 {
 	if (musix) (void) fprintf(Out,"\\startpiece%%\n");
 	else (void) fprintf(Out,"\\debutmorceau%%\n");
@@ -90,7 +90,7 @@ static	void	open_tune(void)
 	in_tune = 1;
 }
 
-static	char	q_plus(int pitch,int beam)
+char	q_plus(int pitch,int beam)
 {
 	if (beam > 0)
 		if (pitch < 29) return(mtex[30]);
@@ -100,7 +100,7 @@ static	char	q_plus(int pitch,int beam)
 		else return(mtex[pitch+9]);
 }
 
-static	char	n_plus(int pitch,int beam)
+char	n_plus(int pitch,int beam)
 {
 	if (beam > 0)
 		if (pitch < 26) return(mtex[27]);
@@ -110,7 +110,7 @@ static	char	n_plus(int pitch,int beam)
 		else return(mtex[pitch+9]);
 }
 
-static	char	L_minus(int pitch,int beam)
+char	L_minus(int pitch,int beam)
 {
 	if (beam > 0)
 		if (19 < pitch) return(mtex[11]);
@@ -120,7 +120,7 @@ static	char	L_minus(int pitch,int beam)
 		else return(mtex[pitch-5]);
 }
 
-static	void	draw_header(void)
+void	draw_header(void)
 {
 	(void) fprintf(Out,"\\tune{\\header%%\n");
 }
@@ -128,7 +128,7 @@ static	void	draw_header(void)
 void	draw_text(char *type,char *string)
 ;
 
-static	void	draw_tempo(Field *tempo)
+void	draw_tempo(Field *tempo)
 {
 	char	*str = &tempo->string[2];
 	int	level,old_tempo_length = tempo_length,length = 1,ctr = 0,j;
@@ -181,19 +181,19 @@ static	void	draw_tempo(Field *tempo)
 	(void) fprintf(Out,"}{%d}}\\enotes%%\n",bpm);
 }
 
-static	void	close_open(void)
+void	close_open(void)
 {
 	(void) fprintf(Out,"\\enotes\\notes");
 	stave = 0;
 }
 
-static	void	next_stave(void)
+void	next_stave(void)
 {
 	(void) fprintf(Out,"&");
 	stave += 1;
 }
 
-static	void	draw_rest(int level)
+void	draw_rest(int level)
 {
 	if (musix) {
 		if (level == 5)
@@ -224,7 +224,7 @@ static	void	draw_rest(int level)
 	}
 }
 
-static	void	draw_pt(Note note)
+void	draw_pt(Note note)
 {
 	if (note.length%15== 0)
 		(void) fprintf(Out,"\\pppt %c",mtex[note.pitch]);
@@ -234,7 +234,7 @@ static	void	draw_pt(Note note)
 		(void) fprintf(Out,"\\pt %c",mtex[note.pitch]);
 }
 
-static	void	draw_slur(Note note,char type,char ud, int change)
+void	draw_slur(Note note,char type,char ud, int change)
 {
 	int	pitch;
 	char	mtype[5];
@@ -264,7 +264,7 @@ static	void	draw_slur(Note note,char type,char ud, int change)
 	slur_level += change;
 }
 
-static	void	draw_attributes(Note note,char ul,char lu,char ud,int beam)
+void	draw_attributes(Note note,char ul,char lu,char ud,int beam)
 {
 	int	g = 0,i;
 
@@ -346,7 +346,7 @@ static	void	draw_attributes(Note note,char ul,char lu,char ud,int beam)
 
 }
 
-static	void	draw_usercmd(char *s)
+void	draw_usercmd(char *s)
 {
 	int	i;
 
@@ -358,7 +358,7 @@ static	void	draw_usercmd(char *s)
 	}
 }
 
-static	void	draw_chord(Symbol *root)
+void	draw_chord(Symbol *root)
 {
 	int	j,level;
 	Symbol	*s = root;
@@ -376,7 +376,7 @@ static	void	draw_chord(Symbol *root)
 	}
 }
 
-static	void	draw_tie(Note note,char *str)
+void	draw_tie(Note note,char *str)
 {
 	int	p_m;
 	char	u_l;
@@ -391,20 +391,20 @@ static	void	draw_tie(Note note,char *str)
 	(void) fprintf(Out,"\\%ctie%s{%c}",u_l,str,mtex[note.pitch+p_m]);
 }
 
-static	void	draw_part(char *part)
+void	draw_part(char *part)
 {
 	if (new_tune) open_tune();
 	(void) fprintf(Out,"\\Pline{%s}%%\n",part);
 }
 
-static	void	draw_tex(char *line)
+void	draw_tex(char *line)
 {
 /* probably shouldn't do this */
 if (in_notes) close_music();
 	(void) fprintf(Out,"%s%%\n",line);
 }
 
-static	void	draw_size(char *size)
+void	draw_size(char *size)
 {
 	double	esize;
 	if (settings.mine && musix) esize = 7.0;
@@ -425,12 +425,12 @@ void	close_TeX(void)
 	(void) fclose(Out);
 }
 
-static	void	draw_old_repeat(int repeat)
+void	draw_old_repeat(int repeat)
 {
 	(void) fprintf(Out,"\\rpt{%d}",repeat);
 }
 
-static	void	draw_meter_new(Field *meter)
+void	draw_meter_new(Field *meter)
 {
 	if (!in_notes) {
 		(void) fprintf(Out,"\\generalmeter{");
@@ -449,7 +449,7 @@ static	void	draw_meter_new(Field *meter)
 	(void) fprintf(Out,"%%\n");
 }
 
-static	void	key2tex(Field *f)
+void	key2tex(Field *f)
 {
 	if (f->info2 == 2) /* key is HP */
 		(void) fprintf(Out,"\\generalsignature{0}%%\n");
@@ -470,7 +470,7 @@ static	void	key2tex(Field *f)
 
 }
 
-static	void	staves(void)
+void	staves(void)
 {
 	int	i,j;
 
@@ -504,7 +504,7 @@ static	void	staves(void)
 
 }
 
-static	void	scan_fields(Symbol *s, int scan)
+void	scan_fields(Symbol *s, int scan)
 {
 	Symbol	*f;
 
@@ -525,7 +525,7 @@ static	void	scan_fields(Symbol *s, int scan)
 	}
 }
 
-static	void	beam2tex(int n, Symbol *first, int beam)
+void	beam2tex(int n, Symbol *first, int beam)
 {
 	int	i,beam_length,l,level,prev_level,next_level,j;
 	int	plet,k,se,position,orig_level,beamed = 1,igrace;
@@ -913,7 +913,7 @@ retry:
 
 }
 
-static	void	bar2tex(Symbol *s)
+void	bar2tex(Symbol *s)
 {
 	if (new_tune) open_tune();
 
@@ -1026,7 +1026,7 @@ static	void	bar2tex(Symbol *s)
 	in_bar = 1; /* now in bar */
 }
 
-static	void	fields2tex(Field *f)
+void	fields2tex(Field *f)
 {
 	switch (f->string[0]) {
 	case 'E':
@@ -1064,7 +1064,7 @@ static	void	fields2tex(Field *f)
 	}
 }
 
-static	void	end_tune(void)
+void	end_tune(void)
 {
 	free(old_beam);
 	old_beam = NULL;
