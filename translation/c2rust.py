@@ -77,19 +77,34 @@ def get_function_info(src: str):
     return funcs
 
 def create_context_split(src: str, funcs_info: dict, target_names: list, is_unsafe_file: bool):
-    """Erzeugt eine Version der Datei, in der nur target_names ihre Körper behalten."""
+    """Erzeugt eine Version der Datei, in der nur target_names ihre Koerper behalten.
+
+    Wichtig fuer Hybrid-Linking: jede Funktion, deren Body wir nach Rust ausgelagert
+    haben, darf in der C-Datei nicht mehr `static` sein. Der Body kommt jetzt aus
+    der Rust-Crate (libhybrid_project.a) und der Linker muss das Symbol von dort
+    aufloesen koennen — `static` macht das Symbol TU-lokal und versteckt es
+    sowohl vor dem Rust-Code als auch vor anderen C-TUs.
+
+    Der bisherige Code stripped `static` nur fuer `is_unsafe_file=True`. Das war
+    falsch: auch in safe_*.c werden Bodies entfernt (fuer die unsafe-Funktionen
+    der Datei) und auch die muessen extern werden. Ohne das schlaegt das
+    Hybrid-Linking spaeter fehl mit 'undefined reference to <fn>'.
+    """
     # Sortiere von hinten nach vorne, um Indizes beim Ersetzen nicht zu korrumpieren
     sorted_items = sorted(funcs_info.items(), key=lambda x: x[1][0], reverse=True)
-    
+
     current_src = src
     for name, (start, brace_open, end) in sorted_items:
         if name not in target_names:
-            # Ersetze Körper { ... } durch ;
-            # Wenn es eine statische Funktion ist, machen wir sie 'extern', damit sie im Linker sichtbar bleibt
+            # Body removed -> Funktion ist jetzt in Rust definiert.
+            # Strip alle Whitespace-Varianten von `static `: `static ` (Space),
+            # `static\t` (Tab), Tabbed im Original-K&R-Stil.
             header = current_src[start:brace_open]
-            if is_unsafe_file:
-                header = header.replace("static ", "extern ")
-            
+            header = re.sub(r'^\s*static\s+', '', header)
+            # Innerhalb des headers (z.B. nach Attributen) ggf. weitere static
+            # entfernen — selten, aber defensiv.
+            header = re.sub(r'\bstatic\s+', '', header)
+
             current_src = current_src[:start] + header + ";" + current_src[end+1:]
     return current_src
 
