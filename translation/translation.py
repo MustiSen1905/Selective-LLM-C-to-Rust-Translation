@@ -22,6 +22,7 @@ try:
         build_safe_bridge_prelude, build_safe_bridge_prelude_v2,
         rewrite_raw_ptr_accesses, GUARD_STATS,
     )
+    from .ffi_export import auto_export_rust_fns_for_c_callers
 except ImportError:
     from signature_guard import (
         extract_signature, signatures_equivalent, is_placeholder_body,
@@ -29,6 +30,7 @@ except ImportError:
         build_safe_bridge_prelude, build_safe_bridge_prelude_v2,
         rewrite_raw_ptr_accesses, GUARD_STATS,
     )
+    from ffi_export import auto_export_rust_fns_for_c_callers
 
 # --- KONFIGURATION ---
 MODEL = "deepseek-coder:33b"
@@ -1400,6 +1402,19 @@ def main(project_dir, function_order=None):
     n_dedup = dedup_function_definitions(rust_src)
     if n_dedup == 0:
         print("  [i] Dedup: keine Duplikate gefunden.")
+
+    # FFI-Auto-Export: Rust-Funktionen, die aus zurueck-gestrippten C-Helpern
+    # (safe_*.c forward decls ohne Body) gerufen werden, brauchen
+    # `#[no_mangle] pub extern "C"`, sonst E0xxx beim Hybrid-Linking.
+    print("--- FFI Auto-Export fuer C-Caller ---")
+    rust_out = os.path.dirname(rust_src.rstrip(os.sep))
+    ffi_outcomes = auto_export_rust_fns_for_c_callers(rust_out)
+    patched = [n for n, s in ffi_outcomes.items() if s.startswith(("PATCHED", "ALREADY"))]
+    idiomatic = [n for n, s in ffi_outcomes.items() if "IDIOMATIC" in s]
+    print(f"  [+] FFI: {len(patched)} Funktionen exportiert, "
+          f"{len(idiomatic)} mit idiomatischer Signatur (manueller Wrapper noetig).")
+    for n in idiomatic[:5]:
+        print(f"      [warn] {n}: {ffi_outcomes[n]}")
 
     # Guard-Stats fuer Thesis-Reporting + stdout-Summary.
     stats_path = os.path.join(cargo_root, "guard_stats.csv")
