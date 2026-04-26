@@ -630,7 +630,8 @@ def rewrite_raw_ptr_accesses(body: str, raw_ptr_names: set[str]) -> str:
 _PLACEHOLDER_BODY_RE = re.compile(
     r'^\s*\{\s*'
     r'(?:'
-    r'/\*\s*\.\.\.\s*\*/'           # /* ... */
+    r'\.\.\.'                       # bare `...` (LLM ellipsis-as-placeholder)
+    r'|/\*\s*\.\.\.\s*\*/'           # /* ... */
     r'|/\*\s*TODO[^*]*\*/'
     r'|//[^\n]*\n\s*'
     r'|unimplemented!\(\s*\)\s*;?'

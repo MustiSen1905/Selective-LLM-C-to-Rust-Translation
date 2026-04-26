@@ -240,12 +240,65 @@ def ast_extract_safe_type_names(code: str):
         return []
 
 
+def normalize_safe_double_underscore(rust_src_dir: str):
+    """Pre-Pass vor `inject_safe_stub_types`: collapse `Safe__X` -> `Safe_X`
+    references, wenn `Safe_X` als struct/enum/type im File definiert ist.
+    Entfernt zusaetzlich den jetzt redundanten Stub `pub type Safe__X = ();`
+    aus dem auto-generated stub block (sonst E0428 multiple definitions).
+
+    Hintergrund: der LLM emittiert manchmal `Safe__IO_FILE` (doppeltes
+    Underscore aus `Safe_` + `_IO_FILE` Zusammensetzung) als Field-Type, waehrend
+    die echte struct als `Safe_IO_FILE` (single underscore, korrekt) definiert
+    ist. Ohne diesen Pass injiziert `inject_safe_stub_types` einen
+    `pub type Safe__IO_FILE = ();` stub, dessen `impl ... {{}}`-Block dann
+    E0390 wirft (`cannot define inherent impl for primitive types`).
+    """
+    if not os.path.isdir(rust_src_dir):
+        return
+    def_re = re.compile(r'\bpub\s+(?:struct|enum|union|type)\s+(Safe\w+)')
+    for fname in sorted(os.listdir(rust_src_dir)):
+        if not fname.endswith(".rs"):
+            continue
+        fpath = os.path.join(rust_src_dir, fname)
+        with open(fpath, "r", encoding="utf-8") as f:
+            code = f.read()
+        defined = set(def_re.findall(code))
+        renames = []
+        for d in defined:
+            if not d.startswith("Safe_") or d.startswith("Safe__"):
+                continue
+            wrong = "Safe__" + d[len("Safe_"):]
+            if not re.search(r'\b' + re.escape(wrong) + r'\b', code):
+                continue
+            # 1. Drop redundant stub `pub type Safe__X = ();` (collapsed form
+            #    would otherwise duplicate the actual `pub struct/type Safe_X`).
+            stub_pat = re.compile(
+                r'^pub\s+type\s+' + re.escape(wrong) + r'\s*=\s*\(\s*\)\s*;\s*\n',
+                re.MULTILINE,
+            )
+            new_code = stub_pat.sub('', code)
+            # 2. Replace remaining references to `Safe__X` with `Safe_X`.
+            new_code = re.sub(r'\b' + re.escape(wrong) + r'\b', d, new_code)
+            if new_code != code:
+                renames.append((wrong, d))
+                code = new_code
+        if renames:
+            with open(fpath, "w", encoding="utf-8") as f:
+                f.write(code)
+            for w, r in renames:
+                print(f"  [+] Safe-Naming: collapsed {w} -> {r} in {fname}")
+
+
 def inject_safe_stub_types(rust_src_dir: str):
     """Fuegt `pub type SafeX = ();` Stubs fuer referenzierte aber nicht definierte
     Safe*-Typen am Dateianfang ein. Fixt LLM-Halluzinationen wie
     `Box<Safe_IO_marker>`, wenn `Safe_IO_marker` nirgends definiert ist."""
     if not os.path.isdir(rust_src_dir):
         return
+
+    # First normalize `Safe__X` references to `Safe_X` where the latter is
+    # defined; otherwise the stub injector creates a useless unit-type stub.
+    normalize_safe_double_underscore(rust_src_dir)
 
     def_re = re.compile(r'\bpub\s+(?:struct|enum|union|type)\s+(Safe\w+)')
     ref_re = re.compile(r'\b(Safe\w+)\b')
