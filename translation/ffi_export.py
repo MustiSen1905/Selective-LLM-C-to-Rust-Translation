@@ -257,13 +257,19 @@ def auto_export_rust_fns_for_c_callers(rust_out_dir: str) -> dict[str, str]:
     if not os.path.isdir(rust_out_dir) or not os.path.isdir(rust_src_dir):
         return {}
 
-    # 1. C-side forward decls sammeln.
+    # 1. C-side forward decls sammeln. Walk subdirectories so multi-level
+    # source trees (libtiff/tools/port/contrib/...) work end-to-end.
     needed_exports: set[str] = set()
-    for fname in os.listdir(rust_out_dir):
-        if not (fname.startswith("safe_") and fname.endswith(".c")):
+    for root, _, files in os.walk(rust_out_dir):
+        # Skip the auto-generated rust_out/src/ tree; safe_*.c only live
+        # alongside the C subdir layout in rust_out's top-level mirror.
+        if os.path.commonpath([root, rust_src_dir]) == rust_src_dir:
             continue
-        decls = collect_c_forward_decls(os.path.join(rust_out_dir, fname))
-        needed_exports.update(decls)
+        for fname in files:
+            if not (fname.startswith("safe_") and fname.endswith(".c")):
+                continue
+            decls = collect_c_forward_decls(os.path.join(root, fname))
+            needed_exports.update(decls)
 
     # Blacklist: spezielle Symbole wie `main` nie patchen.
     needed_exports -= _FFI_EXPORT_BLACKLIST
@@ -271,12 +277,15 @@ def auto_export_rust_fns_for_c_callers(rust_out_dir: str) -> dict[str, str]:
     if not needed_exports:
         return {}
 
-    # 2. Pro Rust-Datei patchen.
+    # 2. Pro Rust-Datei patchen — recurse so nested src/<dir>/<file>.rs is
+    # also covered.
     outcomes: dict[str, str] = {}
-    for fname in sorted(os.listdir(rust_src_dir)):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    rs_paths = []
+    for root, _, files in os.walk(rust_src_dir):
+        for f in sorted(files):
+            if f.endswith(".rs"):
+                rs_paths.append((f, os.path.join(root, f)))
+    for fname, fpath in rs_paths:
         with open(fpath, "r", encoding="utf-8") as f:
             src = f.read()
         modified = src

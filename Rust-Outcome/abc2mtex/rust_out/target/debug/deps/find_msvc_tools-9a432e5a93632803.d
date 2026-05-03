@@ -1,9 +1,0 @@
-/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/target/debug/deps/find_msvc_tools-9a432e5a93632803.rmeta: /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/lib.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/find_tools.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/tool.rs
-
-/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/target/debug/deps/libfind_msvc_tools-9a432e5a93632803.rlib: /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/lib.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/find_tools.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/tool.rs
-
-/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/target/debug/deps/find_msvc_tools-9a432e5a93632803.d: /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/lib.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/find_tools.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/tool.rs
-
-/home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/lib.rs:
-/home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/find_tools.rs:
-/home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/tool.rs:

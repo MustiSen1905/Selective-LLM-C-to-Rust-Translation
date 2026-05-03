@@ -1,0 +1,163 @@
+project,function,outcome,original_signature,llm_signature
+pdfresurrect-master,pdf_display_creator,ACCEPTED,,
+pdfresurrect-master,display_creator,ACCEPTED,,
+pdfresurrect-master,pdf_get_version,ACCEPTED,,
+pdfresurrect-master,is_valid_xref,ACCEPTED,,
+pdfresurrect-master,load_creator,ACCEPTED,,
+pdfresurrect-master,load_xref_from_plaintext,ACCEPTED,,
+pdfresurrect-master,resolve_linearized_pdf,ACCEPTED,,
+pdfresurrect-master,pdf_is_pdf,ACCEPTED,,
+pdfresurrect-master,pdf_get_object_status,ACCEPTED,,
+pdfresurrect-master,pdf_summarize,ACCEPTED,,
+pdfresurrect-master,usage,ACCEPTED,,
+pdfresurrect-master,write_version,ACCEPTED,,
+pdfresurrect-master,main_0,ACCEPTED,,
+pdfresurrect-master,pdf_zero_object,ACCEPTED,,
+pdfresurrect-master,pdf_display_creator,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_display_creator(
+    mut pdf: *const pdf_t,
+    mut xref_idx: core::ffi::c_int,
+) -> core::ffi::c_int","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_display_creator(pdf: &Safe_PDF, xref_idx: usize) -> i32"
+pdfresurrect-master,pdf_display_creator,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_display_creator(
+    mut pdf: *const pdf_t,
+    mut xref_idx: core::ffi::c_int,
+) -> core::ffi::c_int","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_display_creator(pdf: &SafePdf, xref_idx: core::ffi::c_int) -> core::ffi::c_int"
+pdfresurrect-master,pdf_display_creator,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_display_creator(
+    mut pdf: *const pdf_t,
+    mut xref_idx: core::ffi::c_int,
+) -> core::ffi::c_int","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_display_creator(pdf: &mut SafePdf, xref_idx: i32) -> i32"
+pdfresurrect-master,display_creator,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn display_creator(mut fp: *mut FILE, mut pdf: *const pdf_t)","pub fn display_creator(fp: &mut std::ffi::c_void, pdf: &SafePdf)"
+pdfresurrect-master,display_creator,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn display_creator(mut fp: *mut FILE, mut pdf: *const pdf_t)","extern ""C"" fn display_creator(fp: *mut FILE, pdf: &SafePdf)"
+pdfresurrect-master,get_next_eof,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn get_next_eof(mut fp: *mut FILE) -> core::ffi::c_int",fn get_next_eof(fp: &mut SafeIOFILE) -> core::ffi::c_int
+pdfresurrect-master,get_xref_linear_skipped,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn get_xref_linear_skipped(mut fp: *mut FILE, mut xref: *mut xref_t)",pub unsafe fn from_ptr(ptr: *const xref_t) -> Self
+pdfresurrect-master,get_xref_linear_skipped,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn get_xref_linear_skipped(mut fp: *mut FILE, mut xref: *mut xref_t)","unsafe extern ""C"" fn get_xref_linear_skipped(fp: *mut FILE, xref: *mut SafeXrefT)"
+pdfresurrect-master,pdf_get_version,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_get_version(mut fp: *mut FILE, mut pdf: *mut pdf_t)","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_get_version(mut fp: &mut Safe__IO_FILE, mut pdf: &mut SafePdfT)"
+pdfresurrect-master,is_valid_xref,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn is_valid_xref(
+    mut fp: *mut FILE,
+    mut pdf: *mut pdf_t,
+    mut xref: *mut xref_t,
+) -> core::ffi::c_int","extern ""C"" fn is_valid_xref(mut fp: *mut Safe__IO_FILE, pdf: &mut SafePdfT, xref: &mut SafeXRef) -> i32"
+pdfresurrect-master,load_creator_from_old_format,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_creator_from_old_format(
+    mut fp: *mut FILE,
+    mut xref: *mut xref_t,
+    mut buf: *const core::ffi::c_char,
+    mut buf_size: size_t,
+)",pub unsafe fn from_ptr(xref: *const xref_t) -> Self
+pdfresurrect-master,load_creator_from_old_format,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_creator_from_old_format(
+    mut fp: *mut FILE,
+    mut xref: *mut xref_t,
+    mut buf: *const core::ffi::c_char,
+    mut buf_size: size_t,
+)",pub unsafe fn from_ptr(ptr: *const _IO_FILE) -> Self
+pdfresurrect-master,load_creator_from_old_format,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_creator_from_old_format(
+    mut fp: *mut FILE,
+    mut xref: *mut xref_t,
+    mut buf: *const core::ffi::c_char,
+    mut buf_size: size_t,
+)","unsafe extern ""C"" fn load_creator_from_old_format(mut fp: *mut FILE, mut xref: *mut xref_t, buf: &str, buf_size: size_t)"
+pdfresurrect-master,load_creator_from_xml,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_creator_from_xml(
+    mut xref: *mut xref_t,
+    mut buf: *const core::ffi::c_char,
+)","extern ""C"" fn load_creator_from_xml(mut xref: *mut SafeXref, mut buf: *const core::ffi::c_char)"
+pdfresurrect-master,load_creator_from_xml,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_creator_from_xml(
+    mut xref: *mut xref_t,
+    mut buf: *const core::ffi::c_char,
+)",pub unsafe fn from_ptr(ptr: *const xref_t) -> Self
+pdfresurrect-master,load_creator_from_buf,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_creator_from_buf(
+    mut fp: *mut FILE,
+    mut xref: *mut xref_t,
+    mut buf: *const core::ffi::c_char,
+    mut buf_size: size_t,
+)","fn load_creator_from_buf(mut fp: *mut Safe__IO_FILE, mut xref: &mut SafeXrefT) -> Result<(), Box<dyn std::error::Error>>"
+pdfresurrect-master,load_creator_from_buf,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_creator_from_buf(
+    mut fp: *mut FILE,
+    mut xref: *mut xref_t,
+    mut buf: *const core::ffi::c_char,
+    mut buf_size: size_t,
+)","unsafe extern ""C"" fn load_creator_from_buf(
+    mut fp:  *mut FILE,
+    mut xref:  *mut Safe_xref_t,
+    buf:  &[u8],
+    buf_size: size_t,
+)"
+pdfresurrect-master,load_creator,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_creator(mut fp: *mut FILE, mut pdf: *mut pdf_t)","pub unsafe extern ""C"" fn load_creator(fp: *mut FILE, pdf: &mut SafePdfT)"
+pdfresurrect-master,load_xref_from_plaintext,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_xref_from_plaintext(mut fp: *mut FILE, mut xref: *mut xref_t)","pub fn load_xref_from_plaintext(mut fp: &mut SafeFILE, mut xref: &mut SafeXRef)"
+pdfresurrect-master,load_xref_from_plaintext,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_xref_from_plaintext(mut fp: *mut FILE, mut xref: *mut xref_t)",pub unsafe fn from_ptr(ptr: *const _IO_FILE) -> Self
+pdfresurrect-master,load_xref_from_stream,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_xref_from_stream(mut fp: *mut FILE, mut xref: *mut xref_t)",pub unsafe fn from_ptr(ptr: *const xref_t) -> Self
+pdfresurrect-master,load_xref_from_stream,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_xref_from_stream(mut fp: *mut FILE, mut xref: *mut xref_t)","pub unsafe extern ""C"" fn load_xref_from_stream(mut fp: *mut FILE, mut xref: *mut SafeXRef)"
+pdfresurrect-master,load_xref_entries,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_xref_entries(mut fp: *mut FILE, mut xref: *mut xref_t)","pub fn load_xref_entries(fp: &mut File, xref: &mut SafeXref) -> Result<(), String>"
+pdfresurrect-master,load_xref_entries,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn load_xref_entries(mut fp: *mut FILE, mut xref: *mut xref_t)",pub unsafe fn from_ptr(ptr: *const FILE) -> Self
+pdfresurrect-master,resolve_linearized_pdf,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn resolve_linearized_pdf(mut pdf: *mut pdf_t)",pub fn resolve_linearized_pdf(mut pdf: &mut SafePdf)
+pdfresurrect-master,pdf_load_xrefs,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_load_xrefs(
+    mut fp: *mut FILE,
+    mut pdf: *mut pdf_t,
+) -> core::ffi::c_int","#[no_mangle]
+pub extern  ""C"" fn pdf_load_xrefs(fp: &mut Safe_IO_FILE, pdf: &mut SafePdfT) -> i32"
+pdfresurrect-master,pdf_load_xrefs,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_load_xrefs(
+    mut fp: *mut FILE,
+    mut pdf: *mut pdf_t,
+) -> core::ffi::c_int","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_load_xrefs(fp: *mut Safe_IO_FILE, pdf: *mut SafePDFT) -> core::ffi::c_int"
+pdfresurrect-master,pdf_load_xrefs,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_load_xrefs(
+    mut fp: *mut FILE,
+    mut pdf: *mut pdf_t,
+) -> core::ffi::c_int","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_load_xrefs(fp: *mut FILE, pdf: &mut Safe_pdf_t) -> core::ffi::c_int"
+pdfresurrect-master,pdf_get_object_status,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_get_object_status(
+    mut pdf: *const pdf_t,
+    mut xref_idx: core::ffi::c_int,
+    mut entry_idx: core::ffi::c_int,
+) -> core::ffi::c_char","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_get_object_status(pdf: *const pdf_t, xref_idx: i32, entry_idx: i32) -> u8"
+pdfresurrect-master,pdf_summarize,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_summarize(
+    mut fp: *mut FILE,
+    mut pdf: *const pdf_t,
+    mut name: *const core::ffi::c_char,
+    mut flags: pdf_flag_t,
+)","#[no_mangle]
+pub extern ""C"" fn pdf_summarize(fp: &mut Safe_IO_FILE, pdf: &SafePdfT, name: Option<&str>, flags: u16) -> std::result::Result<(), ()>"
+pdfresurrect-master,pdf_summarize,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_summarize(
+    mut fp: *mut FILE,
+    mut pdf: *const pdf_t,
+    mut name: *const core::ffi::c_char,
+    mut flags: pdf_flag_t,
+)","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_summarize(fp: &mut Safe_IO_FILE, pdf: *const pdf_t, name: *const core::ffi::c_char, flags: pdf_flag_t)"
+pdfresurrect-master,write_version,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn write_version(
+    mut fp: *mut FILE,
+    mut fname: *const core::ffi::c_char,
+    mut dirname: *const core::ffi::c_char,
+    mut xref: *mut xref_t,
+)","pub unsafe extern ""C"" fn write_version(
+    mut fp: &mut SafeIoFile,
+    mut fname: &mut String,
+    dirname: &str,
+    xref: &mut SafeXRef,
+)"
+pdfresurrect-master,main_0,REVERTED_SIG_DRIFT,"unsafe fn main_0(
+    mut argc: core::ffi::c_int,
+    mut argv: *mut *mut core::ffi::c_char,
+) -> core::ffi::c_int","#[allow(non_snake_case)]
+pub unsafe fn main_0(argc: i32, argv: *mut [*mut _]) -> i32"
+pdfresurrect-master,pdf_zero_object,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn pdf_zero_object(
+    mut fp: *mut FILE,
+    mut pdf: *const pdf_t,
+    mut xref_idx: core::ffi::c_int,
+    mut entry_idx: core::ffi::c_int,
+)","#[no_mangle]
+pub unsafe extern ""C"" fn pdf_zero_object(fp: &mut Safe__IO_FILE, pdf: &SafePdfT, xref_idx: usize, entry_idx: usize)"
+pdfresurrect-master,get_next_eof,REVERTED_PLACEHOLDER,,

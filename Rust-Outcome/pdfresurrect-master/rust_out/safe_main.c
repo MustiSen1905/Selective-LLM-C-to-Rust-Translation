@@ -23,11 +23,11 @@
 #include "pdf.h"
 
 
-static void usage(void)
+void usage(void)
 ;
 
 
-static void write_version(
+void write_version(
     FILE       *fp,
     const char *fname,
     const char *dirname,
@@ -36,12 +36,12 @@ static void write_version(
 
 
 #ifdef PDFRESURRECT_EXPERIMENTAL
-static void scrub_document(FILE *fp, const pdf_t *pdf)
+void scrub_document(FILE *fp, const pdf_t *pdf)
 ;
 #endif // PDFRESURRECT_EXPERIMENTAL
 
 
-static void display_creator(FILE *fp, const pdf_t *pdf)
+void display_creator(FILE *fp, const pdf_t *pdf)
 ;
 
 

@@ -733,7 +733,7 @@ static void resolve_linearized_pdf(pdf_t *pdf)
 }
 
 
-extern pdf_creator_t *new_creator(int *n_elements)
+pdf_creator_t *new_creator(int *n_elements)
 ;
 
 
@@ -975,11 +975,11 @@ static void load_creator_from_old_format(
 /* Returns object data at the start of the file pointer
  * This interfaces to 'get_object'
  */
-extern char *get_object_from_here(FILE *fp, size_t *size, int *is_stream)
+char *get_object_from_here(FILE *fp, size_t *size, int *is_stream)
 ;
 
 
-extern char *get_object(
+char *get_object(
     FILE         *fp,
     int           obj_id,
     const xref_t *xref,
@@ -988,15 +988,15 @@ extern char *get_object(
 ;
 
 
-extern const char *get_type(FILE *fp, int obj_id, const xref_t *xref)
+const char *get_type(FILE *fp, int obj_id, const xref_t *xref)
 ;
 
 
-extern char *get_header(FILE *fp)
+char *get_header(FILE *fp)
 ;
 
 
-extern char *decode_text_string(const char *str, size_t str_len)
+char *decode_text_string(const char *str, size_t str_len)
 ;
 
 
