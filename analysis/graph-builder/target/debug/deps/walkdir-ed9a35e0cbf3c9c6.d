@@ -1,0 +1,10 @@
+C:\Users\musti\OneDrive\Dokumente\Uni\Bachelorarbeit\Project\Selective-LLM-C-to-Rust-Translation\.claude\worktrees\tender-newton-c89e88\analysis\graph-builder\target\debug\deps\walkdir-ed9a35e0cbf3c9c6.d: C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\lib.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\dent.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\error.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\util.rs
+
+C:\Users\musti\OneDrive\Dokumente\Uni\Bachelorarbeit\Project\Selective-LLM-C-to-Rust-Translation\.claude\worktrees\tender-newton-c89e88\analysis\graph-builder\target\debug\deps\libwalkdir-ed9a35e0cbf3c9c6.rlib: C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\lib.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\dent.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\error.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\util.rs
+
+C:\Users\musti\OneDrive\Dokumente\Uni\Bachelorarbeit\Project\Selective-LLM-C-to-Rust-Translation\.claude\worktrees\tender-newton-c89e88\analysis\graph-builder\target\debug\deps\libwalkdir-ed9a35e0cbf3c9c6.rmeta: C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\lib.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\dent.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\error.rs C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\util.rs
+
+C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\lib.rs:
+C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\dent.rs:
+C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\error.rs:
+C:\Users\musti\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\util.rs:

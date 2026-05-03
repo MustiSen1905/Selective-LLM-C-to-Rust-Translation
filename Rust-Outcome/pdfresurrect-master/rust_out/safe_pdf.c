@@ -195,29 +195,29 @@ int pdf_display_creator(const pdf_t *pdf, int xref_idx)
 /* Checks if the xref is valid and sets 'is_stream' flag if the xref is a
  * stream (PDF 1.5 or higher)
  */
-static int is_valid_xref(FILE *fp, pdf_t *pdf, xref_t *xref)
+int is_valid_xref(FILE *fp, pdf_t *pdf, xref_t *xref)
 ;
 
 
-static void load_xref_entries(FILE *fp, xref_t *xref)
+void load_xref_entries(FILE *fp, xref_t *xref)
 ;
 
 
-static void load_xref_from_plaintext(FILE *fp, xref_t *xref)
+void load_xref_from_plaintext(FILE *fp, xref_t *xref)
 ;
 
 
 /* Load an xref table from a stream (PDF v1.5 +) */
-static void load_xref_from_stream(FILE *fp, xref_t *xref)
+void load_xref_from_stream(FILE *fp, xref_t *xref)
 ;
 
 
-static void get_xref_linear_skipped(FILE *fp, xref_t *xref)
+void get_xref_linear_skipped(FILE *fp, xref_t *xref)
 ;
 
 
 /* This must only be called after all xref and entries have been acquired */
-static void resolve_linearized_pdf(pdf_t *pdf)
+void resolve_linearized_pdf(pdf_t *pdf)
 ;
 
 
@@ -256,11 +256,11 @@ static pdf_creator_t *new_creator(int *n_elements)
         continue;                    \
     }                                \
 }
-static void load_creator(FILE *fp, pdf_t *pdf)
+void load_creator(FILE *fp, pdf_t *pdf)
 ;
 
 
-static void load_creator_from_buf(
+void load_creator_from_buf(
     FILE       *fp,
     xref_t     *xref,
     const char *buf,
@@ -268,11 +268,11 @@ static void load_creator_from_buf(
 ;
 
 
-static void load_creator_from_xml(xref_t *xref, const char *buf)
+void load_creator_from_xml(xref_t *xref, const char *buf)
 ;
 
 
-static void load_creator_from_old_format(
+void load_creator_from_old_format(
     FILE       *fp,
     xref_t     *xref,
     const char *buf,
@@ -538,5 +538,5 @@ static char *decode_text_string(const char *str, size_t str_len)
 /* Return the offset to the beginning of the %%EOF string.
  * A negative value is returned when done scanning.
  */
-static int get_next_eof(FILE *fp)
+int get_next_eof(FILE *fp)
 ;

@@ -22,9 +22,9 @@
 
 typedef int (compFun)(const void*, const void*);
 
-static	char	priority[99];
+char	priority[99];
 
-static	char	*next(char *s)
+char	*next(char *s)
 {
 	while ((*s < 'a' || *s > 'z')
 	    && (*s < 'A' || *s > 'Z')
@@ -35,7 +35,7 @@ static	char	*next(char *s)
 	return(s);
 }
 
-static	int	str_cmp(char *s,char *t)
+int	str_cmp(char *s,char *t)
 {
 	char	u,v;
 	if (s == NULL || t == NULL)
@@ -60,7 +60,7 @@ static	int	str_cmp(char *s,char *t)
 	return(u - v);
 }
 
-static	int	compare(Record **entry1,Record **entry2)
+int	compare(Record **entry1,Record **entry2)
 {
 	int	result = 0,p;
 	for (p = 0; priority[p] != '\0' && result == 0; ++p) {

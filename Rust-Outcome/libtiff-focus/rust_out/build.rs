@@ -1,0 +1,9 @@
+fn main() {
+        cc::Build::new()
+            .file("libtiff/safe_mkg3states.c").file("libtiff/safe_mkspans.c").file("libtiff/safe_tif_aux.c").file("libtiff/safe_tif_close.c").file("libtiff/safe_tif_codec.c").file("libtiff/safe_tif_color.c").file("libtiff/safe_tif_compress.c").file("libtiff/safe_tif_dir.c").file("libtiff/safe_tif_dirinfo.c").file("libtiff/safe_tif_dirread.c").file("libtiff/safe_tif_dirwrite.c").file("libtiff/safe_tif_dumpmode.c").file("libtiff/safe_tif_error.c").file("libtiff/safe_tif_extension.c").file("libtiff/safe_tif_fax3.c").file("libtiff/safe_tif_flush.c").file("libtiff/safe_tif_getimage.c").file("libtiff/safe_tif_jbig.c").file("libtiff/safe_tif_jpeg.c").file("libtiff/safe_tif_jpeg_12.c").file("libtiff/safe_tif_luv.c").file("libtiff/safe_tif_lzma.c").file("libtiff/safe_tif_lzw.c").file("libtiff/safe_tif_next.c").file("libtiff/safe_tif_ojpeg.c").file("libtiff/safe_tif_open.c").file("libtiff/safe_tif_packbits.c").file("libtiff/safe_tif_pixarlog.c").file("libtiff/safe_tif_predict.c").file("libtiff/safe_tif_print.c").file("libtiff/safe_tif_read.c").file("libtiff/safe_tif_strip.c").file("libtiff/safe_tif_swab.c").file("libtiff/safe_tif_thunder.c").file("libtiff/safe_tif_tile.c").file("libtiff/safe_tif_unix.c").file("libtiff/safe_tif_version.c").file("libtiff/safe_tif_vms.c").file("libtiff/safe_tif_warning.c").file("libtiff/safe_tif_win32.c").file("libtiff/safe_tif_wince.c").file("libtiff/safe_tif_write.c").file("libtiff/safe_tif_zip.c").file("port/safe_dummy.c").file("port/safe_getopt.c").file("port/safe_lfind.c").file("port/safe_snprintf.c").file("port/safe_strtoul.c").file("port/safe_strtoull.c")
+            .include("libtiff").include("port")
+            .flag("-std=c99")
+            .flag("-fcommon")
+            .warnings(false)
+            .compile("c_parts");
+    }

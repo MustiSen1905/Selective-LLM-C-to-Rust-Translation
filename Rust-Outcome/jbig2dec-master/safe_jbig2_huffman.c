@@ -180,7 +180,7 @@ static int
 test_get_word1(Jbig2Ctx *ctx, Jbig2WordStream *self, size_t offset, uint32_t *word)
 ;
 
-static int test1()
+int test1()
 ;
 
 #include <stdio.h>
@@ -1403,7 +1403,7 @@ static int
 test_get_word2(Jbig2Ctx *ctx, Jbig2WordStream *self, size_t offset, uint32_t *word)
 ;
 
-static int test2()
+int test2()
 ;
 
 int

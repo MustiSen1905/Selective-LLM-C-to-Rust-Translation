@@ -330,7 +330,7 @@ static void Memento_initMutex(Memento_mutex *m)
 #include <pthread.h>
 typedef pthread_mutex_t Memento_mutex;
 
-static void Memento_initMutex(Memento_mutex *m)
+void Memento_initMutex(Memento_mutex *m)
 ;
 
 #define MEMENTO_DO_LOCK() \
@@ -437,29 +437,29 @@ static void *libbt;
 static char backtrace_exe[4096];
 static void *current_addr;
 
-static void error2_cb(void *data, const char *msg, int errnum)
+void error2_cb(void *data, const char *msg, int errnum)
 ;
 
-static void syminfo_cb(void *data, uintptr_t pc, const char *symname, uintptr_t symval, uintptr_t symsize)
+void syminfo_cb(void *data, uintptr_t pc, const char *symname, uintptr_t symval, uintptr_t symsize)
 ;
 
-static void error_cb(void *data, const char *msg, int errnum)
+void error_cb(void *data, const char *msg, int errnum)
 ;
 
-static int full_cb(void *data, uintptr_t pc, const char *fname, int line, const char *fn)
+int full_cb(void *data, uintptr_t pc, const char *fname, int line, const char *fn)
 ;
 
-static void print_stack_libbt(void *addr)
+void print_stack_libbt(void *addr)
 ;
 
-static void print_stack_libbt_failed(void *addr)
+void print_stack_libbt_failed(void *addr)
 ;
 
-static int init_libbt(void)
+int init_libbt(void)
 ;
 #endif
 
-static void print_stack_default(void *addr)
+void print_stack_default(void *addr)
 ;
 
 static void Memento_initStacktracer(void)
@@ -637,7 +637,7 @@ typedef struct
     void **addr;
 } my_unwind_details;
 
-static _Unwind_Reason_Code unwind_populate_callback(struct _Unwind_Context *context,
+_Unwind_Reason_Code unwind_populate_callback(struct _Unwind_Context *context,
                                                     void *arg)
 ;
 
@@ -682,18 +682,18 @@ static void Memento_showStacktrace(void **stack, int numberOfFrames)
 }
 
 #else
-static void Memento_initStacktracer(void)
+void Memento_initStacktracer(void)
 ;
 
-static int Memento_getStacktrace(void **stack, int *skip)
+int Memento_getStacktrace(void **stack, int *skip)
 ;
 
-static void Memento_showStacktrace(void **stack, int numberOfFrames)
+void Memento_showStacktrace(void **stack, int numberOfFrames)
 ;
 #endif /* MEMENTO_STACKTRACE_METHOD */
 
 #ifdef MEMENTO_DETAILS
-static void Memento_storeDetails(Memento_BlkHeader *head, int type)
+void Memento_storeDetails(Memento_BlkHeader *head, int type)
 ;
 #endif
 
@@ -709,7 +709,7 @@ void (Memento_bt)(void)
 #endif
 }
 
-static void Memento_bt_internal(int skip2)
+void Memento_bt_internal(int skip2)
 ;
 
 static int Memento_checkAllMemoryLocked(void);
@@ -730,12 +730,12 @@ do { MEMENTO_DO_UNLOCK(); } while (0)
 #define Memento_breakpointLocked() \
 do { MEMENTO_UNLOCK(); Memento_breakpoint(); MEMENTO_LOCK(); } while (0)
 
-static void Memento_addBlockHead(Memento_Blocks    *blks,
+void Memento_addBlockHead(Memento_Blocks    *blks,
                                  Memento_BlkHeader *b,
                                  int                type)
 ;
 
-static void Memento_addBlockTail(Memento_Blocks    *blks,
+void Memento_addBlockTail(Memento_Blocks    *blks,
                                  Memento_BlkHeader *b,
                                  int                type)
 ;
@@ -749,21 +749,21 @@ typedef struct BlkCheckData {
 } BlkCheckData;
 
 #ifndef MEMENTO_LEAKONLY
-static int Memento_Internal_checkAllocedBlock(Memento_BlkHeader *b, void *arg)
+int Memento_Internal_checkAllocedBlock(Memento_BlkHeader *b, void *arg)
 ;
 
-static int Memento_Internal_checkFreedBlock(Memento_BlkHeader *b, void *arg)
+int Memento_Internal_checkFreedBlock(Memento_BlkHeader *b, void *arg)
 ;
 #endif /* MEMENTO_LEAKONLY */
 
-static void Memento_removeBlock(Memento_Blocks    *blks,
+void Memento_removeBlock(Memento_Blocks    *blks,
                                 Memento_BlkHeader *b)
 ;
 
-static void free_block(Memento_BlkHeader *head)
+void free_block(Memento_BlkHeader *head)
 ;
 
-static int Memento_Internal_makeSpace(size_t space)
+int Memento_Internal_makeSpace(size_t space)
 ;
 
 static int Memento_appBlocks(Memento_Blocks *blks,
@@ -835,21 +835,21 @@ static int Memento_appBlock(Memento_Blocks    *blks,
 }
 #endif /* MEMENTO_LEAKONLY */
 
-static int showBlock(Memento_BlkHeader *b, int space)
+int showBlock(Memento_BlkHeader *b, int space)
 ;
 
-static void blockDisplay(Memento_BlkHeader *b, int n)
+void blockDisplay(Memento_BlkHeader *b, int n)
 ;
 
-static int Memento_listBlock(Memento_BlkHeader *b,
+int Memento_listBlock(Memento_BlkHeader *b,
                              void              *arg)
 ;
 
-static void doNestedDisplay(Memento_BlkHeader *b,
+void doNestedDisplay(Memento_BlkHeader *b,
                             int depth)
 ;
 
-static int ptrcmp(const void *a_, const void *b_)
+int ptrcmp(const void *a_, const void *b_)
 ;
 
 static
@@ -859,14 +859,14 @@ int Memento_listBlocksNested(void)
 void Memento_listBlocks(void)
 ;
 
-static int Memento_listNewBlock(Memento_BlkHeader *b,
+int Memento_listNewBlock(Memento_BlkHeader *b,
                                 void              *arg)
 ;
 
 void Memento_listNewBlocks(void)
 ;
 
-static void Memento_endStats(void)
+void Memento_endStats(void)
 ;
 
 void Memento_stats(void)
@@ -878,7 +878,7 @@ void Memento_stats(void)
 }
 
 #ifdef MEMENTO_DETAILS
-static int showInfo(Memento_BlkHeader *b, void *arg)
+int showInfo(Memento_BlkHeader *b, void *arg)
 ;
 #endif
 
@@ -892,7 +892,7 @@ void Memento_listBlockInfo(void)
 #endif
 }
 
-static int Memento_nonLeakBlocksLeaked(void)
+int Memento_nonLeakBlocksLeaked(void)
 ;
 
 void Memento_fin(void)
@@ -930,7 +930,7 @@ void Memento_fin(void)
     }
 }
 
-static void Memento_init(void)
+void Memento_init(void)
 ;
 
 typedef struct findBlkData {
@@ -939,7 +939,7 @@ typedef struct findBlkData {
     int                flags;
 } findBlkData;
 
-static int Memento_containsAddr(Memento_BlkHeader *b,
+int Memento_containsAddr(Memento_BlkHeader *b,
                                 void *arg)
 ;
 
@@ -1061,17 +1061,17 @@ static int squeeze(void)
 #else
 #include <signal.h>
 
-static void Memento_signal(int sig)
+void Memento_signal(int sig)
 ;
 
-static int squeeze(void)
+int squeeze(void)
 ;
 #endif
 
-static void Memento_startFailing(void)
+void Memento_startFailing(void)
 ;
 
-static int Memento_event(void)
+int Memento_event(void)
 ;
 
 int Memento_sequence(void)
@@ -1146,7 +1146,7 @@ void Memento_tick(void)
     MEMENTO_UNLOCK();
 }
 
-static int Memento_failThisEventLocked(void)
+int Memento_failThisEventLocked(void)
 ;
 
 int Memento_failThisEvent(void)
@@ -1237,7 +1237,7 @@ void *Memento_calloc(size_t n, size_t s)
     return block;
 }
 
-static void do_reference(Memento_BlkHeader *blk, int event)
+void do_reference(Memento_BlkHeader *blk, int event)
 ;
 
 int Memento_checkPointerOrNull(void *blk)
@@ -1421,13 +1421,13 @@ void *Memento_reference(void *blk)
 
 /* Treat blocks from the user with suspicion, and check them the slow
  * but safe way. */
-static int checkBlockUser(Memento_BlkHeader *memblk, const char *action)
+int checkBlockUser(Memento_BlkHeader *memblk, const char *action)
 ;
 
-static int checkBlock(Memento_BlkHeader *memblk, const char *action)
+int checkBlock(Memento_BlkHeader *memblk, const char *action)
 ;
 
-static void do_free(void *blk, int eventType)
+void do_free(void *blk, int eventType)
 ;
 
 void Memento_free(void *blk)
@@ -1535,14 +1535,14 @@ int Memento_checkBlock(void *blk)
 ;
 
 #ifndef MEMENTO_LEAKONLY
-static int Memento_Internal_checkAllAlloced(Memento_BlkHeader *memblk, void *arg)
+int Memento_Internal_checkAllAlloced(Memento_BlkHeader *memblk, void *arg)
 ;
 
-static int Memento_Internal_checkAllFreed(Memento_BlkHeader *memblk, void *arg)
+int Memento_Internal_checkAllFreed(Memento_BlkHeader *memblk, void *arg)
 ;
 #endif /* MEMENTO_LEAKONLY */
 
-static int Memento_checkAllMemoryLocked(void)
+int Memento_checkAllMemoryLocked(void)
 ;
 
 int Memento_checkAllMemory(void)

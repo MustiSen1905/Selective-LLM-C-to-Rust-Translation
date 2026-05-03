@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/.claude/worktrees/tender-newton-c89e88/Rust-Outcome/libtiff-focus",
+    "command": "clang -I. -I\"libtiff\" -I\"libtiff\" -I\"port\" -std=gnu89 -fcommon -Wno-everything -c libtiff/tif_dir.c",
+    "file": "libtiff/tif_dir.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/.claude/worktrees/tender-newton-c89e88/Rust-Outcome/libtiff-focus",
+    "command": "clang -I. -I\"port\" -I\"libtiff\" -I\"port\" -std=gnu89 -fcommon -Wno-everything -c port/strcasecmp.c",
+    "file": "port/strcasecmp.c"
+  }
+]

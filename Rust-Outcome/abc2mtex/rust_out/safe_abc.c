@@ -39,58 +39,58 @@ typedef struct {
 	int	warnings;
 } Output;
 
-static	FILE	*In;
-static	char	abc_file[99];
-static	int	input_line;
-static	int	just_comment;
+FILE	*In;
+char	abc_file[99];
+int	input_line;
+int	just_comment;
 
-static	Barline	*bar_start;
-static	Note	*beam_start = NULL;
-static	Note	*note;
-static	Symbol	*current = NULL;
-static	int	n_notes = 0;
+Barline	*bar_start;
+Note	*beam_start = NULL;
+Note	*note;
+Symbol	*current = NULL;
+int	n_notes = 0;
 
-static	const	char	*Key_array[] = {
+const	char	*Key_array[] = {
 				"Fb","Cb","Gb","Db","Ab","Eb","Bb",
 				"F", "C", "G", "D", "A", "E", "B",
 				"F#","C#","G#","D#","A#","E#","B#",
 			"" };
-static	const	char	**Key = Key_array+8;
+const	char	**Key = Key_array+8;
 
-static	const	int	Csemitones[] = { 0, 2, 4, 5, 7, 9, 11 };
-static		int	 semitones[7];
+const	int	Csemitones[] = { 0, 2, 4, 5, 7, 9, 11 };
+int	 semitones[7];
 
-static	int	max = 0; /* max notes in a beam */
+int	max = 0; /* max notes in a beam */
 
-static	int	token, prev_token;
-static	int	token_length = 0;
-static	char	*token_ptr = NULL;
+int	token, prev_token;
+int	token_length = 0;
+char	*token_ptr = NULL;
 
 #define	MAX_N_BLOCKS	10
 #define	BLOCK_LENGTH	400
 
-static	int	n_blocks;
-static	Symbol	*block[MAX_N_BLOCKS];
-static	int	n_symbols = 0;
+int	n_blocks;
+Symbol	*block[MAX_N_BLOCKS];
+int	n_symbols = 0;
 
-static	int	compound_time = 0;
-static	frac	fbar_total;
-static	int	bar_no;
-static	char	bar[3][99];
-static	char	current_bar[99];
-static	int	in_old_slur = 0;
-static	int	bar_length;
-static	int	stave;
-static	Output	output;
-static	int	tnote = 0;
-static	int	beam_length = 0;
-static	Note	*chord_root = NULL;	/* first note of chord */
-static	int	tuplet_n_notes = 0;	/* number of notes required in tuplet */
-static	int	tuplet_note_no = 0;	/* number of notes in tuplet so far */
-static	frac	tuplet_fraction = {1,1};/* fractional length of a tuplet note */
-static	frac	broken = { 0, 0 };
-static	int	continuation = 0;
-static	int	ignore;
+int	compound_time = 0;
+frac	fbar_total;
+int	bar_no;
+char	bar[3][99];
+char	current_bar[99];
+int	in_old_slur = 0;
+int	bar_length;
+int	stave;
+Output	output;
+int	tnote = 0;
+int	beam_length = 0;
+Note	*chord_root = NULL;	/* first note of chord */
+int	tuplet_n_notes = 0;	/* number of notes required in tuplet */
+int	tuplet_note_no = 0;	/* number of notes in tuplet so far */
+frac	tuplet_fraction = {1,1};/* fractional length of a tuplet note */
+frac	broken = { 0, 0 };
+int	continuation = 0;
+int	ignore;
 
 enum	env_types {
 		IN_GRACE,
@@ -101,9 +101,9 @@ enum	env_types {
 		MAX_ENVS
 	};
 
-static	int	env[MAX_ENVS] = { 0, 0, 0, 0, 0 };
+int	env[MAX_ENVS] = { 0, 0, 0, 0, 0 };
 
-static	const	char	*token_names[] = {
+const	char	*token_names[] = {
 				"gchord",
 				"accent",
 				"accidental",
@@ -161,7 +161,7 @@ enum token_types {
 	MAX_TKNS
 };
 
-static	int	syntax_table[MAX_TKNS+1][MAX_TKNS+1] = {
+int	syntax_table[MAX_TKNS+1][MAX_TKNS+1] = {
 		/*	  " ~ = A ' 2 / > | [   - t H \ * n { } [ ] ( ) & % */
 		/* " */	{ 0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,0 },
 		/* ~ */	{ 0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0 },
@@ -241,7 +241,7 @@ void	closeIn(void)
 void	read_settings(void)
 ;
 
-static	int	hcf(int a, int b)
+int	hcf(int a, int b)
 {
 	int	ans = 1, p;
 	const	int	prime[] = { 2, 3, 5, 7, 11, 13, 17, 0 };
@@ -256,7 +256,7 @@ static	int	hcf(int a, int b)
 	return(ans);
 }
 
-static	void	add_frac(frac a, frac b, frac *ans)
+void	add_frac(frac a, frac b, frac *ans)
 {
 	int	f;
 	ans->n = (a.n*b.d) + (b.n*a.d);
@@ -280,7 +280,7 @@ void	strip(char *str, char *comment)
 void	stripcpy(char *out_str, char *in_str)
 ;
 
-static	const	char	*Notes[]={
+const	char	*Notes[]={
 				"",  "",
 				"",  "",  "",  "",  "",  "",  "",
 				"C,","D,","E,","F,","G,","A,","B,",
@@ -289,7 +289,7 @@ static	const	char	*Notes[]={
 				"c'","d'","e'","f'","g'","a'","b'"
 			};
 
-static	void	transpose_note(void)
+void	transpose_note(void)
 {
 
 	const	char	*Accidental_array[] = { "__", "_", "=", "^", "^^" };
@@ -304,7 +304,7 @@ static	void	transpose_note(void)
 	tnote = 0;
 }
 
-static	void	end_beam(void)
+void	end_beam(void)
 {
 	if (note) {
 		if (!env[IN_GRACE] && env[IN_TUPLET]) {
@@ -328,9 +328,9 @@ static	void	end_beam(void)
 	beam_length = 0;
 }
 
-static	int	global_accidentals[7];
+int	global_accidentals[7];
 
-static	void	new_symbol(int type)
+void	new_symbol(int type)
 {
 	int	index;
 	frac	fnote_length;
@@ -400,7 +400,7 @@ static	void	new_symbol(int type)
 		note = NULL;
 }
 
-static	void	output_transpose(void)
+void	output_transpose(void)
 {
 	int	i;
 
@@ -415,7 +415,7 @@ static	void	output_transpose(void)
 void	output_transline(char *s)
 ;
 
-static	void	save_two_bars(void)
+void	save_two_bars(void)
 {
 	if (output.nbars == 0) return;
 
@@ -425,7 +425,7 @@ static	void	save_two_bars(void)
 		(void) strncat(current_bar,token_ptr,token_length);
 }
 
-static	void	check_syntax(int new_token)
+void	check_syntax(int new_token)
 {
 	int	e;
 	const	char	*env_names[] = {
@@ -458,7 +458,7 @@ static	void	check_syntax(int new_token)
 			token_names[token],token_names[prev_token]);
 }
 
-static	void	set_base(Field *meter)
+void	set_base(Field *meter)
 {
 	char	*meter_str = &meter->string[2];
 	int	l;
@@ -513,7 +513,7 @@ void	get_dnl(Record *entry)
 void	set_dnl(char *dnl_str)
 ;
 
-static	void	ignore_space(char *s, int *c)
+void	ignore_space(char *s, int *c)
 {
 	while (s[*c] == ' ') {
 		if (transpose || offset)
@@ -522,7 +522,7 @@ static	void	ignore_space(char *s, int *c)
 	}
 }
 
-static	void	ignore_alpha(char *s, int *c)
+void	ignore_alpha(char *s, int *c)
 {
 	while ((s[*c] >= 'A' && s[*c] <= 'Z')
 	    || (s[*c] >= 'a' && s[*c] <= 'z')) {
@@ -532,7 +532,7 @@ static	void	ignore_alpha(char *s, int *c)
 	}
 }
 
-static	void	transpose_accidental(int pitch)
+void	transpose_accidental(int pitch)
 {
 	int	sharpness = note->iaccidental - 3;
 	sharpness += ((54-2*(pitch-9))%7+transpose+14)/7-2;
@@ -543,7 +543,7 @@ static	void	transpose_accidental(int pitch)
 	note->iaccidental = sharpness + 3;
 }
 
-static	int	mystrncasecmp(char *s1, char *s2, int n)
+int	mystrncasecmp(char *s1, char *s2, int n)
 {
 	char	tmp1[99],tmp2[99];
 	int	i;
@@ -559,7 +559,7 @@ static	int	mystrncasecmp(char *s1, char *s2, int n)
 	return(strncmp(tmp1,tmp2,n));
 }
 
-static	void	sharps_flats(Field *key)
+void	sharps_flats(Field *key)
 {
 	Note	dummy;
 	int	pitch;
@@ -716,9 +716,9 @@ static	void	sharps_flats(Field *key)
 int	range(int *first,int *last,int *yfirst,int *ylast,char **input)
 ;
 
-static	void	process_field(char *str)
+void	process_field(char *str)
 {
-	static	char	comment[999];
+char	comment[999];
 	Symbol	*previous = current;
 
 	if (ignore) return;
@@ -766,14 +766,14 @@ static	void	process_field(char *str)
 
 }
 
-static	void	process_trailing(void)
+void	process_trailing(void)
 {
 	check_syntax(TRAILING_TKN);
 
 	output_transpose();
 }
 
-static	void	process_gchord(char *str)
+void	process_gchord(char *str)
 {
 	int	ctr, g;
 	char	temp[99];
@@ -814,7 +814,7 @@ static	void	process_gchord(char *str)
 	(void) strcpy(note->gchord,str);
 }
 
-static	void	process_macro(char c)
+void	process_macro(char c)
 {
 	check_syntax(MACRO_TKN);
 
@@ -826,7 +826,7 @@ static	void	process_macro(char c)
 	output_transpose();
 }
 
-static	void	process_accent(char c)
+void	process_accent(char c)
 {
 	if (!note || note->pitch || strchr(note->end,'b'))
 		new_symbol(NOTE);
@@ -842,7 +842,7 @@ static	void	process_accent(char c)
 	(void) sprintf(end_of(note->attributes),"%c",c);
 }
 
-static	void	process_accidental(int accidental)
+void	process_accidental(int accidental)
 {
 	if (!note || note->pitch || strchr(note->end,'b'))
 		new_symbol(NOTE);
@@ -858,7 +858,7 @@ static	void	process_accidental(int accidental)
 	note->iaccidental = accidental;
 }
 
-static	void	process_note(int pitch)
+void	process_note(int pitch)
 {
 	if (!note || note->pitch || strchr(note->end,'b'))
 		new_symbol(NOTE);
@@ -908,7 +908,7 @@ static	void	process_note(int pitch)
 	if (note->type == NORMAL) save_two_bars();
 }
 
-static	void	process_octaver(int octaver)
+void	process_octaver(int octaver)
 {
 	check_syntax(OCTAVER_TKN);
 
@@ -923,7 +923,7 @@ static	void	process_octaver(int octaver)
 		abc_error("octaver puts note out of range");
 }
 
-static	void	process_length(int length)
+void	process_length(int length)
 {
 	check_syntax(LENGTH_TKN);
 
@@ -939,7 +939,7 @@ static	void	process_length(int length)
 	note->length *= length;
 }
 
-static	void	process_divisor(int length)
+void	process_divisor(int length)
 {
 	check_syntax(DIVISOR_TKN);
 
@@ -955,7 +955,7 @@ static	void	process_divisor(int length)
 	note->length /= length;
 }
 
-static	void	process_broken(int power)
+void	process_broken(int power)
 {
 	int	i;
 
@@ -982,7 +982,7 @@ static	void	process_broken(int power)
 	env[IN_BROKEN] = 1;
 }
 
-static	void	process_bar(int bar_type)
+void	process_bar(int bar_type)
 {
 	int	bar_total;
 
@@ -1034,7 +1034,7 @@ static	void	process_bar(int bar_type)
 	beam_length = 0;
 }
 
-static	void	process_repeat(int no)
+void	process_repeat(int no)
 {
 	Symbol	*bar;
 
@@ -1057,7 +1057,7 @@ static	void	process_repeat(int no)
 		abc_error("repeat inappropriate for bar type");
 }
 
-static	void	process_space(void)
+void	process_space(void)
 {
 	end_beam();
 
@@ -1068,7 +1068,7 @@ static	void	process_space(void)
 	save_two_bars();
 }
 
-static	void	process_tie(void)
+void	process_tie(void)
 {
 	check_syntax(TIE_TKN);
 
@@ -1082,7 +1082,7 @@ static	void	process_tie(void)
 	end_beam();
 }
 
-static	void	process_continuation(void)
+void	process_continuation(void)
 {
 	end_beam();
 
@@ -1093,7 +1093,7 @@ static	void	process_continuation(void)
 	continuation = 1;
 }
 
-static	void	process_newline(void)
+void	process_newline(void)
 {
 	end_beam();
 
@@ -1107,7 +1107,7 @@ static	void	process_newline(void)
 	}
 }
 
-static	void	process_open_chord(void)
+void	process_open_chord(void)
 {
 	if (!note || note->pitch || strchr(note->end,'b'))
 		new_symbol(NOTE);
@@ -1121,7 +1121,7 @@ static	void	process_open_chord(void)
 	chord_root->chord = -1;
 }
 
-static	void	process_close_chord(void)
+void	process_close_chord(void)
 {
 	check_syntax(CLOSE_CHORD_TKN);
 	if (!env[IN_CHORD]) abc_error("not in chord");
@@ -1143,7 +1143,7 @@ static	void	process_close_chord(void)
 	chord_root = NULL;
 }
 
-static	void	process_open_close_chord(void)
+void	process_open_close_chord(void)
 {
 	if (settings.old_chords == 0)
 		abc_error("++ syntax obsolete; use [] or change settings file");
@@ -1151,7 +1151,7 @@ static	void	process_open_close_chord(void)
 	else process_open_chord();
 }
 
-static	void	process_open_grace(void)
+void	process_open_grace(void)
 {
 	check_syntax(OPEN_GRACE_TKN);
 
@@ -1160,7 +1160,7 @@ static	void	process_open_grace(void)
 	env[IN_GRACE] = 1;
 }
 
-static	void	process_close_grace(void)
+void	process_close_grace(void)
 {
 	check_syntax(CLOSE_GRACE_TKN);
 	if (!env[IN_GRACE]) abc_error("not in grace");
@@ -1171,7 +1171,7 @@ static	void	process_close_grace(void)
 	env[IN_GRACE] = 0;
 }
 
-static	void	process_open_slur(void)
+void	process_open_slur(void)
 {
 	if (!note || note->pitch || strchr(note->end,'b'))
 		new_symbol(NOTE);
@@ -1183,7 +1183,7 @@ static	void	process_open_slur(void)
 	(void) strcat(note->start,"s");
 }
 
-static	void	process_close_slur(void)
+void	process_close_slur(void)
 {
 	check_syntax(CLOSE_SLUR_TKN);
 
@@ -1192,7 +1192,7 @@ static	void	process_close_slur(void)
 	(void) strcat(note->end,"s");
 }
 
-static	void	process_open_close_slur(void)
+void	process_open_close_slur(void)
 {
 	if (settings.old_slurs == 0)
 		abc_error("ss syntax obsolete; use () or change settings file");
@@ -1213,7 +1213,7 @@ static	void	process_open_close_slur(void)
 	}
 }
 
-static	void	process_tuplet(char *s)
+void	process_tuplet(char *s)
 {
 	int	p, q = -1, r = -1;
 	char	*save_s = s;
@@ -1275,7 +1275,7 @@ static	void	process_tuplet(char *s)
 	tuplet_note_no = 0;
 }
 
-static	void	process_justify(void)
+void	process_justify(void)
 {
 	check_syntax(JUSTIFY_TKN);
 
@@ -1284,7 +1284,7 @@ static	void	process_justify(void)
 	current->justify = 1;
 }
 
-static	void	process_ampersand(int level)
+void	process_ampersand(int level)
 {
 	end_beam();
 
@@ -1300,7 +1300,7 @@ static	void	process_ampersand(int level)
 	current->u.misc.level = level;
 }
 
-static	void	process_beams(int n, Symbol *s)
+void	process_beams(int n, Symbol *s)
 {
 	Note	*beam = NULL;
 	Note	*grace = NULL;
@@ -1346,7 +1346,7 @@ static	void	process_beams(int n, Symbol *s)
 	}
 }
 
-static	void	set_semitones(int s_f)
+void	set_semitones(int s_f)
 {
 	int	i,no;
 
@@ -1368,7 +1368,7 @@ static	void	set_semitones(int s_f)
 	}
 }
 
-static	int	distance_from_C(Note *n)
+int	distance_from_C(Note *n)
 {
 	int	note, octave;
 
@@ -1391,7 +1391,7 @@ static	int	distance_from_C(Note *n)
 	return(semitones[note] + 12*octave);
 }
 
-static	void	tune2hash(Field *key, int *hash_array, int force)
+void	tune2hash(Field *key, int *hash_array, int force)
 {
 	int	h = 0;
 	int	note1,note2,first_note;

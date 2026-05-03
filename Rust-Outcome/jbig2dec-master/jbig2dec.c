@@ -91,7 +91,7 @@ static int print_usage(void);
 #define KBYTE 1024
 #define MBYTE (1024 * KBYTE)
 
-extern void *jbig2dec_reached_limit(jbig2dec_allocator_t *allocator, size_t oldsize, size_t size)
+void *jbig2dec_reached_limit(jbig2dec_allocator_t *allocator, size_t oldsize, size_t size)
 ;
 
 static void jbig2dec_peak(jbig2dec_allocator_t *allocator)
@@ -113,7 +113,7 @@ static void jbig2dec_peak(jbig2dec_allocator_t *allocator)
         peak_mb > 0 ? peak_mb : allocator->memory_peak, peak_mb > 0 ? "M" : "");
 }
 
-extern void *jbig2dec_alloc(Jbig2Allocator *allocator_, size_t size)
+void *jbig2dec_alloc(Jbig2Allocator *allocator_, size_t size)
 ;
 
 static void jbig2dec_free(Jbig2Allocator *allocator_, void *p)
@@ -129,7 +129,7 @@ static void jbig2dec_free(Jbig2Allocator *allocator_, void *p)
     free((unsigned char *) p - ALIGNMENT);
 }
 
-extern void *jbig2dec_realloc(Jbig2Allocator *allocator_, void *p, size_t size)
+void *jbig2dec_realloc(Jbig2Allocator *allocator_, void *p, size_t size)
 ;
 
 /* page hashing functions */
