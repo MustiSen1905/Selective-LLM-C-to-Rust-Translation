@@ -1,11 +1,11 @@
 [
   {
-    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/pdfresurrect-master",
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/.claude/worktrees/tender-newton-c89e88/Rust-Outcome/pdfresurrect-master",
     "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c main.c",
     "file": "main.c"
   },
   {
-    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/pdfresurrect-master",
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/.claude/worktrees/tender-newton-c89e88/Rust-Outcome/pdfresurrect-master",
     "command": "clang -I. -std=gnu89 -fcommon -Wno-everything -c pdf.c",
     "file": "pdf.c"
   }

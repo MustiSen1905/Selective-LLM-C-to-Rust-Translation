@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/.claude/worktrees/tender-newton-c89e88/Rust-Outcome/subdir-test",
+    "command": "clang -I. -I\"util\" -I\"core\" -I\"util\" -std=gnu89 -fcommon -Wno-everything -c util/helper.c",
+    "file": "util/helper.c"
+  }
+]

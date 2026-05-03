@@ -46,34 +46,34 @@ int main(void)
 
 
 // prints string as hex
-static void phex(uint8_t* str)
+void phex(uint8_t* str)
 ;
 
-static void test_encrypt_ecb_verbose(void)
+void test_encrypt_ecb_verbose(void)
 ;
 
 
-static int test_encrypt_ecb(void)
+int test_encrypt_ecb(void)
 ;
 
-static int test_decrypt_cbc(void)
+int test_decrypt_cbc(void)
 ;
 
-static int test_encrypt_cbc(void)
+int test_encrypt_cbc(void)
 ;
 
 static int test_xcrypt_ctr(const char* xcrypt);
-static int test_encrypt_ctr(void)
+int test_encrypt_ctr(void)
 ;
 
-static int test_decrypt_ctr(void)
+int test_decrypt_ctr(void)
 ;
 
-static int test_xcrypt_ctr(const char* xcrypt)
+int test_xcrypt_ctr(const char* xcrypt)
 ;
 
 
-static int test_decrypt_ecb(void)
+int test_decrypt_ecb(void)
 ;
 
 

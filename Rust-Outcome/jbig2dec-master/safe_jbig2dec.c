@@ -113,7 +113,7 @@ static void *jbig2dec_reached_limit(jbig2dec_allocator_t *allocator, size_t olds
     return NULL;
 }
 
-static void jbig2dec_peak(jbig2dec_allocator_t *allocator)
+void jbig2dec_peak(jbig2dec_allocator_t *allocator)
 ;
 
 static void *jbig2dec_alloc(Jbig2Allocator *allocator_, size_t size)
@@ -140,7 +140,7 @@ static void *jbig2dec_alloc(Jbig2Allocator *allocator_, size_t size)
     return (unsigned char *) ptr + ALIGNMENT;
 }
 
-static void jbig2dec_free(Jbig2Allocator *allocator_, void *p)
+void jbig2dec_free(Jbig2Allocator *allocator_, void *p)
 ;
 
 static void *jbig2dec_realloc(Jbig2Allocator *allocator_, void *p, size_t size)

@@ -1225,7 +1225,7 @@ static int Memento_Internal_makeSpace(size_t space)
     return 1;
 }
 
-extern int Memento_appBlocks(Memento_Blocks *blks,
+int Memento_appBlocks(Memento_Blocks *blks,
                              int             (*app)(Memento_BlkHeader *,
                                                     void *),
                              void           *arg)
@@ -1233,14 +1233,14 @@ extern int Memento_appBlocks(Memento_Blocks *blks,
 
 #ifndef MEMENTO_LEAKONLY
 /* Distrustful - check the block is a real one */
-extern int Memento_appBlockUser(Memento_Blocks    *blks,
+int Memento_appBlockUser(Memento_Blocks    *blks,
                                 int                (*app)(Memento_BlkHeader *,
                                                           void *),
                                 void              *arg,
                                 Memento_BlkHeader *b)
 ;
 
-extern int Memento_appBlock(Memento_Blocks    *blks,
+int Memento_appBlock(Memento_Blocks    *blks,
                             int                (*app)(Memento_BlkHeader *,
                                                       void *),
                             void              *arg,
@@ -1818,7 +1818,7 @@ int Memento_sequence(void)
 int Memento_breakAt(int event)
 ;
 
-extern void *safe_find_block(void *ptr)
+void *safe_find_block(void *ptr)
 ;
 
 void *Memento_label(void *ptr, const char *label)
@@ -1862,7 +1862,7 @@ static int Memento_failThisEventLocked(void)
 int Memento_failThisEvent(void)
 ;
 
-extern void *do_malloc(size_t s, int eventType)
+void *do_malloc(size_t s, int eventType)
 ;
 
 void *Memento_malloc(size_t s)
@@ -2010,7 +2010,7 @@ int Memento_checkIntPointerOrNull(void *blk)
 	return 1;
 }
 
-extern void *do_takeRef(void *blk)
+void *do_takeRef(void *blk)
 ;
 
 void *Memento_takeByteRef(void *blk)
@@ -2025,7 +2025,7 @@ void *Memento_takeIntRef(void *blk)
 void *Memento_takeRef(void *blk)
 ;
 
-extern void *do_dropRef(void *blk)
+void *do_dropRef(void *blk)
 ;
 
 void *Memento_dropByteRef(void *blk)
@@ -2189,7 +2189,7 @@ void Memento_free(void *blk)
     MEMENTO_UNLOCK();
 }
 
-extern void *do_realloc(void *blk, size_t newsize, int type)
+void *do_realloc(void *blk, size_t newsize, int type)
 ;
 
 void *Memento_realloc(void *blk, size_t newsize)

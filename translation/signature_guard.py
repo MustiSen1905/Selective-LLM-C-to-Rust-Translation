@@ -658,10 +658,15 @@ def dedup_function_definitions(rust_src_dir: str) -> int:
     if not os.path.isdir(rust_src_dir):
         return 0
     removed = 0
-    for fname in sorted(os.listdir(rust_src_dir)):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    # Walk subdirectories so projects with nested source trees (e.g. libtiff
+    # with `libtiff/`, `tools/`, `port/`) are fully covered. The callers
+    # already pass the project's `src/` root.
+    rs_files = []
+    for root, _, files in os.walk(rust_src_dir):
+        for f in sorted(files):
+            if f.endswith(".rs"):
+                rs_files.append((f, os.path.join(root, f)))
+    for fname, fpath in rs_files:
         with open(fpath, "r", encoding="utf-8") as f:
             code = f.read()
 

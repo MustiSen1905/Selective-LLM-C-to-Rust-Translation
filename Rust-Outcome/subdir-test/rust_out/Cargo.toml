@@ -1,0 +1,12 @@
+[package]
+name = "hybrid_project"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+[build-dependencies]
+cc = "1"
+[lib]
+name="hybrid_project"
+path= "lib.rs"
+crate-type = ["staticlib", "rlib"]
+ 

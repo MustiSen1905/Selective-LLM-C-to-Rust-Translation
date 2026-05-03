@@ -240,6 +240,23 @@ def ast_extract_safe_type_names(code: str):
         return []
 
 
+def _iter_rs_files(rust_src_dir: str):
+    """Yields (rel_name, abs_path) for every `.rs` file under `rust_src_dir`,
+    recursing into subdirectories. Used by the post-processors that previously
+    relied on a flat `os.listdir` call and silently skipped files under
+    nested module dirs (introduced when the input C project has a multi-level
+    source tree, e.g. `libtiff/`, `tools/`, `port/`).
+    """
+    if not os.path.isdir(rust_src_dir):
+        return
+    for root, _, files in os.walk(rust_src_dir):
+        for f in sorted(files):
+            if f.endswith(".rs"):
+                abs_path = os.path.join(root, f)
+                rel_name = os.path.relpath(abs_path, rust_src_dir)
+                yield rel_name, abs_path
+
+
 def normalize_safe_double_underscore(rust_src_dir: str):
     """Pre-Pass vor `inject_safe_stub_types`: collapse `Safe__X` -> `Safe_X`
     references, wenn `Safe_X` als struct/enum/type im File definiert ist.
@@ -256,10 +273,7 @@ def normalize_safe_double_underscore(rust_src_dir: str):
     if not os.path.isdir(rust_src_dir):
         return
     def_re = re.compile(r'\bpub\s+(?:struct|enum|union|type)\s+(Safe\w+)')
-    for fname in sorted(os.listdir(rust_src_dir)):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    for fname, fpath in _iter_rs_files(rust_src_dir):
         with open(fpath, "r", encoding="utf-8") as f:
             code = f.read()
         defined = set(def_re.findall(code))
@@ -305,10 +319,7 @@ def inject_safe_stub_types(rust_src_dir: str):
     marker = "// --- auto-generated Safe stub types ---"
     end_marker = "// --- end stubs ---"
 
-    for fname in sorted(os.listdir(rust_src_dir)):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    for fname, fpath in _iter_rs_files(rust_src_dir):
         with open(fpath, "r", encoding="utf-8") as f:
             code = f.read()
 
@@ -371,10 +382,7 @@ def inject_safe_default_derive(rust_src_dir: str):
     if not os.path.isdir(rust_src_dir):
         return
 
-    for fname in sorted(os.listdir(rust_src_dir)):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    for fname, fpath in _iter_rs_files(rust_src_dir):
         with open(fpath, "r", encoding="utf-8") as f:
             code = f.read()
         original = code
@@ -500,13 +508,15 @@ def inject_cross_module_safe_imports(rust_src_dir: str):
         return
 
     file_safe_map = {}
-    for fname in os.listdir(rust_src_dir):
-        if not fname.endswith(".rs"):
-            continue
-        mod = os.path.splitext(fname)[0]
+    for fname, fpath in _iter_rs_files(rust_src_dir):
+        # `fname` is a relative path like `core/calc.rs` for nested layouts.
+        # Convert to a Rust module path for the cross-module key:
+        # `core/calc.rs` -> `core::calc`, `main.rs` -> `main`.
+        rel_no_ext = fname[:-3] if fname.endswith(".rs") else fname
+        rel_no_ext = rel_no_ext.replace(os.sep, "/")
+        mod = rel_no_ext.replace("/", "::")
         if mod in ("lib", "main"):
             continue
-        fpath = os.path.join(rust_src_dir, fname)
         try:
             with open(fpath, "r", encoding="utf-8") as f:
                 code = f.read()
@@ -602,10 +612,7 @@ def fix_wrong_from_ptr_args(rust_src_dir: str):
     total_files = 0
     total_fixes = 0
 
-    for fname in sorted(os.listdir(rust_src_dir)):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    for fname, fpath in _iter_rs_files(rust_src_dir):
         with open(fpath, "r", encoding="utf-8") as f:
             code = f.read()
         original = code
@@ -682,10 +689,7 @@ def fix_safe_char_fields(rust_src_dir: str):
     safe_struct_re = re.compile(r'pub\s+struct\s+Safe\w+\s*\{([^{}]*)\}', re.MULTILINE)
 
     patched_files = 0
-    for fname in sorted(os.listdir(rust_src_dir)):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    for fname, fpath in _iter_rs_files(rust_src_dir):
         with open(fpath, "r", encoding="utf-8") as f:
             code = f.read()
         original = code
@@ -740,10 +744,7 @@ def sanitize_legacy_files(rust_src_dir: str):
         target = "usize" if method in ("add", "sub", "wrapping_add", "wrapping_sub") else "isize"
         return f".{method}({ident} as {target})"
 
-    for fname in sorted(os.listdir(rust_src_dir)):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    for fname, fpath in _iter_rs_files(rust_src_dir):
         try:
             with open(fpath, "r", encoding="utf-8") as f:
                 code = f.read()
@@ -789,10 +790,7 @@ def fix_function_name_renames(rust_src_dir: str):
         return
 
     files = {}
-    for fname in os.listdir(rust_src_dir):
-        if not fname.endswith(".rs"):
-            continue
-        fpath = os.path.join(rust_src_dir, fname)
+    for _, fpath in _iter_rs_files(rust_src_dir):
         try:
             with open(fpath, "r", encoding="utf-8") as f:
                 files[fpath] = f.read()

@@ -1,0 +1,171 @@
+project,function,outcome,original_signature,llm_signature
+tiny-AES-c-master,xtime,ACCEPTED,,
+tiny-AES-c-master,InvShiftRows,ACCEPTED,,
+tiny-AES-c-master,AES_ECB_decrypt,ACCEPTED,,
+tiny-AES-c-master,AddRoundKey,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn AddRoundKey(
+    mut round: uint8_t,
+    mut state: *mut state_t,
+    mut RoundKey: *const uint8_t,
+)",pub fn from_ptr(state: *mut state_t) -> Self
+tiny-AES-c-master,AddRoundKey,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn AddRoundKey(
+    mut round: uint8_t,
+    mut state: *mut state_t,
+    mut RoundKey: *const uint8_t,
+)","pub fn add_round_key(round: u8, state: &mut SafeAES_ctx)"
+tiny-AES-c-master,AddRoundKey,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn AddRoundKey(
+    mut round: uint8_t,
+    mut state: *mut state_t,
+    mut RoundKey: *const uint8_t,
+)","pub fn AddRoundKey(round: u8, state: &mut [u8; 4], round_key: &[u8]) -> Result<(), ()>"
+tiny-AES-c-master,xtime,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn xtime(mut x: uint8_t) -> uint8_t","#[allow(non_snake_case)]
+pub extern ""C"" fn xtime(mut x: uint8) -> uint8"
+tiny-AES-c-master,xtime,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn xtime(mut x: uint8_t) -> uint8_t",fn xtime(x: u8) -> u8
+tiny-AES-c-master,xtime,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn xtime(mut x: uint8_t) -> uint8_t","#[allow(non_snake_case)]
+pub extern ""C"" fn xtime(x: uint8_t) -> uint8_t"
+tiny-AES-c-master,InvMixColumns,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvMixColumns(mut state: *mut state_t)",pub fn from_ptr(state: *mut state_t) -> Self
+tiny-AES-c-master,InvShiftRows,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvShiftRows(mut state: *mut state_t)",pub fn from_ptr(state: *mut [[u8; 4]; 4]) -> Self
+tiny-AES-c-master,InvShiftRows,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvShiftRows(mut state: *mut state_t)",pub fn InvShiftRows(mut state: &mut [u8; 16]) -> ()
+tiny-AES-c-master,InvSubBytes,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvSubBytes(mut state: *mut state_t)",pub fn InvSubBytes(state: &mut [u8; 4 * 4])
+tiny-AES-c-master,InvSubBytes,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvSubBytes(mut state: *mut state_t)",pub fn InvSubBytes(mut state_ptr: *mut state_t) -> bool
+tiny-AES-c-master,InvSubBytes,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvSubBytes(mut state: *mut state_t)",pub fn from_ptr(ptr: *mut state_t) -> Option<Self>
+tiny-AES-c-master,InvCipher,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvCipher(mut state: *mut state_t, mut RoundKey: *const uint8_t)","#[inline]
+pub fn InvCipher(mut state: &mut [[u8; 4]; 4], RoundKey: &SafeAES_ctx)"
+tiny-AES-c-master,InvCipher,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvCipher(mut state: *mut state_t, mut RoundKey: *const uint8_t)","unsafe extern ""C"" fn InvCipher(state: &mut SafeAES_ctx, RoundKey: &SafeAES_ctx)"
+tiny-AES-c-master,InvCipher,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn InvCipher(mut state: *mut state_t, mut RoundKey: *const uint8_t)","unsafe extern ""C"" fn InvCipher(mut state_ptr: *mut [[u8; 4]; 4], mut round_key: *const u8)"
+tiny-AES-c-master,XorWithIv,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn XorWithIv(mut buf: *mut uint8_t, mut Iv: *const uint8_t)","fn XorWithIv(buf: &mut [u8], Iv: &[u8]) -> Result<(), String>"
+tiny-AES-c-master,XorWithIv,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn XorWithIv(mut buf: *mut uint8_t, mut Iv: *const uint8_t)","pub unsafe extern ""C"" fn XorWithIv(mut buf: *mut u8, Iv: *const u8) -> Result<(), String>"
+tiny-AES-c-master,XorWithIv,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn XorWithIv(mut buf: *mut uint8_t, mut Iv: *const uint8_t)","pub fn XorWithIv(buf_ptr: *mut u8, Iv_ptr: *const u8) -> Result<(), String>"
+tiny-AES-c-master,AES_CBC_decrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CBC_decrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","#[no_mangle]
+pub extern ""C"" fn AES_CBC_decrypt_buffer(ctx_ptr: *mut AES_ctx, buf_ptr: *mut u8, length: size_t)"
+tiny-AES-c-master,AES_CBC_decrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CBC_decrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","#[no_mangle]
+pub unsafe extern ""C"" fn AES_CBC_decrypt_buffer(ctx: &mut SafeAES_ctx, buf: *mut u8, length: usize)"
+tiny-AES-c-master,AES_CBC_decrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CBC_decrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","#[no_mangle]
+pub extern ""C"" fn AES_CBC_decrypt_buffer(ctx_ptr: *mut AES_ctx, buf_ptr: *mut u8, length: usize)"
+tiny-AES-c-master,MixColumns,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn MixColumns(mut state: *mut state_t)","unsafe extern ""C"" fn MixColumns(mut state_ptr: *mut State)"
+tiny-AES-c-master,MixColumns,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn MixColumns(mut state: *mut state_t)",pub fn MixColumns(state: &mut SafeState)
+tiny-AES-c-master,ShiftRows,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn ShiftRows(mut state: *mut state_t)","extern  ""C"" fn ShiftRows(mut state: *mut SafeAES_ctx)"
+tiny-AES-c-master,SubBytes,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn SubBytes(mut state: *mut state_t)",fn sub_bytes(state_ptr: *mut SafeState) -> bool
+tiny-AES-c-master,SubBytes,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn SubBytes(mut state: *mut state_t)",pub fn SubBytes(state: &mut [u8; 16]) -> bool
+tiny-AES-c-master,SubBytes,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn SubBytes(mut state: *mut state_t)",unsafe fn SubBytes(mut state_ptr: *mut SafeAES_ctx)
+tiny-AES-c-master,Cipher,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn Cipher(mut state: *mut state_t, mut RoundKey: *const uint8_t)","unsafe extern ""C"" fn Cipher(mut state: *mut [[u8; 4]; 4], RoundKey: *const u8)"
+tiny-AES-c-master,Cipher,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn Cipher(mut state: *mut state_t, mut RoundKey: *const uint8_t)",pub fn from_ptr(ptr: *mut state_t) -> Self
+tiny-AES-c-master,Cipher,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn Cipher(mut state: *mut state_t, mut RoundKey: *const uint8_t)",fn safe_aes_ctx(state: &[&[[u8; 4]; 4]]) -> SafeAES_ctx
+tiny-AES-c-master,AES_CBC_encrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CBC_encrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","#[no_mangle]
+pub extern ""C"" fn AES_CBC_encrypt_buffer(mut ctx: *mut AES_ctx, mut buf: *mut u8, length: usize)"
+tiny-AES-c-master,AES_CBC_encrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CBC_encrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","fn XorWithIv(buf: &mut [u8], iv: &[u8])"
+tiny-AES-c-master,AES_CBC_encrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CBC_encrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","#[no_mangle]
+pub extern ""C"" fn AES_CBC_encrypt_buffer(mut ctx: *mut SafeAES_ctx, mut buf: *mut u8, length: usize)"
+tiny-AES-c-master,AES_CTR_xcrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CTR_xcrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","#[no_mangle]
+pub extern ""C"" fn AES_CTR_xcrypt_buffer(mut ctx: &mut SafeAES_ctx, buf: &mut [u8], length: usize)"
+tiny-AES-c-master,AES_CTR_xcrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CTR_xcrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","#[no_mangle]
+pub unsafe extern ""C"" fn AES_CTR_xcrypt_buffer(ctx: &mut SafeAES_ctx, buf: &mut [u8], length: usize)"
+tiny-AES-c-master,AES_CTR_xcrypt_buffer,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_CTR_xcrypt_buffer(
+    mut ctx: *mut AES_ctx,
+    mut buf: *mut uint8_t,
+    mut length: size_t,
+)","#[no_mangle]
+pub extern ""C"" fn AES_CTR_xcrypt_buffer(ctx: &mut SafeAES_ctx, buf: &mut [u8], length: usize)"
+tiny-AES-c-master,AES_ECB_decrypt,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_ECB_decrypt(
+    mut ctx: *const AES_ctx,
+    mut buf: *mut uint8_t,
+)","#[no_mangle]
+pub extern ""C"" fn AES_ECB_decrypt(safe_ctx: &SafeAES_ctx, buf: &mut [u8])"
+tiny-AES-c-master,AES_ECB_decrypt,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_ECB_decrypt(
+    mut ctx: *const AES_ctx,
+    mut buf: *mut uint8_t,
+)","#[no_mangle]
+pub unsafe extern ""C"" fn AES_ECB_decrypt(ctx_ptr: *const SafeAES_ctx, buf: *mut u8)"
+tiny-AES-c-master,AES_ECB_decrypt,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_ECB_decrypt(
+    mut ctx: *const AES_ctx,
+    mut buf: *mut uint8_t,
+)","#[no_mangle]
+pub extern ""C"" fn AES_ECB_decrypt(mut ctx: *const SafeAES_ctx, mut buf: *mut u8)"
+tiny-AES-c-master,AES_ECB_encrypt,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_ECB_encrypt(
+    mut ctx: *const AES_ctx,
+    mut buf: *mut uint8_t,
+)","fn AES_ECB_encrypt(mut ctx_ptr: *const core::ffi::c_char, mut buf_ptr: *mut u8)"
+tiny-AES-c-master,AES_ECB_encrypt,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_ECB_encrypt(
+    mut ctx: *const AES_ctx,
+    mut buf: *mut uint8_t,
+)","fn Cipher(state: *mut state_t, roundkey: *const u8)"
+tiny-AES-c-master,AES_ctx_set_iv,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_ctx_set_iv(mut ctx: *mut AES_ctx, mut iv: *const uint8_t)","#[no_mangle]
+pub unsafe extern ""C"" fn AES_ctx_set_iv(mut ctx: *mut SafeAES_ctx, mut iv: *const u8)"
+tiny-AES-c-master,AES_ctx_set_iv,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_ctx_set_iv(mut ctx: *mut AES_ctx, mut iv: *const uint8_t)","#[no_mangle]
+pub unsafe extern ""C"" fn AES_ctx_set_iv(mut ctx_ptr: *mut AES_ctx, iv_ptr: *const u8)"
+tiny-AES-c-master,AES_ctx_set_iv,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_ctx_set_iv(mut ctx: *mut AES_ctx, mut iv: *const uint8_t)","#[no_mangle]
+pub fn AES_ctx_set_iv(mut ctx: &mut SafeAES_ctx, iv: &[u8])"
+tiny-AES-c-master,KeyExpansion,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn KeyExpansion(mut RoundKey: *mut uint8_t, mut Key: *const uint8_t)","pub fn KeyExpansion(mut RoundKey: &mut [u8; 16], mut Key: &[u8; 16])"
+tiny-AES-c-master,KeyExpansion,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn KeyExpansion(mut RoundKey: *mut uint8_t, mut Key: *const uint8_t)","pub fn KeyExpansion(mut RoundKey: &mut [u8; 16], mut Key: &[u8; 16]) -> &mut [u8; 16]"
+tiny-AES-c-master,KeyExpansion,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn KeyExpansion(mut RoundKey: *mut uint8_t, mut Key: *const uint8_t)","pub fn KeyExpansion(mut RoundKey: &mut [u8], mut Key: &[u8])"
+tiny-AES-c-master,AES_init_ctx,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_init_ctx(mut ctx: *mut AES_ctx, mut key: *const uint8_t)","#[no_mangle]
+pub extern ""C"" fn AES_init_ctx(mut ctx: &mut SafeAES_ctx, mut key: *const u8)"
+tiny-AES-c-master,AES_init_ctx,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_init_ctx(mut ctx: *mut AES_ctx, mut key: *const uint8_t)","#[no_mangle]
+pub fn AES_init_ctx(ctx: &mut SafeAES_ctx, key: &[u8]) -> Result<(), &'static str>"
+tiny-AES-c-master,AES_init_ctx,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_init_ctx(mut ctx: *mut AES_ctx, mut key: *const uint8_t)","#[no_mangle]
+pub unsafe extern ""C"" fn AES_init_ctx(mut ctx_ptr: *mut AES_ctx, key_ptr: *const u8)"
+tiny-AES-c-master,AES_init_ctx_iv,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_init_ctx_iv(
+    mut ctx: *mut AES_ctx,
+    mut key: *const uint8_t,
+    mut iv: *const uint8_t,
+)","#[no_mangle]
+pub unsafe extern ""C"" fn AES_init_ctx_iv(ctx: *mut SafeAESCtx, key: *const u8, iv: *const u8)"
+tiny-AES-c-master,AES_init_ctx_iv,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn AES_init_ctx_iv(
+    mut ctx: *mut AES_ctx,
+    mut key: *const uint8_t,
+    mut iv: *const uint8_t,
+)","#[inline]
+    pub unsafe fn from_ptr(ptr: *mut AES_ctx) -> Self"
