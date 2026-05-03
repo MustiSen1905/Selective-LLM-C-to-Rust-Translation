@@ -1,2344 +1,821 @@
 {
-    "analysis_target": "jbig2dec-master",
+    "analysis_target": "abc2mtex",
     "files": {
-        "config_win32.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "getopt.c": {
-            "functions": [],
-            "allocations": [
-                {
-                    "target_var": "new_str",
-                    "method": "malloc",
-                    "line": 316
-                }
-            ],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "getopt.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "getopt1.c": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2.c": {
+        "abc.c": {
             "functions": [
                 {
-                    "name": "jbig2_default_alloc",
-                    "args": "Jbig2Allocator *allocator, size_t size",
+                    "name": "main",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 195
+                },
+                {
+                    "name": "abc_warning",
+                    "args": "char *fmt, ...",
                     "has_pointers": true,
-                    "line": 37
+                    "line": 212
                 },
                 {
-                    "name": "jbig2_default_free",
-                    "args": "Jbig2Allocator *allocator, void *p",
-                    "has_pointers": true,
-                    "line": 43
-                },
-                {
-                    "name": "jbig2_default_realloc",
-                    "args": "Jbig2Allocator *allocator, void *p, size_t size",
-                    "has_pointers": true,
-                    "line": 49
-                },
-                {
-                    "name": "jbig2_alloc",
-                    "args": "Jbig2Allocator *allocator, size_t size, size_t num",
-                    "has_pointers": true,
-                    "line": 61
-                },
-                {
-                    "name": "jbig2_default_error",
-                    "args": "void *data, const char *msg, Jbig2Severity severity, uint32_t seg_idx",
-                    "has_pointers": true,
-                    "line": 73
-                },
-                {
-                    "name": "jbig2_error",
-                    "args": "Jbig2Ctx *ctx, Jbig2Severity severity, uint32_t segment_number, const char *fmt, ...",
-                    "has_pointers": true,
-                    "line": 86
-                },
-                {
-                    "name": "jbig2_data_in",
-                    "args": "Jbig2Ctx *ctx, const unsigned char *data, size_t size",
-                    "has_pointers": true,
-                    "line": 242
-                },
-                {
-                    "name": "jbig2_word_stream_buf_get_next_word",
-                    "args": "Jbig2Ctx *ctx, Jbig2WordStream *self, size_t offset, uint32_t *word",
-                    "has_pointers": true,
-                    "line": 490
-                },
-                {
-                    "name": "jbig2_word_stream_buf_free",
-                    "args": "Jbig2Ctx *ctx, Jbig2WordStream *ws",
-                    "has_pointers": true,
-                    "line": 542
-                },
-                {
-                    "name": "jbig2_free",
-                    "args": "Jbig2Allocator *allocator, void *p",
-                    "has_pointers": true,
-                    "line": 557
-                },
-                {
-                    "name": "jbig2_realloc",
-                    "args": "Jbig2Allocator *allocator, void *p, size_t size, size_t num",
-                    "has_pointers": true,
-                    "line": 563
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "p",
-                    "line": 46
-                },
-                {
-                    "variable": "allocator, result",
-                    "line": 142
-                },
-                {
-                    "variable": "allocator, result->segments",
-                    "line": 152
-                },
-                {
-                    "variable": "allocator, result",
-                    "line": 153
-                },
-                {
-                    "variable": "ctx->allocator, ctx->buf",
-                    "line": 274
-                },
-                {
-                    "variable": "ca, ctx->buf",
-                    "line": 448
-                },
-                {
-                    "variable": "ca, ctx->segments",
-                    "line": 452
-                },
-                {
-                    "variable": "ca, ctx->pages",
-                    "line": 459
-                },
-                {
-                    "variable": "ca, ctx",
-                    "line": 462
-                },
-                {
-                    "variable": "ctx->allocator, ws",
-                    "line": 545
-                },
-                {
-                    "variable": "allocator, p",
-                    "line": 560
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "Jbig2Ctx *ctx",
-                    "line": 92
-                },
-                {
-                    "variable": "Jbig2GlobalCtx *global_ctx",
-                    "line": 96
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2dec.c": {
-            "functions": [
-                {
-                    "name": "jbig2dec_peak",
-                    "args": "jbig2dec_allocator_t *allocator",
-                    "has_pointers": true,
-                    "line": 116
-                },
-                {
-                    "name": "jbig2dec_free",
-                    "args": "Jbig2Allocator *allocator_, void *p",
-                    "has_pointers": true,
-                    "line": 159
-                },
-                {
-                    "name": "hash_init",
-                    "args": "jbig2dec_params_t *params",
-                    "has_pointers": true,
-                    "line": 210
-                },
-                {
-                    "name": "hash_image",
-                    "args": "jbig2dec_params_t *params, Jbig2Image *image",
+                    "name": "abc_error",
+                    "args": "char *fmt, ...",
                     "has_pointers": true,
                     "line": 223
                 },
                 {
-                    "name": "hash_print",
-                    "args": "jbig2dec_params_t *params, FILE *out",
-                    "has_pointers": true,
-                    "line": 231
-                },
-                {
-                    "name": "hash_free",
-                    "args": "jbig2dec_params_t *params",
-                    "has_pointers": true,
-                    "line": 245
-                },
-                {
-                    "name": "set_output_format",
-                    "args": "jbig2dec_params_t *params, const char *format",
-                    "has_pointers": true,
-                    "line": 252
-                },
-                {
-                    "name": "parse_options",
-                    "args": "int argc, char *argv[], jbig2dec_params_t *params",
-                    "has_pointers": true,
-                    "line": 269
-                },
-                {
-                    "name": "print_version",
+                    "name": "closeIn",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 346
+                    "line": 266
                 },
                 {
-                    "name": "print_usage",
+                    "name": "read_settings",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 353
+                    "line": 271
                 },
                 {
-                    "name": "error_callback",
-                    "args": "void *error_callback_data, const char *message, Jbig2Severity severity, uint32_t seg_idx",
-                    "has_pointers": true,
-                    "line": 392
-                },
-                {
-                    "name": "flush_errors",
-                    "args": "jbig2dec_error_callback_state_t *state",
-                    "has_pointers": true,
-                    "line": 469
-                },
-                {
-                    "name": "make_output_filename",
-                    "args": "const char *input_filename, const char *extension",
-                    "has_pointers": true,
-                    "line": 477
-                },
-                {
-                    "name": "write_page_image",
-                    "args": "jbig2dec_params_t *params, FILE *out, Jbig2Image *image",
-                    "has_pointers": true,
-                    "line": 529
-                },
-                {
-                    "name": "write_document_hash",
-                    "args": "jbig2dec_params_t *params",
-                    "has_pointers": true,
-                    "line": 547
-                },
-                {
-                    "name": "main",
-                    "args": "int argc, char **argv",
-                    "has_pointers": true,
-                    "line": 565
-                }
-            ],
-            "allocations": [
-                {
-                    "target_var": "ptr",
-                    "method": "malloc",
-                    "line": 148
-                },
-                {
-                    "target_var": "p",
-                    "method": "realloc",
-                    "line": 196
-                },
-                {
-                    "target_var": "output_filename",
-                    "method": "strdup",
-                    "line": 324
-                },
-                {
-                    "target_var": "last_message",
-                    "method": "strdup",
-                    "line": 451
-                }
-            ],
-            "deallocations": [
-                {
-                    "variable": "allocator_, p",
-                    "line": 184
-                },
-                {
-                    "variable": "params->hash_ctx",
-                    "line": 248
-                },
-                {
-                    "variable": "state->last_message",
-                    "line": 447
-                },
-                {
-                    "variable": "state->last_message",
-                    "line": 465
-                },
-                {
-                    "variable": "global_ctx",
-                    "line": 712
-                },
-                {
-                    "variable": "ctx",
-                    "line": 789
-                },
-                {
-                    "variable": "params.output_filename",
-                    "line": 791
-                },
-                {
-                    "variable": "error_callback_state.last_message",
-                    "line": 793
-                },
-                {
-                    "variable": "&params",
-                    "line": 795
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_arith.c": {
-            "functions": [
-                {
-                    "name": "jbig2_arith_bytein",
-                    "args": "Jbig2Ctx *ctx, Jbig2ArithState *as",
-                    "has_pointers": true,
-                    "line": 57
-                },
-                {
-                    "name": "jbig2_arith_renormd",
-                    "args": "Jbig2Ctx *ctx, Jbig2ArithState *as",
-                    "has_pointers": true,
-                    "line": 301
-                },
-                {
-                    "name": "jbig2_arith_decode",
-                    "args": "Jbig2Ctx *ctx, Jbig2ArithState *as, Jbig2ArithCx *pcx",
-                    "has_pointers": true,
-                    "line": 317
-                },
-                {
-                    "name": "jbig2_arith_trace",
-                    "args": "Jbig2ArithState *as, Jbig2ArithCx cx",
-                    "has_pointers": true,
-                    "line": 381
-                },
-                {
-                    "name": "test_get_word",
-                    "args": "Jbig2Ctx *ctx, Jbig2WordStream *self, size_t offset, uint32_t *word",
-                    "has_pointers": true,
-                    "line": 388
-                },
-                {
-                    "name": "main",
-                    "args": "int argc, char **argv",
-                    "has_pointers": true,
-                    "line": 419
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 207
-                },
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 214
-                },
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 226
-                },
-                {
-                    "variable": "ctx->allocator, as",
-                    "line": 450
-                },
-                {
-                    "variable": "ctx",
-                    "line": 452
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_arith.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_arith_iaid.c": {
-            "functions": [
-                {
-                    "name": "jbig2_arith_iaid_decode",
-                    "args": "Jbig2Ctx *ctx, Jbig2ArithIaidCtx *actx, Jbig2ArithState *as, int32_t *p_result",
-                    "has_pointers": true,
-                    "line": 79
-                },
-                {
-                    "name": "jbig2_arith_iaid_ctx_free",
-                    "args": "Jbig2Ctx *ctx, Jbig2ArithIaidCtx *iax",
-                    "has_pointers": true,
-                    "line": 108
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 68
-                },
-                {
-                    "variable": "ctx->allocator, iax->IAIDx",
-                    "line": 112
-                },
-                {
-                    "variable": "ctx->allocator, iax",
-                    "line": 113
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_arith_iaid.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "Jbig2Ctx *ctx, Jbig2ArithIaidCtx *iax",
-                    "line": 29
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_arith_int.c": {
-            "functions": [
-                {
-                    "name": "jbig2_arith_int_decode",
-                    "args": "Jbig2Ctx *ctx, Jbig2ArithIntCtx *actx, Jbig2ArithState *as, int32_t *p_result",
-                    "has_pointers": true,
-                    "line": 56
-                },
-                {
-                    "name": "jbig2_arith_int_ctx_free",
-                    "args": "Jbig2Ctx *ctx, Jbig2ArithIntCtx *iax",
-                    "has_pointers": true,
-                    "line": 144
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, iax",
-                    "line": 147
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_arith_int.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "Jbig2Ctx *ctx, Jbig2ArithIntCtx *iax",
-                    "line": 29
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_generic.c": {
-            "functions": [
-                {
-                    "name": "jbig2_image_get_pixel_fast",
-                    "args": "Jbig2Image *image, int x, int y",
-                    "has_pointers": true,
-                    "line": 346
-                },
-                {
-                    "name": "jbig2_generic_stats_size",
-                    "args": "Jbig2Ctx *ctx, int template",
-                    "has_pointers": true,
-                    "line": 356
-                },
-                {
-                    "name": "jbig2_decode_generic_template0",
-                    "args": "Jbig2Ctx *ctx,\n                               Jbig2Segment *segment,\n                               const Jbig2GenericRegionParams *params, Jbig2ArithState *as,\n                               Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 364
-                },
-                {
-                    "name": "jbig2_decode_generic_template0_unopt",
-                    "args": "Jbig2Ctx *ctx,\n                                     Jbig2Segment *segment,\n                                     const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 433
-                },
-                {
-                    "name": "jbig2_decode_generic_template1_unopt",
-                    "args": "Jbig2Ctx *ctx,\n                                     Jbig2Segment *segment,\n                                     const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 508
-                },
-                {
-                    "name": "jbig2_decode_generic_template1",
-                    "args": "Jbig2Ctx *ctx,\n                               Jbig2Segment *segment,\n                               const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 576
-                },
-                {
-                    "name": "jbig2_decode_generic_template2_unopt",
-                    "args": "Jbig2Ctx *ctx,\n                               Jbig2Segment *segment,\n                               const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 641
-                },
-                {
-                    "name": "jbig2_decode_generic_template2",
-                    "args": "Jbig2Ctx *ctx,\n                                Jbig2Segment *segment,\n                                const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 708
-                },
-                {
-                    "name": "jbig2_decode_generic_template3",
-                    "args": "Jbig2Ctx *ctx,\n                               Jbig2Segment *segment,\n                               const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 773
-                },
-                {
-                    "name": "jbig2_decode_generic_template3_unopt",
-                    "args": "Jbig2Ctx *ctx,\n                                     Jbig2Segment *segment,\n                                     const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 831
-                },
-                {
-                    "name": "copy_prev_row",
-                    "args": "Jbig2Image *image, int row",
-                    "has_pointers": true,
-                    "line": 885
-                },
-                {
-                    "name": "jbig2_decode_generic_template0_TPGDON",
-                    "args": "Jbig2Ctx *ctx,\n                                      Jbig2Segment *segment,\n                                      const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 899
-                },
-                {
-                    "name": "jbig2_decode_generic_template1_TPGDON",
-                    "args": "Jbig2Ctx *ctx,\n                                      Jbig2Segment *segment,\n                                      const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 1099
-                },
-                {
-                    "name": "jbig2_decode_generic_template2_TPGDON",
-                    "args": "Jbig2Ctx *ctx,\n                                      Jbig2Segment *segment,\n                                      const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 1174
-                },
-                {
-                    "name": "jbig2_decode_generic_template3_TPGDON",
-                    "args": "Jbig2Ctx *ctx,\n                                      Jbig2Segment *segment,\n                                      const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 1249
-                },
-                {
-                    "name": "jbig2_decode_generic_region_TPGDON",
-                    "args": "Jbig2Ctx *ctx,\n                                   Jbig2Segment *segment,\n                                   const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 1312
-                },
-                {
-                    "name": "jbig2_decode_generic_region",
-                    "args": "Jbig2Ctx *ctx,\n                            Jbig2Segment *segment, const Jbig2GenericRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 1348
-                },
-                {
-                    "name": "jbig2_immediate_generic_region",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const byte *segment_data",
-                    "has_pointers": true,
-                    "line": 1393
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, as",
-                    "line": 1518
-                },
-                {
-                    "variable": "ctx, ws",
-                    "line": 1519
-                },
-                {
-                    "variable": "ctx->allocator, GB_stats",
-                    "line": 1520
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_generic.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_halftone.c": {
-            "functions": [
-                {
-                    "name": "jbig2_hd_release",
-                    "args": "Jbig2Ctx *ctx, Jbig2PatternDict *dict",
-                    "has_pointers": true,
-                    "line": 107
-                },
-                {
-                    "name": "jbig2_pattern_dictionary",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const byte *segment_data",
-                    "has_pointers": true,
-                    "line": 198
-                },
-                {
-                    "name": "jbig2_decode_halftone_region",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment,\n                             Jbig2HalftoneRegionParams *params, const byte *data, const size_t size, Jbig2Image *image, Jbig2ArithCx *GB_stats",
-                    "has_pointers": true,
-                    "line": 460
-                },
-                {
-                    "name": "jbig2_halftone_region",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const byte *segment_data",
-                    "has_pointers": true,
-                    "line": 557
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, new",
-                    "line": 64
-                },
-                {
-                    "variable": "ctx->allocator, new->patterns",
-                    "line": 79
-                },
-                {
-                    "variable": "ctx->allocator, new",
-                    "line": 80
-                },
-                {
-                    "variable": "ctx->allocator, new->patterns",
-                    "line": 92
-                },
-                {
-                    "variable": "ctx->allocator, new",
-                    "line": 93
-                },
-                {
-                    "variable": "ctx->allocator, dict->patterns",
-                    "line": 117
-                },
-                {
-                    "variable": "ctx->allocator, dict",
-                    "line": 118
-                },
-                {
-                    "variable": "ctx->allocator, as",
-                    "line": 181
-                },
-                {
-                    "variable": "ctx, ws",
-                    "line": 182
-                },
-                {
-                    "variable": "ctx->allocator, GB_stats",
-                    "line": 243
-                },
-                {
-                    "variable": "ctx->allocator, GSPLANES",
+                    "name": "hcf",
+                    "args": "int a, int b",
+                    "has_pointers": false,
                     "line": 299
                 },
                 {
-                    "variable": "ctx->allocator, GSVALS[--j]",
-                    "line": 380
-                },
-                {
-                    "variable": "ctx->allocator, GSVALS",
-                    "line": 381
-                },
-                {
-                    "variable": "ctx->allocator, as",
-                    "line": 400
-                },
-                {
-                    "variable": "ctx, ws",
-                    "line": 401
-                },
-                {
-                    "variable": "ctx->allocator, GSPLANES",
-                    "line": 406
-                },
-                {
-                    "variable": "ctx->allocator, GI[i]",
-                    "line": 545
-                },
-                {
-                    "variable": "ctx->allocator, GI",
-                    "line": 548
-                },
-                {
-                    "variable": "ctx->allocator, GB_stats",
-                    "line": 633
-                },
-                {
-                    "variable": "ctx->allocator, GB_stats",
-                    "line": 640
-                },
-                {
-                    "variable": "ctx->allocator, GB_stats",
-                    "line": 646
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_halftone.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_huffman.c": {
-            "functions": [
-                {
-                    "name": "jbig2_huffman_free",
-                    "args": "Jbig2Ctx *ctx, Jbig2HuffmanState *hs",
-                    "has_pointers": true,
-                    "line": 104
-                },
-                {
-                    "name": "jbig2_dump_huffman_state",
-                    "args": "Jbig2HuffmanState *hs",
-                    "has_pointers": true,
-                    "line": 114
-                },
-                {
-                    "name": "jbig2_dump_huffman_binary",
-                    "args": "Jbig2HuffmanState *hs",
-                    "has_pointers": true,
-                    "line": 121
-                },
-                {
-                    "name": "jbig2_dump_huffman_table",
-                    "args": "const Jbig2HuffmanTable *table",
-                    "has_pointers": true,
-                    "line": 134
-                },
-                {
-                    "name": "jbig2_huffman_skip",
-                    "args": "Jbig2HuffmanState *hs",
-                    "has_pointers": true,
-                    "line": 178
-                },
-                {
-                    "name": "jbig2_huffman_advance",
-                    "args": "Jbig2HuffmanState *hs, size_t advance",
-                    "has_pointers": true,
-                    "line": 207
-                },
-                {
-                    "name": "jbig2_release_huffman_table",
-                    "args": "Jbig2Ctx *ctx, Jbig2HuffmanTable *table",
-                    "has_pointers": true,
-                    "line": 500
-                },
-                {
-                    "name": "jbig2_table",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const byte *segment_data",
-                    "has_pointers": true,
-                    "line": 538
-                },
-                {
-                    "name": "jbig2_table_free",
-                    "args": "Jbig2Ctx *ctx, Jbig2HuffmanParams *params",
-                    "has_pointers": true,
-                    "line": 679
-                },
-                {
-                    "name": "test_get_word1",
-                    "args": "Jbig2Ctx *ctx, Jbig2WordStream *self, size_t offset, uint32_t *word",
-                    "has_pointers": true,
-                    "line": 720
-                },
-                {
-                    "name": "test1",
-                    "args": "",
-                    "has_pointers": false,
-                    "line": 751
-                },
-                {
-                    "name": "test_get_word2",
-                    "args": "Jbig2Ctx *ctx, Jbig2WordStream *self, size_t offset, uint32_t *word",
-                    "has_pointers": true,
-                    "line": 2031
-                },
-                {
-                    "name": "test2",
-                    "args": "",
-                    "has_pointers": false,
-                    "line": 2063
-                },
-                {
-                    "name": "main",
-                    "args": "int argc, char **argv",
-                    "has_pointers": true,
-                    "line": 2143
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx, result",
-                    "line": 84
-                },
-                {
-                    "variable": "ctx, result",
-                    "line": 90
-                },
-                {
-                    "variable": "ctx->allocator, hs",
-                    "line": 107
-                },
-                {
-                    "variable": "ctx->allocator, LENCOUNT",
-                    "line": 423
-                },
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 430
-                },
-                {
-                    "variable": "ctx->allocator, LENCOUNT",
-                    "line": 431
-                },
-                {
-                    "variable": "ctx->allocator, result->entries",
-                    "line": 459
-                },
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 460
-                },
-                {
-                    "variable": "ctx->allocator, LENCOUNT",
-                    "line": 461
-                },
-                {
-                    "variable": "ctx->allocator, LENCOUNT",
-                    "line": 494
-                },
-                {
-                    "variable": "ctx->allocator, table->entries",
-                    "line": 504
-                },
-                {
-                    "variable": "ctx->allocator, table",
-                    "line": 505
-                },
-                {
-                    "variable": "ctx->allocator, line",
-                    "line": 673
-                },
-                {
-                    "variable": "ctx->allocator, params",
-                    "line": 674
-                },
-                {
-                    "variable": "ctx->allocator, params",
-                    "line": 684
-                },
-                {
-                    "variable": "ctx, hs",
-                    "line": 807
-                },
-                {
-                    "variable": "ctx",
-                    "line": 810
-                },
-                {
-                    "variable": "ctx",
-                    "line": 2089
-                },
-                {
-                    "variable": "ctx",
-                    "line": 2097
-                },
-                {
-                    "variable": "ctx, hs",
-                    "line": 2131
-                },
-                {
-                    "variable": "ctx",
-                    "line": 2135
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_huffman.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "Jbig2Ctx *ctx, Jbig2HuffmanState *hs",
-                    "line": 61
-                },
-                {
-                    "variable": "Jbig2Ctx *ctx, Jbig2HuffmanParams *params",
-                    "line": 105
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_hufftab.c": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_hufftab.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_image.c": {
-            "functions": [
-                {
-                    "name": "jbig2_image_release",
-                    "args": "Jbig2Ctx *ctx, Jbig2Image *image",
-                    "has_pointers": true,
-                    "line": 84
-                },
-                {
-                    "name": "jbig2_image_free",
-                    "args": "Jbig2Ctx *ctx, Jbig2Image *image",
-                    "has_pointers": true,
-                    "line": 95
-                },
-                {
-                    "name": "template_image_compose_opt",
-                    "args": "const uint8_t * JBIG2_RESTRICT ss, uint8_t * JBIG2_RESTRICT dd, int early, int late, uint8_t leftmask, uint8_t rightmask, uint32_t bytewidth_, uint32_t h, uint32_t shift, uint32_t dstride, uint32_t sstride, Jbig2ComposeOp op",
-                    "has_pointers": true,
-                    "line": 163
-                },
-                {
-                    "name": "jbig2_image_compose_opt_OR",
-                    "args": "const uint8_t *s, uint8_t *d, int early, int late, uint8_t mask, uint8_t rightmask, uint32_t bytewidth, uint32_t h, uint32_t shift, uint32_t dstride, uint32_t sstride",
-                    "has_pointers": true,
-                    "line": 287
-                },
-                {
-                    "name": "jbig2_image_compose_opt_AND",
-                    "args": "const uint8_t *s, uint8_t *d, int early, int late, uint8_t mask, uint8_t rightmask, uint32_t bytewidth, uint32_t h, uint32_t shift, uint32_t dstride, uint32_t sstride",
-                    "has_pointers": true,
-                    "line": 296
-                },
-                {
-                    "name": "jbig2_image_compose_opt_XOR",
-                    "args": "const uint8_t *s, uint8_t *d, int early, int late, uint8_t mask, uint8_t rightmask, uint32_t bytewidth, uint32_t h, uint32_t shift, uint32_t dstride, uint32_t sstride",
-                    "has_pointers": true,
-                    "line": 305
-                },
-                {
-                    "name": "jbig2_image_compose_opt_XNOR",
-                    "args": "const uint8_t *s, uint8_t *d, int early, int late, uint8_t mask, uint8_t rightmask, uint32_t bytewidth, uint32_t h, uint32_t shift, uint32_t dstride, uint32_t sstride",
+                    "name": "add_frac",
+                    "args": "frac a, frac b, frac *ans",
                     "has_pointers": true,
                     "line": 314
                 },
                 {
-                    "name": "jbig2_image_compose_opt_REPLACE",
-                    "args": "const uint8_t *s, uint8_t *d, int early, int late, uint8_t mask, uint8_t rightmask, uint32_t bytewidth, uint32_t h, uint32_t shift, uint32_t dstride, uint32_t sstride",
+                    "name": "is_field",
+                    "args": "char *line",
                     "has_pointers": true,
-                    "line": 323
+                    "line": 329
                 },
                 {
-                    "name": "jbig2_image_compose",
-                    "args": "Jbig2Ctx *ctx, Jbig2Image *dst, Jbig2Image *src, int x, int y, Jbig2ComposeOp op",
+                    "name": "strip",
+                    "args": "char *str, char *comment",
                     "has_pointers": true,
-                    "line": 333
+                    "line": 337
                 },
                 {
-                    "name": "jbig2_image_clear",
-                    "args": "Jbig2Ctx *ctx, Jbig2Image *image, int value",
+                    "name": "stripcpy",
+                    "args": "char *out_str, char *in_str",
                     "has_pointers": true,
-                    "line": 458
+                    "line": 353
                 },
                 {
-                    "name": "jbig2_image_get_pixel",
-                    "args": "Jbig2Image *image, int x, int y",
-                    "has_pointers": true,
-                    "line": 470
-                },
-                {
-                    "name": "jbig2_image_set_pixel",
-                    "args": "Jbig2Image *image, int x, int y, bool value",
-                    "has_pointers": true,
-                    "line": 487
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, image",
-                    "line": 56
-                },
-                {
-                    "variable": "ctx->allocator, image",
-                    "line": 62
-                },
-                {
-                    "variable": "ctx, image",
-                    "line": 91
-                },
-                {
-                    "variable": "ctx->allocator, image->data",
-                    "line": 99
-                },
-                {
-                    "variable": "ctx->allocator, image",
-                    "line": 100
-                },
-                {
-                    "variable": "ctx->allocator, image->data",
-                    "line": 152
-                },
-                {
-                    "variable": "ctx->allocator, newimage",
-                    "line": 157
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_image.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "Jbig2Ctx *ctx, Jbig2Image *image",
-                    "line": 34
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_image_pbm.c": {
-            "functions": [
-                {
-                    "name": "jbig2_image_write_pbm_file",
-                    "args": "Jbig2Image *image, char *filename",
-                    "has_pointers": true,
-                    "line": 35
-                },
-                {
-                    "name": "jbig2_image_write_pbm",
-                    "args": "Jbig2Image *image, FILE *out",
-                    "has_pointers": true,
-                    "line": 54
-                }
-            ],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_image_png.c": {
-            "functions": [
-                {
-                    "name": "jbig2_png_write_data",
-                    "args": "png_structp png_ptr, png_bytep data, png_size_t length",
+                    "name": "transpose_note",
+                    "args": "void",
                     "has_pointers": false,
-                    "line": 49
+                    "line": 369
                 },
                 {
-                    "name": "jbig2_png_flush",
-                    "args": "png_structp png_ptr",
+                    "name": "end_beam",
+                    "args": "void",
                     "has_pointers": false,
-                    "line": 66
+                    "line": 384
                 },
                 {
-                    "name": "jbig2_image_write_png",
-                    "args": "Jbig2Image *image, FILE *out",
+                    "name": "new_symbol",
+                    "args": "int type",
+                    "has_pointers": false,
+                    "line": 410
+                },
+                {
+                    "name": "output_transpose",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 480
+                },
+                {
+                    "name": "output_transline",
+                    "args": "char *s",
                     "has_pointers": true,
-                    "line": 81
+                    "line": 492
                 },
                 {
-                    "name": "jbig2_image_write_png_file",
-                    "args": "Jbig2Image *image, char *filename",
+                    "name": "save_two_bars",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 498
+                },
+                {
+                    "name": "check_syntax",
+                    "args": "int new_token",
+                    "has_pointers": false,
+                    "line": 508
+                },
+                {
+                    "name": "set_base",
+                    "args": "Field *meter",
                     "has_pointers": true,
-                    "line": 137
-                }
-            ],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_image_rw.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_mmr.c": {
-            "functions": [
+                    "line": 541
+                },
                 {
-                    "name": "jbig2_decode_mmr_init",
-                    "args": "Jbig2MmrCtx *mmr, int width, int height, const byte *data, size_t size",
+                    "name": "get_dnl",
+                    "args": "Record *entry",
                     "has_pointers": true,
-                    "line": 59
+                    "line": 590
                 },
                 {
-                    "name": "jbig2_decode_mmr_consume",
-                    "args": "Jbig2MmrCtx *mmr, int n_bits",
+                    "name": "set_dnl",
+                    "args": "char *dnl_str",
                     "has_pointers": true,
-                    "line": 78
+                    "line": 602
                 },
                 {
-                    "name": "jbig2_set_bits",
-                    "args": "byte *line, uint32_t x0, uint32_t x1",
+                    "name": "ignore_space",
+                    "args": "char *s, int *c",
                     "has_pointers": true,
-                    "line": 920
+                    "line": 616
                 },
                 {
-                    "name": "jbig2_decode_get_code",
-                    "args": "Jbig2MmrCtx *mmr, const mmr_table_node *table, int initial_bits",
+                    "name": "ignore_alpha",
+                    "args": "char *s, int *c",
                     "has_pointers": true,
-                    "line": 942
+                    "line": 625
                 },
                 {
-                    "name": "jbig2_decode_get_run",
-                    "args": "Jbig2Ctx *ctx, Jbig2MmrCtx *mmr, const mmr_table_node *table, int initial_bits",
+                    "name": "transpose_accidental",
+                    "args": "int pitch",
+                    "has_pointers": false,
+                    "line": 635
+                },
+                {
+                    "name": "mystrncasecmp",
+                    "args": "char *s1, char *s2, int n",
                     "has_pointers": true,
-                    "line": 963
+                    "line": 646
                 },
                 {
-                    "name": "jbig2_decode_mmr_line",
-                    "args": "Jbig2Ctx *ctx, Jbig2MmrCtx *mmr, const byte *ref, byte *dst, int *eofb",
+                    "name": "sharps_flats",
+                    "args": "Field *key",
                     "has_pointers": true,
-                    "line": 983
+                    "line": 662
                 },
                 {
-                    "name": "jbig2_decode_generic_mmr",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const Jbig2GenericRegionParams *params, const byte *data, size_t size, Jbig2Image *image",
+                    "name": "range",
+                    "args": "int *first,int *last,int *yfirst,int *ylast,char **input",
                     "has_pointers": true,
-                    "line": 1205
+                    "line": 816
                 },
                 {
-                    "name": "jbig2_decode_halftone_mmr",
-                    "args": "Jbig2Ctx *ctx, const Jbig2GenericRegionParams *params, const byte *data, size_t size, Jbig2Image *image, size_t *consumed_bytes",
+                    "name": "process_field",
+                    "args": "char *str",
                     "has_pointers": true,
-                    "line": 1248
-                }
-            ],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_mmr.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_page.c": {
-            "functions": [
+                    "line": 881
+                },
                 {
-                    "name": "dump_page_info",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, Jbig2Page *page",
+                    "name": "process_trailing",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 931
+                },
+                {
+                    "name": "process_gchord",
+                    "args": "char *str",
                     "has_pointers": true,
-                    "line": 38
+                    "line": 938
                 },
                 {
-                    "name": "jbig2_page_info",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const uint8_t *segment_data",
-                    "has_pointers": true,
-                    "line": 61
+                    "name": "process_macro",
+                    "args": "char c",
+                    "has_pointers": false,
+                    "line": 979
                 },
                 {
-                    "name": "jbig2_end_of_stripe",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const uint8_t *segment_data",
-                    "has_pointers": true,
-                    "line": 173
+                    "name": "process_accent",
+                    "args": "char c",
+                    "has_pointers": false,
+                    "line": 991
                 },
                 {
-                    "name": "jbig2_complete_page",
-                    "args": "Jbig2Ctx *ctx",
-                    "has_pointers": true,
-                    "line": 202
-                },
-                {
-                    "name": "jbig2_end_of_page",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const uint8_t *segment_data",
-                    "has_pointers": true,
-                    "line": 238
-                },
-                {
-                    "name": "jbig2_page_add_result",
-                    "args": "Jbig2Ctx *ctx, Jbig2Page *page, Jbig2Image *image, uint32_t x, uint32_t y, Jbig2ComposeOp op",
-                    "has_pointers": true,
-                    "line": 270
-                },
-                {
-                    "name": "jbig2_release_page",
-                    "args": "Jbig2Ctx *ctx, Jbig2Image *image",
-                    "has_pointers": true,
-                    "line": 350
-                }
-            ],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_page.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_priv.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "Jbig2Allocator *allocator, void *p",
-                    "line": 125
-                },
-                {
-                    "variable": "Jbig2Ctx *ctx, Jbig2WordStream *ws",
-                    "line": 152
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_refinement.c": {
-            "functions": [
-                {
-                    "name": "jbig2_decode_refinement_template0_unopt",
-                    "args": "Jbig2Ctx *ctx,\n                                        Jbig2Segment *segment,\n                                        const Jbig2RefinementRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GR_stats",
-                    "has_pointers": true,
-                    "line": 48
-                },
-                {
-                    "name": "jbig2_decode_refinement_template1_unopt",
-                    "args": "Jbig2Ctx *ctx,\n                                        Jbig2Segment *segment,\n                                        const Jbig2RefinementRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GR_stats",
-                    "has_pointers": true,
-                    "line": 110
-                },
-                {
-                    "name": "jbig2_decode_refinement_template1",
-                    "args": "Jbig2Ctx *ctx,\n                                  Jbig2Segment *segment,\n                                  const Jbig2RefinementRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GR_stats",
-                    "has_pointers": true,
-                    "line": 165
-                },
-                {
-                    "name": "implicit_value",
-                    "args": "const Jbig2RefinementRegionParams *params, Jbig2Image *image, int x, int y",
-                    "has_pointers": true,
-                    "line": 239
-                },
-                {
-                    "name": "jbig2_decode_refinement_TPGRON",
-                    "args": "Jbig2Ctx *ctx, const Jbig2RefinementRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GR_stats",
-                    "has_pointers": true,
-                    "line": 303
-                },
-                {
-                    "name": "jbig2_decode_refinement_region",
-                    "args": "Jbig2Ctx *ctx,\n                               Jbig2Segment *segment,\n                               const Jbig2RefinementRegionParams *params, Jbig2ArithState *as, Jbig2Image *image, Jbig2ArithCx *GR_stats",
-                    "has_pointers": true,
-                    "line": 364
-                },
-                {
-                    "name": "jbig2_refinement_region",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const byte *segment_data",
-                    "has_pointers": true,
-                    "line": 418
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, as",
-                    "line": 543
-                },
-                {
-                    "variable": "ctx, ws",
-                    "line": 544
-                },
-                {
-                    "variable": "ctx->allocator, GR_stats",
-                    "line": 545
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_refinement.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_segment.c": {
-            "functions": [
-                {
-                    "name": "jbig2_free_segment",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment",
-                    "has_pointers": true,
-                    "line": 140
-                },
-                {
-                    "name": "jbig2_get_region_segment_info",
-                    "args": "Jbig2RegionSegmentInfo *info, const uint8_t *segment_data",
-                    "has_pointers": true,
-                    "line": 197
-                },
-                {
-                    "name": "jbig2_parse_extension_segment",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const uint8_t *segment_data",
-                    "has_pointers": true,
-                    "line": 210
-                },
-                {
-                    "name": "jbig2_parse_profile_segment",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const uint8_t *segment_data",
-                    "has_pointers": true,
-                    "line": 251
-                },
-                {
-                    "name": "jbig2_parse_segment",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const uint8_t *segment_data",
-                    "has_pointers": true,
-                    "line": 335
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 68
-                },
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 92
-                },
-                {
-                    "variable": "ctx->allocator, result",
-                    "line": 103
-                },
-                {
-                    "variable": "ctx->allocator, segment->referred_to_segments",
-                    "line": 146
-                },
-                {
-                    "variable": "ctx->allocator, segment",
-                    "line": 172
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_segment.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_symbol_dict.c": {
-            "functions": [
-                {
-                    "name": "jbig2_dump_symbol_dict",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment",
-                    "has_pointers": true,
-                    "line": 69
-                },
-                {
-                    "name": "jbig2_sd_release",
-                    "args": "Jbig2Ctx *ctx, Jbig2SymbolDict *dict",
-                    "has_pointers": true,
-                    "line": 121
-                },
-                {
-                    "name": "jbig2_symbol_dictionary",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const byte *segment_data",
-                    "has_pointers": true,
-                    "line": 860
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, new_dict",
-                    "line": 113
-                },
-                {
-                    "variable": "ctx->allocator, dict->glyphs",
-                    "line": 131
-                },
-                {
-                    "variable": "ctx->allocator, dict",
-                    "line": 132
-                },
-                {
-                    "variable": "ctx->allocator, dicts",
-                    "line": 190
-                },
-                {
-                    "variable": "ctx, ws",
-                    "line": 270
-                },
-                {
-                    "variable": "ctx->allocator, refagg_dicts",
-                    "line": 821
-                },
-                {
-                    "variable": "ctx->allocator, SDNEWSYMWIDTHS",
-                    "line": 834
-                },
-                {
-                    "variable": "ctx, hs",
-                    "line": 836
-                },
-                {
-                    "variable": "ctx, tparams.IARDY",
-                    "line": 838
-                },
-                {
-                    "variable": "ctx, tparams.IARDX",
-                    "line": 839
-                },
-                {
-                    "variable": "ctx, tparams.IARDH",
-                    "line": 840
-                },
-                {
-                    "variable": "ctx, tparams.IARDW",
-                    "line": 841
-                },
-                {
-                    "variable": "ctx, tparams.IARI",
-                    "line": 842
-                },
-                {
-                    "variable": "ctx, tparams.IAID",
-                    "line": 843
-                },
-                {
-                    "variable": "ctx, tparams.IAIT",
-                    "line": 844
-                },
-                {
-                    "variable": "ctx, tparams.IADS",
-                    "line": 845
-                },
-                {
-                    "variable": "ctx, tparams.IAFS",
-                    "line": 846
-                },
-                {
-                    "variable": "ctx, tparams.IADT",
-                    "line": 847
-                },
-                {
-                    "variable": "ctx, IAAI",
-                    "line": 848
-                },
-                {
-                    "variable": "ctx, IAEX",
-                    "line": 849
-                },
-                {
-                    "variable": "ctx, IADW",
-                    "line": 850
-                },
-                {
-                    "variable": "ctx, IADH",
-                    "line": 851
-                },
-                {
-                    "variable": "ctx->allocator, as",
-                    "line": 853
-                },
-                {
-                    "variable": "ctx, ws",
-                    "line": 854
-                },
-                {
-                    "variable": "ctx->allocator, dicts",
-                    "line": 1029
-                },
-                {
-                    "variable": "ctx->allocator, dicts",
-                    "line": 1032
-                },
-                {
-                    "variable": "ctx->allocator, GB_stats",
-                    "line": 1057
-                },
-                {
-                    "variable": "ctx->allocator, GR_stats",
-                    "line": 1072
-                },
-                {
-                    "variable": "ctx->allocator, GB_stats",
-                    "line": 1073
-                },
-                {
-                    "variable": "ctx->allocator, GR_stats",
-                    "line": 1077
-                },
-                {
-                    "variable": "ctx->allocator, GB_stats",
-                    "line": 1078
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_symbol_dict.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_text.c": {
-            "functions": [
-                {
-                    "name": "jbig2_decode_text_region",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment,\n                         const Jbig2TextRegionParams *params,\n                         const Jbig2SymbolDict *const *dicts, const uint32_t n_dicts,\n                         Jbig2Image *image, const byte *data, const size_t size, Jbig2ArithCx *GR_stats, Jbig2ArithState *as, Jbig2WordStream *ws",
-                    "has_pointers": true,
-                    "line": 59
-                },
-                {
-                    "name": "jbig2_text_region",
-                    "args": "Jbig2Ctx *ctx, Jbig2Segment *segment, const byte *segment_data",
-                    "has_pointers": true,
-                    "line": 577
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "ctx->allocator, symcodelengths",
-                    "line": 220
-                },
-                {
-                    "variable": "ctx, hs",
-                    "line": 224
-                },
-                {
-                    "variable": "ctx, hs",
-                    "line": 569
-                },
-                {
-                    "variable": "ctx, params.IAID",
-                    "line": 1006
-                },
-                {
-                    "variable": "ctx, params.IARI",
+                    "name": "process_accidental",
+                    "args": "int accidental",
+                    "has_pointers": false,
                     "line": 1007
                 },
                 {
-                    "variable": "ctx, params.IARDW",
-                    "line": 1008
-                },
-                {
-                    "variable": "ctx, params.IARDH",
-                    "line": 1009
-                },
-                {
-                    "variable": "ctx, params.IARDX",
-                    "line": 1010
-                },
-                {
-                    "variable": "ctx, params.IARDY",
-                    "line": 1011
-                },
-                {
-                    "variable": "ctx, params.IADT",
-                    "line": 1016
-                },
-                {
-                    "variable": "ctx, params.IAFS",
-                    "line": 1017
-                },
-                {
-                    "variable": "ctx, params.IADS",
-                    "line": 1018
-                },
-                {
-                    "variable": "ctx, params.IAIT",
-                    "line": 1019
-                },
-                {
-                    "variable": "ctx->allocator, as",
+                    "name": "process_note",
+                    "args": "int pitch",
+                    "has_pointers": false,
                     "line": 1023
                 },
                 {
-                    "variable": "ctx, ws",
-                    "line": 1024
+                    "name": "process_octaver",
+                    "args": "int octaver",
+                    "has_pointers": false,
+                    "line": 1073
                 },
                 {
-                    "variable": "ctx->allocator, GR_stats",
-                    "line": 1027
+                    "name": "process_length",
+                    "args": "int length",
+                    "has_pointers": false,
+                    "line": 1088
                 },
                 {
-                    "variable": "ctx->allocator, dicts",
-                    "line": 1041
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "jbig2_text.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "memcmp.c": {
-            "functions": [
-                {
-                    "name": "memcmp",
-                    "args": "const void *b1, const void *b2, size_t len",
-                    "has_pointers": true,
-                    "line": 35
-                }
-            ],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "memento.c": {
-            "functions": [
-                {
-                    "name": "android_fprintf",
-                    "args": "FILE *file, const char *fmt, ...",
-                    "has_pointers": true,
-                    "line": 105
+                    "name": "process_divisor",
+                    "args": "int length",
+                    "has_pointers": false,
+                    "line": 1104
                 },
                 {
-                    "name": "windows_fprintf",
-                    "args": "FILE *file, const char *fmt, ...",
-                    "has_pointers": true,
-                    "line": 163
+                    "name": "process_broken",
+                    "args": "int power",
+                    "has_pointers": false,
+                    "line": 1120
                 },
                 {
-                    "name": "Memento_initMutex",
-                    "args": "Memento_mutex *m",
-                    "has_pointers": true,
-                    "line": 367
+                    "name": "process_bar",
+                    "args": "int bar_type",
+                    "has_pointers": false,
+                    "line": 1147
                 },
                 {
-                    "name": "Memento_initMutex",
-                    "args": "Memento_mutex *m",
-                    "has_pointers": true,
-                    "line": 380
+                    "name": "process_repeat",
+                    "args": "int no",
+                    "has_pointers": false,
+                    "line": 1199
                 },
                 {
-                    "name": "Memento_initMutex",
-                    "args": "Memento_mutex *m",
-                    "has_pointers": true,
-                    "line": 394
-                },
-                {
-                    "name": "error2_cb",
-                    "args": "void *data, const char *msg, int errnum",
-                    "has_pointers": true,
-                    "line": 503
-                },
-                {
-                    "name": "syminfo_cb",
-                    "args": "void *data, uintptr_t pc, const char *symname, uintptr_t symval, uintptr_t symsize",
-                    "has_pointers": true,
-                    "line": 507
-                },
-                {
-                    "name": "error_cb",
-                    "args": "void *data, const char *msg, int errnum",
-                    "has_pointers": true,
-                    "line": 515
-                },
-                {
-                    "name": "full_cb",
-                    "args": "void *data, uintptr_t pc, const char *fname, int line, const char *fn",
-                    "has_pointers": true,
-                    "line": 524
-                },
-                {
-                    "name": "print_stack_libbt",
-                    "args": "void *addr",
-                    "has_pointers": true,
-                    "line": 533
-                },
-                {
-                    "name": "print_stack_libbt_failed",
-                    "args": "void *addr",
-                    "has_pointers": true,
-                    "line": 543
-                },
-                {
-                    "name": "init_libbt",
+                    "name": "process_space",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 584
+                    "line": 1222
                 },
                 {
-                    "name": "print_stack_default",
-                    "args": "void *addr",
-                    "has_pointers": true,
-                    "line": 638
-                },
-                {
-                    "name": "Memento_initStacktracer",
+                    "name": "process_tie",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 668
+                    "line": 1233
                 },
                 {
-                    "name": "Memento_getStacktrace",
-                    "args": "void **stack, int *skip",
-                    "has_pointers": true,
-                    "line": 673
-                },
-                {
-                    "name": "Memento_showStacktrace",
-                    "args": "void **stack, int numberOfFrames",
-                    "has_pointers": true,
-                    "line": 685
-                },
-                {
-                    "name": "Memento_initStacktracer",
+                    "name": "process_continuation",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 751
+                    "line": 1247
                 },
                 {
-                    "name": "Memento_getStacktrace",
-                    "args": "void **stack, int *skip",
-                    "has_pointers": true,
-                    "line": 791
-                },
-                {
-                    "name": "Memento_showStacktrace",
-                    "args": "void **stack, int numberOfFrames",
-                    "has_pointers": true,
-                    "line": 801
-                },
-                {
-                    "name": "Memento_initStacktracer",
+                    "name": "process_newline",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 831
+                    "line": 1258
                 },
                 {
-                    "name": "Memento_getStacktrace",
-                    "args": "void **stack, int *skip",
-                    "has_pointers": true,
-                    "line": 858
-                },
-                {
-                    "name": "Memento_showStacktrace",
-                    "args": "void **stack, int numberOfFrames",
-                    "has_pointers": true,
-                    "line": 875
-                },
-                {
-                    "name": "Memento_initStacktracer",
+                    "name": "process_open_chord",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 899
+                    "line": 1272
                 },
                 {
-                    "name": "Memento_getStacktrace",
-                    "args": "void **stack, int *skip",
-                    "has_pointers": true,
-                    "line": 903
-                },
-                {
-                    "name": "Memento_showStacktrace",
-                    "args": "void **stack, int numberOfFrames",
-                    "has_pointers": true,
-                    "line": 909
-                },
-                {
-                    "name": "Memento_storeDetails",
-                    "args": "Memento_BlkHeader *head, int type",
-                    "has_pointers": true,
-                    "line": 915
-                },
-                {
-                    "name": "Memento_bt_internal",
-                    "args": "int skip2",
-                    "has_pointers": false,
-                    "line": 962
-                },
-                {
-                    "name": "Memento_breakpoint",
+                    "name": "process_close_chord",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 976
+                    "line": 1286
                 },
                 {
-                    "name": "Memento_addBlockHead",
-                    "args": "Memento_Blocks    *blks,\n                                 Memento_BlkHeader *b,\n                                 int                type",
-                    "has_pointers": true,
-                    "line": 1001
-                },
-                {
-                    "name": "Memento_addBlockTail",
-                    "args": "Memento_Blocks    *blks,\n                                 Memento_BlkHeader *b,\n                                 int                type",
-                    "has_pointers": true,
-                    "line": 1029
-                },
-                {
-                    "name": "Memento_Internal_checkAllocedBlock",
-                    "args": "Memento_BlkHeader *b, void *arg",
-                    "has_pointers": true,
-                    "line": 1067
-                },
-                {
-                    "name": "Memento_Internal_checkFreedBlock",
-                    "args": "Memento_BlkHeader *b, void *arg",
-                    "has_pointers": true,
-                    "line": 1128
-                },
-                {
-                    "name": "Memento_removeBlock",
-                    "args": "Memento_Blocks    *blks,\n                                Memento_BlkHeader *b",
-                    "has_pointers": true,
-                    "line": 1171
-                },
-                {
-                    "name": "free_block",
-                    "args": "Memento_BlkHeader *head",
-                    "has_pointers": true,
-                    "line": 1191
-                },
-                {
-                    "name": "Memento_Internal_makeSpace",
-                    "args": "size_t space",
-                    "has_pointers": false,
-                    "line": 1206
-                },
-                {
-                    "name": "showBlock",
-                    "args": "Memento_BlkHeader *b, int space",
-                    "has_pointers": true,
-                    "line": 1297
-                },
-                {
-                    "name": "blockDisplay",
-                    "args": "Memento_BlkHeader *b, int n",
-                    "has_pointers": true,
-                    "line": 1312
-                },
-                {
-                    "name": "Memento_listBlock",
-                    "args": "Memento_BlkHeader *b,\n                             void              *arg",
-                    "has_pointers": true,
-                    "line": 1332
-                },
-                {
-                    "name": "doNestedDisplay",
-                    "args": "Memento_BlkHeader *b,\n                            int depth",
-                    "has_pointers": true,
-                    "line": 1344
-                },
-                {
-                    "name": "ptrcmp",
-                    "args": "const void *a_, const void *b_",
-                    "has_pointers": true,
-                    "line": 1365
-                },
-                {
-                    "name": "Memento_listBlocksNested",
+                    "name": "process_open_close_chord",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 1373
+                    "line": 1308
                 },
                 {
-                    "name": "Memento_listBlocks",
+                    "name": "process_open_grace",
                     "args": "void",
                     "has_pointers": false,
-                    "line": 1486
+                    "line": 1316
                 },
                 {
-                    "name": "Memento_listNewBlock",
-                    "args": "Memento_BlkHeader *b,\n                                void              *arg",
-                    "has_pointers": true,
-                    "line": 1502
-                },
-                {
-                    "name": "Memento_listNewBlocks",
+                    "name": "process_close_grace",
                     "args": "void",
+                    "has_pointers": false,
+                    "line": 1325
+                },
+                {
+                    "name": "process_open_slur",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 1336
+                },
+                {
+                    "name": "process_close_slur",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 1348
+                },
+                {
+                    "name": "process_open_close_slur",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 1357
+                },
+                {
+                    "name": "process_tuplet",
+                    "args": "char *s",
+                    "has_pointers": true,
+                    "line": 1378
+                },
+                {
+                    "name": "process_justify",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 1440
+                },
+                {
+                    "name": "process_ampersand",
+                    "args": "int level",
+                    "has_pointers": false,
+                    "line": 1449
+                },
+                {
+                    "name": "process_beams",
+                    "args": "int n, Symbol *s",
+                    "has_pointers": true,
+                    "line": 1465
+                },
+                {
+                    "name": "set_semitones",
+                    "args": "int s_f",
                     "has_pointers": false,
                     "line": 1511
                 },
                 {
-                    "name": "Memento_endStats",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1524
-                },
-                {
-                    "name": "Memento_stats",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1534
-                },
-                {
-                    "name": "showInfo",
-                    "args": "Memento_BlkHeader *b, void *arg",
+                    "name": "distance_from_C",
+                    "args": "Note *n",
                     "has_pointers": true,
-                    "line": 1543
+                    "line": 1533
                 },
                 {
-                    "name": "Memento_listBlockInfo",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1564
-                },
-                {
-                    "name": "Memento_nonLeakBlocksLeaked",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1574
-                },
-                {
-                    "name": "Memento_fin",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1592
-                },
-                {
-                    "name": "Memento_init",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1627
-                },
-                {
-                    "name": "Memento_containsAddr",
-                    "args": "Memento_BlkHeader *b,\n                                void *arg",
+                    "name": "tune2hash",
+                    "args": "Field *key, int *hash_array, int force",
                     "has_pointers": true,
-                    "line": 1677
+                    "line": 1556
                 },
                 {
-                    "name": "Memento_info",
-                    "args": "void *addr",
+                    "name": "process_abc",
+                    "args": "char title[][99], int titles, Record *entry,\n\t\tchar *key_comment, char *bars, char *tune, char *input,\n\t\tint output_type, int nbars, int force, int *hash_array",
                     "has_pointers": true,
-                    "line": 1703
-                },
-                {
-                    "name": "Memento_signal",
-                    "args": "int sig",
-                    "has_pointers": false,
-                    "line": 1745
-                },
-                {
-                    "name": "squeeze",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1755
-                },
-                {
-                    "name": "Memento_signal",
-                    "args": "int sig",
-                    "has_pointers": false,
-                    "line": 1841
-                },
-                {
-                    "name": "squeeze",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1855
-                },
-                {
-                    "name": "Memento_startFailing",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1862
-                },
-                {
-                    "name": "Memento_event",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1879
-                },
-                {
-                    "name": "Memento_sequence",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1905
-                },
-                {
-                    "name": "Memento_breakAt",
-                    "args": "int event",
-                    "has_pointers": false,
-                    "line": 1910
-                },
-                {
-                    "name": "Memento_tick",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1970
-                },
-                {
-                    "name": "Memento_failThisEventLocked",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1977
-                },
-                {
-                    "name": "Memento_failThisEvent",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 2009
-                },
-                {
-                    "name": "do_reference",
-                    "args": "Memento_BlkHeader *blk, int event",
-                    "has_pointers": true,
-                    "line": 2097
-                },
-                {
-                    "name": "Memento_checkPointerOrNull",
-                    "args": "void *blk",
-                    "has_pointers": true,
-                    "line": 2104
-                },
-                {
-                    "name": "Memento_checkBytePointerOrNull",
-                    "args": "void *blk",
-                    "has_pointers": true,
-                    "line": 2127
-                },
-                {
-                    "name": "Memento_checkShortPointerOrNull",
-                    "args": "void *blk",
-                    "has_pointers": true,
-                    "line": 2156
-                },
-                {
-                    "name": "Memento_checkIntPointerOrNull",
-                    "args": "void *blk",
-                    "has_pointers": true,
-                    "line": 2185
-                },
-                {
-                    "name": "checkBlockUser",
-                    "args": "Memento_BlkHeader *memblk, const char *action",
-                    "has_pointers": true,
-                    "line": 2383
-                },
-                {
-                    "name": "checkBlock",
-                    "args": "Memento_BlkHeader *memblk, const char *action",
-                    "has_pointers": true,
-                    "line": 2421
-                },
-                {
-                    "name": "do_free",
-                    "args": "void *blk, int eventType",
-                    "has_pointers": true,
-                    "line": 2472
-                },
-                {
-                    "name": "Memento_free",
-                    "args": "void *blk",
-                    "has_pointers": true,
-                    "line": 2514
-                },
-                {
-                    "name": "Memento_checkBlock",
-                    "args": "void *blk",
-                    "has_pointers": true,
-                    "line": 2615
-                },
-                {
-                    "name": "Memento_Internal_checkAllAlloced",
-                    "args": "Memento_BlkHeader *memblk, void *arg",
-                    "has_pointers": true,
-                    "line": 2631
-                },
-                {
-                    "name": "Memento_Internal_checkAllFreed",
-                    "args": "Memento_BlkHeader *memblk, void *arg",
-                    "has_pointers": true,
-                    "line": 2667
-                },
-                {
-                    "name": "Memento_checkAllMemoryLocked",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 2717
-                },
-                {
-                    "name": "Memento_checkAllMemory",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 2731
-                },
-                {
-                    "name": "Memento_setParanoia",
-                    "args": "int i",
-                    "has_pointers": false,
-                    "line": 2747
-                },
-                {
-                    "name": "Memento_paranoidAt",
-                    "args": "int i",
-                    "has_pointers": false,
-                    "line": 2757
-                },
-                {
-                    "name": "Memento_getBlockNum",
-                    "args": "void *b",
-                    "has_pointers": true,
-                    "line": 2763
-                },
-                {
-                    "name": "Memento_check",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 2772
-                },
-                {
-                    "name": "Memento_find",
-                    "args": "void *a",
-                    "has_pointers": true,
-                    "line": 2782
-                },
-                {
-                    "name": "Memento_breakOnFree",
-                    "args": "void *a",
-                    "has_pointers": true,
-                    "line": 2819
-                },
-                {
-                    "name": "Memento_breakOnRealloc",
-                    "args": "void *a",
-                    "has_pointers": true,
-                    "line": 2858
-                },
-                {
-                    "name": "Memento_failAt",
-                    "args": "int i",
-                    "has_pointers": false,
-                    "line": 2897
-                },
-                {
-                    "name": "Memento_startLeaking",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 2912
-                },
-                {
-                    "name": "Memento_stopLeaking",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 2917
-                },
-                {
-                    "name": "Memento_squeezing",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 2922
-                },
-                {
-                    "name": "Memento_free",
-                    "args": "void *b",
-                    "has_pointers": true,
-                    "line": 3073
+                    "line": 1617
                 }
             ],
             "allocations": [],
             "deallocations": [
                 {
-                    "variable": "strings",
-                    "line": 665
+                    "variable": "s->u.note.gchord",
+                    "line": 1950
                 },
                 {
-                    "variable": "demangled",
-                    "line": 889
+                    "variable": "s->u.field.string",
+                    "line": 1952
                 },
                 {
-                    "variable": "blk, Memento_EventType_free",
-                    "line": 2520
+                    "variable": "block[i]",
+                    "line": 1955
                 },
                 {
-                    "variable": "blk, Memento_EventType_realloc",
-                    "line": 2604
-                },
-                {
-                    "variable": "pointer, Memento_EventType_delete",
-                    "line": 2953
-                },
-                {
-                    "variable": "pointer, Memento_EventType_deleteArray",
-                    "line": 2977
+                    "variable": "line",
+                    "line": 1956
                 }
             ],
             "global_vars": [],
             "cppcheck_reports": []
         },
-        "memento.h": {
-            "functions": [],
+        "fields.c": {
+            "functions": [
+                {
+                    "name": "article",
+                    "args": "char *s,char *t",
+                    "has_pointers": true,
+                    "line": 47
+                },
+                {
+                    "name": "detex",
+                    "args": "char *s,char *t",
+                    "has_pointers": true,
+                    "line": 74
+                },
+                {
+                    "name": "interval",
+                    "args": "char *s",
+                    "has_pointers": true,
+                    "line": 87
+                },
+                {
+                    "name": "is_comment",
+                    "args": "char *str",
+                    "has_pointers": true,
+                    "line": 100
+                },
+                {
+                    "name": "strip_path",
+                    "args": "char *filename,char *file",
+                    "has_pointers": true,
+                    "line": 112
+                },
+                {
+                    "name": "main",
+                    "args": "int argc,char **argv",
+                    "has_pointers": true,
+                    "line": 126
+                }
+            ],
             "allocations": [],
             "deallocations": [
                 {
-                    "variable": "void *",
-                    "line": 240
+                    "variable": "entry->fields[i]",
+                    "line": 550
+                },
+                {
+                    "variable": "entry->BARS",
+                    "line": 551
                 }
             ],
             "global_vars": [],
             "cppcheck_reports": []
         },
-        "os_types.h": {
+        "index.c": {
+            "functions": [
+                {
+                    "name": "g_error",
+                    "args": "const char *fmt, ...",
+                    "has_pointers": true,
+                    "line": 19
+                },
+                {
+                    "name": "get_index",
+                    "args": "char *fmt, char *fname",
+                    "has_pointers": true,
+                    "line": 30
+                },
+                {
+                    "name": "size_record",
+                    "args": "char *fmt, int *size, char *field",
+                    "has_pointers": true,
+                    "line": 71
+                },
+                {
+                    "name": "free_record",
+                    "args": "Record *entry, char *fmt",
+                    "has_pointers": true,
+                    "line": 108
+                },
+                {
+                    "name": "str_get",
+                    "args": "char *string, char *fmt, int *f, char *index, int *i",
+                    "has_pointers": true,
+                    "line": 121
+                },
+                {
+                    "name": "get_record",
+                    "args": "char *fmt, FILE *In, Record *entry",
+                    "has_pointers": true,
+                    "line": 155
+                },
+                {
+                    "name": "str_put",
+                    "args": "char *string, char *fmt, int *f, char *index, int *i",
+                    "has_pointers": true,
+                    "line": 194
+                },
+                {
+                    "name": "put_record",
+                    "args": "char *fmt, FILE *Out, Record *entry",
+                    "has_pointers": true,
+                    "line": 228
+                },
+                {
+                    "name": "lower",
+                    "args": "char c",
+                    "has_pointers": false,
+                    "line": 262
+                }
+            ],
+            "allocations": [],
+            "deallocations": [
+                {
+                    "variable": "entry->fields[fmt[f]-'A']",
+                    "line": 114
+                },
+                {
+                    "variable": "entry->BARS",
+                    "line": 116
+                },
+                {
+                    "variable": "entry",
+                    "line": 118
+                }
+            ],
+            "global_vars": [],
+            "cppcheck_reports": [
+                "C-projects\\abc2mtex\\index.c:105:2: error: Memory leak: entry.bars [memleak]"
+            ]
+        },
+        "index.h": {
             "functions": [],
             "allocations": [],
             "deallocations": [],
             "global_vars": [],
             "cppcheck_reports": []
         },
-        "pbm2png.c": {
+        "search.c": {
             "functions": [
                 {
+                    "name": "hash_compare",
+                    "args": "int *array1,int *array2",
+                    "has_pointers": true,
+                    "line": 30
+                },
+                {
+                    "name": "get_abc_entry",
+                    "args": "char *dflt_meter,char *dflt_origin,\n\t\t\tchar *dflt_rhythm,char *entry,Record *abc,int *x",
+                    "has_pointers": true,
+                    "line": 39
+                },
+                {
+                    "name": "str_compare",
+                    "args": "char *s,char *t",
+                    "has_pointers": true,
+                    "line": 112
+                },
+                {
+                    "name": "str_search",
+                    "args": "char *s,char *t",
+                    "has_pointers": true,
+                    "line": 123
+                },
+                {
                     "name": "main",
-                    "args": "int argc, char *argv[]",
+                    "args": "int argc,char *argv[]",
+                    "has_pointers": true,
+                    "line": 141
+                }
+            ],
+            "allocations": [],
+            "deallocations": [],
+            "global_vars": [],
+            "cppcheck_reports": []
+        },
+        "sort_in.c": {
+            "functions": [
+                {
+                    "name": "str_cmp",
+                    "args": "char *s,char *t",
                     "has_pointers": true,
                     "line": 38
+                },
+                {
+                    "name": "compare",
+                    "args": "Record **entry1,Record **entry2",
+                    "has_pointers": true,
+                    "line": 63
+                },
+                {
+                    "name": "main",
+                    "args": "int argc,char *argv[]",
+                    "has_pointers": true,
+                    "line": 88
                 }
             ],
             "allocations": [],
-            "deallocations": [],
+            "deallocations": [
+                {
+                    "variable": "list",
+                    "line": 174
+                }
+            ],
             "global_vars": [],
             "cppcheck_reports": []
         },
-        "sha1.c": {
+        "tex.c": {
             "functions": [
                 {
-                    "name": "SHAPrintContext",
-                    "args": "SHA1_CTX *context, char *msg",
-                    "has_pointers": true,
-                    "line": 115
-                },
-                {
-                    "name": "SHA1_Transform",
-                    "args": "uint32_t state[5], const uint8_t buffer[64]",
+                    "name": "abclog2",
+                    "args": "int x",
                     "has_pointers": false,
-                    "line": 124
+                    "line": 44
                 },
                 {
-                    "name": "SHA1_Init",
-                    "args": "SHA1_CTX *context",
+                    "name": "open_TeX",
+                    "args": "char *s, int musix_out",
                     "has_pointers": true,
-                    "line": 184
+                    "line": 54
                 },
                 {
-                    "name": "SHA1_Update",
-                    "args": "SHA1_CTX *context, const uint8_t *data, const size_t len",
-                    "has_pointers": true,
-                    "line": 197
+                    "name": "open_grace",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 72
                 },
                 {
-                    "name": "SHA1_Final",
-                    "args": "SHA1_CTX *context, uint8_t digest[SHA1_DIGEST_SIZE]",
-                    "has_pointers": true,
-                    "line": 227
+                    "name": "open_music",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 78
                 },
                 {
-                    "name": "main",
-                    "args": "int argc, char **argv",
-                    "has_pointers": true,
-                    "line": 262
+                    "name": "close_grace",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 84
                 },
                 {
-                    "name": "digest_to_hex",
-                    "args": "const uint8_t digest[SHA1_DIGEST_SIZE], char *output",
-                    "has_pointers": true,
-                    "line": 317
+                    "name": "close_music",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 90
                 },
                 {
-                    "name": "main",
-                    "args": "int argc, char **argv",
+                    "name": "open_tune",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 96
+                },
+                {
+                    "name": "q_plus",
+                    "args": "int pitch,int beam",
+                    "has_pointers": false,
+                    "line": 108
+                },
+                {
+                    "name": "n_plus",
+                    "args": "int pitch,int beam",
+                    "has_pointers": false,
+                    "line": 118
+                },
+                {
+                    "name": "L_minus",
+                    "args": "int pitch,int beam",
+                    "has_pointers": false,
+                    "line": 128
+                },
+                {
+                    "name": "draw_header",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 138
+                },
+                {
+                    "name": "draw_text",
+                    "args": "char *type,char *string",
                     "has_pointers": true,
-                    "line": 334
+                    "line": 143
+                },
+                {
+                    "name": "draw_tempo",
+                    "args": "Field *tempo",
+                    "has_pointers": true,
+                    "line": 164
+                },
+                {
+                    "name": "close_open",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 217
+                },
+                {
+                    "name": "next_stave",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 223
+                },
+                {
+                    "name": "draw_rest",
+                    "args": "int level",
+                    "has_pointers": false,
+                    "line": 229
+                },
+                {
+                    "name": "draw_pt",
+                    "args": "Note note",
+                    "has_pointers": false,
+                    "line": 260
+                },
+                {
+                    "name": "draw_slur",
+                    "args": "Note note,char type,char ud, int change",
+                    "has_pointers": false,
+                    "line": 270
+                },
+                {
+                    "name": "draw_attributes",
+                    "args": "Note note,char ul,char lu,char ud,int beam",
+                    "has_pointers": false,
+                    "line": 300
+                },
+                {
+                    "name": "draw_usercmd",
+                    "args": "char *s",
+                    "has_pointers": true,
+                    "line": 382
+                },
+                {
+                    "name": "draw_chord",
+                    "args": "Symbol *root",
+                    "has_pointers": true,
+                    "line": 394
+                },
+                {
+                    "name": "draw_tie",
+                    "args": "Note note,char *str",
+                    "has_pointers": true,
+                    "line": 412
+                },
+                {
+                    "name": "draw_part",
+                    "args": "char *part",
+                    "has_pointers": true,
+                    "line": 427
+                },
+                {
+                    "name": "draw_tex",
+                    "args": "char *line",
+                    "has_pointers": true,
+                    "line": 433
+                },
+                {
+                    "name": "draw_size",
+                    "args": "char *size",
+                    "has_pointers": true,
+                    "line": 440
+                },
+                {
+                    "name": "close_TeX",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 454
+                },
+                {
+                    "name": "draw_old_repeat",
+                    "args": "int repeat",
+                    "has_pointers": false,
+                    "line": 461
+                },
+                {
+                    "name": "draw_meter_new",
+                    "args": "Field *meter",
+                    "has_pointers": true,
+                    "line": 466
+                },
+                {
+                    "name": "key2tex",
+                    "args": "Field *f",
+                    "has_pointers": true,
+                    "line": 485
+                },
+                {
+                    "name": "staves",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 506
+                },
+                {
+                    "name": "scan_fields",
+                    "args": "Symbol *s, int scan",
+                    "has_pointers": true,
+                    "line": 540
+                },
+                {
+                    "name": "beam2tex",
+                    "args": "int n, Symbol *first, int beam",
+                    "has_pointers": true,
+                    "line": 561
+                },
+                {
+                    "name": "bar2tex",
+                    "args": "Symbol *s",
+                    "has_pointers": true,
+                    "line": 949
+                },
+                {
+                    "name": "fields2tex",
+                    "args": "Field *f",
+                    "has_pointers": true,
+                    "line": 1062
+                },
+                {
+                    "name": "end_tune",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 1100
+                },
+                {
+                    "name": "tune2tex",
+                    "args": "char title[][99], int titles, Record *entry, int n_symbols,\n\t\tSymbol *symbols, Field *key_field, Field *meter_field,\n\t\tField *tempo_field",
+                    "has_pointers": true,
+                    "line": 1118
                 }
             ],
             "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "sha1.h": {
-            "functions": [],
-            "allocations": [],
-            "deallocations": [],
+            "deallocations": [
+                {
+                    "variable": "old_beam",
+                    "line": 492
+                },
+                {
+                    "variable": "old_beam",
+                    "line": 1102
+                }
+            ],
             "global_vars": [],
             "cppcheck_reports": []
         }

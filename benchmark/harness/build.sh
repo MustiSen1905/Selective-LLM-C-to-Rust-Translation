@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+# Build V-C, V-c2rust, and V-Hybrid binaries for a given project.
+# Usage: bash benchmark/harness/build.sh <project>
+#   project: pdfresurrect-master | abc2mtex | tiny-AES-c-master
+#
+# Output: benchmark/bin/<project>_{c,c2rust,hybrid}
+set -euo pipefail
+
+PROJECT=${1:?Usage: $0 <project>}
+WT=$(cd "$(dirname "$0")/../.." && pwd)
+BIN_DIR="$WT/benchmark/bin"
+mkdir -p "$BIN_DIR"
+
+source ~/.cargo/env 2>/dev/null || true
+
+RUST_OUT="$WT/Rust-Outcome/$PROJECT/rust_out"
+CHECKPOINT="$WT/Rust-Outcome/$PROJECT/rust_out_c2rust_checkpoint"
+
+# ---------------------------------------------------------------------------
+# Project-specific source lists
+# ---------------------------------------------------------------------------
+case "$PROJECT" in
+  pdfresurrect-master)
+    C_SRC_DIR="$WT/C-projects/pdfresurrect-master"
+    VC_SOURCES=("$C_SRC_DIR/main.c" "$C_SRC_DIR/pdf.c")
+    HYBRID_ENTRY="$C_SRC_DIR/main.c"
+    HYBRID_BIN_NAME="pdfresurrect_hybrid"
+    BUILD_STRATEGY="staticlib_link"
+    ;;
+  abc2mtex)
+    C_SRC_DIR="$WT/C-projects/abc2mtex"
+    VC_SOURCES=("$C_SRC_DIR/fields.c" "$C_SRC_DIR/abc.c" "$C_SRC_DIR/tex.c" "$C_SRC_DIR/index.c")
+    HYBRID_BIN_NAME="abc2mtex_hybrid"
+    BUILD_STRATEGY="cargo_bin"
+    ;;
+  tiny-AES-c-master)
+    C_SRC_DIR="$WT/C-projects/tiny-AES-c-master"
+    if [[ -d "$C_SRC_DIR" ]]; then
+      # aes.c + test.c (the NIST test driver)
+      VC_SOURCES=("$C_SRC_DIR/aes.c" "$C_SRC_DIR/test.c")
+    else
+      VC_SOURCES=()  # will use prebuilt
+    fi
+    HYBRID_BIN_NAME="tiny_aes_hybrid"
+    BUILD_STRATEGY="cargo_bin"
+    ;;
+  *)
+    echo "Unknown project '$PROJECT'. Add a case to $0." >&2
+    exit 1
+    ;;
+esac
+
+SHORT="${PROJECT%%-master}"   # pdfresurrect-master → pdfresurrect, abc2mtex → abc2mtex
+SHORT="${SHORT//-/_}"          # hyphens → underscores
+
+# ---------------------------------------------------------------------------
+# V-C  —  original C build
+# ---------------------------------------------------------------------------
+echo ""
+echo "=== V-C: $PROJECT ==="
+if [[ ${#VC_SOURCES[@]} -gt 0 ]]; then
+  gcc -O2 -DNDEBUG -o "$BIN_DIR/${SHORT}_c" "${VC_SOURCES[@]}"
+  echo "Built: $BIN_DIR/${SHORT}_c"
+else
+  if [[ -x "$BIN_DIR/${SHORT}_c" ]]; then
+    echo "Using prebuilt $BIN_DIR/${SHORT}_c (C source not in C-projects/)"
+  else
+    echo "WARN: No C source and no prebuilt binary for V-C. Skipping." >&2
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Helper: build a cargo staticlib and link it with a C entry file
+# ---------------------------------------------------------------------------
+build_staticlib_variant() {
+  local label=$1        # "c2rust" | "hybrid"
+  local src_dir=$2      # path to the rust_out or checkpoint dir
+  local out_name=$3     # output binary name
+  local entry_c=$4      # C file that contains main()
+
+  echo ""
+  echo "=== V-$label: $PROJECT ==="
+
+  if [[ ! -d "$src_dir" ]]; then
+    echo "SKIP: $src_dir does not exist (run pipeline first)." >&2
+    return 0
+  fi
+
+  (cd "$src_dir" && cargo build --release --lib 2>&1 | tail -5)
+
+  local lib="$src_dir/target/release/libhybrid_project.a"
+  if [[ ! -f "$lib" ]]; then
+    echo "ERROR: $lib not found after cargo build." >&2
+    return 1
+  fi
+
+  gcc -O2 -DNDEBUG -o "$BIN_DIR/$out_name" \
+      "$entry_c" "$lib" -lpthread -ldl -lm \
+      2>&1 || {
+    echo "Retry: adding explicit safe_*.c compilation..." >&2
+    # Fallback: compile remaining safe_*.c files explicitly
+    local safe_c_files
+    mapfile -t safe_c_files < <(find "$src_dir" -maxdepth 1 -name 'safe_*.c')
+    if [[ ${#safe_c_files[@]} -gt 0 ]]; then
+      gcc -O2 -DNDEBUG -o "$BIN_DIR/$out_name" \
+          "$entry_c" "${safe_c_files[@]}" "$lib" -lpthread -ldl -lm
+    else
+      return 1
+    fi
+  }
+  echo "Built: $BIN_DIR/$out_name"
+}
+
+# ---------------------------------------------------------------------------
+# Helper: build a cargo binary variant
+# ---------------------------------------------------------------------------
+build_cargo_bin_variant() {
+  local label=$1
+  local src_dir=$2
+  local bin_name=$3
+  local out_name=$4
+
+  echo ""
+  echo "=== V-$label: $PROJECT ==="
+
+  if [[ ! -d "$src_dir" ]]; then
+    echo "SKIP: $src_dir does not exist." >&2
+    return 0
+  fi
+
+  (cd "$src_dir" && cargo build --release --bin "$bin_name" 2>&1 | tail -5)
+
+  local built="$src_dir/target/release/$bin_name"
+  if [[ -x "$built" ]]; then
+    cp "$built" "$BIN_DIR/$out_name"
+    echo "Built: $BIN_DIR/$out_name"
+  else
+    echo "ERROR: binary $built not found after cargo build." >&2
+    return 1
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# V-c2rust  —  raw c2rust output (no LLM rewrite)
+# ---------------------------------------------------------------------------
+case "$BUILD_STRATEGY" in
+  staticlib_link)
+    build_staticlib_variant "c2rust" "$CHECKPOINT" "${SHORT}_c2rust" "$HYBRID_ENTRY"
+    ;;
+  cargo_bin)
+    build_cargo_bin_variant "c2rust" "$CHECKPOINT" "$HYBRID_BIN_NAME" "${SHORT}_c2rust"
+    ;;
+esac
+
+# ---------------------------------------------------------------------------
+# V-Hybrid  —  LLM-translated (final pipeline output)
+# ---------------------------------------------------------------------------
+case "$BUILD_STRATEGY" in
+  staticlib_link)
+    build_staticlib_variant "hybrid" "$RUST_OUT" "${SHORT}_hybrid" "$HYBRID_ENTRY"
+    ;;
+  cargo_bin)
+    build_cargo_bin_variant "hybrid" "$RUST_OUT" "$HYBRID_BIN_NAME" "${SHORT}_hybrid"
+    ;;
+esac
+
+echo ""
+echo "=== Build summary ==="
+ls -lh "$BIN_DIR"/${SHORT}_* 2>/dev/null || echo "(no binaries found)"

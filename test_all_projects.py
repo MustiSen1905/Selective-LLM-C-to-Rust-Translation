@@ -3,7 +3,7 @@ import sys
 
 def run_multiple_projects():
     # Liste deiner Projekte / Argumente
-    projekte = ["abc2mtex", "jbig2dec-master", "libtiff-4.0.9","pdfresurrect-master"]
+    projekte = ["abc2mtex","pdfresurrect-master"]
     log_datei = "projekte_ergebnisse.txt"
     
     # Datei öffnen ("w" zum Überschreiben am Anfang)

@@ -1,0 +1,9 @@
+/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/.claude/worktrees/blissful-chandrasekhar-b26b47/Rust-Outcome/pdfresurrect-master/rust_out/target/release/deps/find_msvc_tools-3f4ad540f955d8af.rmeta: /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/lib.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/find_tools.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/tool.rs
+
+/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/.claude/worktrees/blissful-chandrasekhar-b26b47/Rust-Outcome/pdfresurrect-master/rust_out/target/release/deps/libfind_msvc_tools-3f4ad540f955d8af.rlib: /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/lib.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/find_tools.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/tool.rs
+
+/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/.claude/worktrees/blissful-chandrasekhar-b26b47/Rust-Outcome/pdfresurrect-master/rust_out/target/release/deps/find_msvc_tools-3f4ad540f955d8af.d: /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/lib.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/find_tools.rs /home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/tool.rs
+
+/home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/lib.rs:
+/home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/find_tools.rs:
+/home/musti/.cargo/registry/src/github.com-1ecc6299db9ec823/find-msvc-tools-0.1.9/src/tool.rs:
