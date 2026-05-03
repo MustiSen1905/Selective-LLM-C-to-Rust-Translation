@@ -9,7 +9,4 @@ cc = "1"
 name="hybrid_project"
 path= "lib.rs"
 crate-type = ["staticlib", "rlib"]
-
-[[bin]]
-name = "abc2mtex_hybrid"
-path = "src/bin_main.rs"
+ 

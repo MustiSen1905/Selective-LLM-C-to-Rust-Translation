@@ -105,7 +105,7 @@ void	free_record(Record *entry, char *fmt)
 	free(entry);
 }
 
-static	void	str_get(char *string, char *fmt, int *f, char *index, int *i)
+void	str_get(char *string, char *fmt, int *f, char *index, int *i)
 ;
 
 int	get_record(char *fmt, FILE *In, Record *entry)
@@ -147,7 +147,7 @@ int	get_record(char *fmt, FILE *In, Record *entry)
 	return(1);
 }
 
-static	void	str_put(char *string, char *fmt, int *f, char *index, int *i)
+void	str_put(char *string, char *fmt, int *f, char *index, int *i)
 ;
 
 int	put_record(char *fmt, FILE *Out, Record *entry)

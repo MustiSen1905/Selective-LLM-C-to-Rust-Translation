@@ -269,10 +269,10 @@ void	read_settings(void)
 	(void) fclose(fp);
 }
 
-static	int	hcf(int a, int b)
+int	hcf(int a, int b)
 ;
 
-static	void	add_frac(frac a, frac b, frac *ans)
+void	add_frac(frac a, frac b, frac *ans)
 ;
 
 char	*end_of(char *s)
@@ -318,18 +318,18 @@ static	const	char	*Notes[]={
 				"c'","d'","e'","f'","g'","a'","b'"
 			};
 
-static	void	transpose_note(void)
+void	transpose_note(void)
 ;
 
-static	void	end_beam(void)
+void	end_beam(void)
 ;
 
 static	int	global_accidentals[7];
 
-static	void	new_symbol(int type)
+void	new_symbol(int type)
 ;
 
-static	void	output_transpose(void)
+void	output_transpose(void)
 ;
 
 void	output_transline(char *s)
@@ -338,13 +338,13 @@ void	output_transline(char *s)
 	(void) fputs(s,Trans);
 }
 
-static	void	save_two_bars(void)
+void	save_two_bars(void)
 ;
 
-static	void	check_syntax(int new_token)
+void	check_syntax(int new_token)
 ;
 
-static	void	set_base(Field *meter)
+void	set_base(Field *meter)
 ;
 
 void	get_dnl(Record *entry)
@@ -373,19 +373,19 @@ void	set_dnl(char *dnl_str)
 	}
 }
 
-static	void	ignore_space(char *s, int *c)
+void	ignore_space(char *s, int *c)
 ;
 
-static	void	ignore_alpha(char *s, int *c)
+void	ignore_alpha(char *s, int *c)
 ;
 
-static	void	transpose_accidental(int pitch)
+void	transpose_accidental(int pitch)
 ;
 
-static	int	mystrncasecmp(char *s1, char *s2, int n)
+int	mystrncasecmp(char *s1, char *s2, int n)
 ;
 
-static	void	sharps_flats(Field *key)
+void	sharps_flats(Field *key)
 ;
 
 int	range(int *first,int *last,int *yfirst,int *ylast,char **input)
@@ -453,100 +453,100 @@ int	range(int *first,int *last,int *yfirst,int *ylast,char **input)
 	return(1);
 }
 
-static	void	process_field(char *str)
+void	process_field(char *str)
 ;
 
-static	void	process_trailing(void)
+void	process_trailing(void)
 ;
 
-static	void	process_gchord(char *str)
+void	process_gchord(char *str)
 ;
 
-static	void	process_macro(char c)
+void	process_macro(char c)
 ;
 
-static	void	process_accent(char c)
+void	process_accent(char c)
 ;
 
-static	void	process_accidental(int accidental)
+void	process_accidental(int accidental)
 ;
 
-static	void	process_note(int pitch)
+void	process_note(int pitch)
 ;
 
-static	void	process_octaver(int octaver)
+void	process_octaver(int octaver)
 ;
 
-static	void	process_length(int length)
+void	process_length(int length)
 ;
 
-static	void	process_divisor(int length)
+void	process_divisor(int length)
 ;
 
-static	void	process_broken(int power)
+void	process_broken(int power)
 ;
 
-static	void	process_bar(int bar_type)
+void	process_bar(int bar_type)
 ;
 
-static	void	process_repeat(int no)
+void	process_repeat(int no)
 ;
 
-static	void	process_space(void)
+void	process_space(void)
 ;
 
-static	void	process_tie(void)
+void	process_tie(void)
 ;
 
-static	void	process_continuation(void)
+void	process_continuation(void)
 ;
 
-static	void	process_newline(void)
+void	process_newline(void)
 ;
 
-static	void	process_open_chord(void)
+void	process_open_chord(void)
 ;
 
-static	void	process_close_chord(void)
+void	process_close_chord(void)
 ;
 
-static	void	process_open_close_chord(void)
+void	process_open_close_chord(void)
 ;
 
-static	void	process_open_grace(void)
+void	process_open_grace(void)
 ;
 
-static	void	process_close_grace(void)
+void	process_close_grace(void)
 ;
 
-static	void	process_open_slur(void)
+void	process_open_slur(void)
 ;
 
-static	void	process_close_slur(void)
+void	process_close_slur(void)
 ;
 
-static	void	process_open_close_slur(void)
+void	process_open_close_slur(void)
 ;
 
-static	void	process_tuplet(char *s)
+void	process_tuplet(char *s)
 ;
 
-static	void	process_justify(void)
+void	process_justify(void)
 ;
 
-static	void	process_ampersand(int level)
+void	process_ampersand(int level)
 ;
 
-static	void	process_beams(int n, Symbol *s)
+void	process_beams(int n, Symbol *s)
 ;
 
-static	void	set_semitones(int s_f)
+void	set_semitones(int s_f)
 ;
 
-static	int	distance_from_C(Note *n)
+int	distance_from_C(Note *n)
 ;
 
-static	void	tune2hash(Field *key, int *hash_array, int force)
+void	tune2hash(Field *key, int *hash_array, int force)
 ;
 
 void	process_abc(char title[][99], int titles, Record *entry,

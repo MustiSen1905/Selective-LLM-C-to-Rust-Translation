@@ -11,3 +11,12 @@ pub mod src {
 pub mod main;
 pub mod pdf;
 } // mod src
+
+/// C-compatible entry point exported as `main` for hybrid/c2rust linking.
+#[no_mangle]
+pub unsafe extern "C" fn main(
+    argc: core::ffi::c_int,
+    argv: *mut *mut core::ffi::c_char,
+) -> core::ffi::c_int {
+    src::main::main_0(argc, argv)
+}

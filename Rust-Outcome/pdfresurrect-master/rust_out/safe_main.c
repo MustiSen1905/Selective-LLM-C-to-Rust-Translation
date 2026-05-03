@@ -45,7 +45,7 @@ void display_creator(FILE *fp, const pdf_t *pdf)
 ;
 
 
-static pdf_t *init_pdf(FILE *fp, const char *name)
+pdf_t *init_pdf(FILE *fp, const char *name)
 {
     pdf_t *pdf;
 

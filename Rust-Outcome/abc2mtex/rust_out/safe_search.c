@@ -27,7 +27,7 @@ enum	results { FAILURE, SUCCESS, CONTINUE };
 
 #define	DEFAULT_FORMAT_SIZE "F<99X<99J<99O<99R<99C<99T<99M<99L<99K<99|<99"
 
-int	hash_compare(int *array1,int *array2)
+static	int	hash_compare(int *array1,int *array2)
 {
 	int	dist = 0;
 
@@ -36,7 +36,7 @@ int	hash_compare(int *array1,int *array2)
 	return(dist);
 }
 
-int	get_abc_entry(char *dflt_meter,char *dflt_origin,
+static	int	get_abc_entry(char *dflt_meter,char *dflt_origin,
 			char *dflt_rhythm,char *entry,Record *abc,int *x)
 {
 	char	dummy[30][99];
@@ -109,7 +109,7 @@ int	get_abc_entry(char *dflt_meter,char *dflt_origin,
 		return(0);
 }
 
-int	str_compare(char *s,char *t)
+static	int	str_compare(char *s,char *t)
 {
 	while ((lower(*t)) == (lower(*s)) || *s == '.') {
 		++s;
@@ -120,7 +120,7 @@ int	str_compare(char *s,char *t)
 	return(CONTINUE);
 }
 
-int	str_search(char *s,char *t)
+static	int	str_search(char *s,char *t)
 {
 	int	result;
 	while (*s == '.') {

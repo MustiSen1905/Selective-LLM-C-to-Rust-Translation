@@ -24,13 +24,13 @@ typedef int (compFun)(const void*, const void*);
 
 static	char	priority[99];
 
-static	char	*next(char *s)
+char	*next(char *s)
 ;
 
-static	int	str_cmp(char *s,char *t)
+int	str_cmp(char *s,char *t)
 ;
 
-static	int	compare(Record **entry1,Record **entry2)
+int	compare(Record **entry1,Record **entry2)
 ;
 
 int	main(int argc,char *argv[])

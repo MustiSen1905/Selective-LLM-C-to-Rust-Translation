@@ -44,7 +44,7 @@ extern	int	nblanks;
 FILE	*Log;
 FILE	*Index;
 
-void	article(char *s,char *t)
+static	void	article(char *s,char *t)
 {
 	int	j;
 	char	*i = s;
@@ -71,7 +71,7 @@ void	article(char *s,char *t)
 	*t = '\0';
 }
 
-void	detex(char *s,char *t)
+static	void	detex(char *s,char *t)
 {
 	while (*s) {
 		if (*s == '\\') {
@@ -84,7 +84,7 @@ void	detex(char *s,char *t)
 	*t = '\0';
 }
 
-void	interval(char *s)
+static	void	interval(char *s)
 {
 	offset = atoi(&s[1])-1;
 	for (transpose = -1; transpose < 3; transpose++)
@@ -97,7 +97,7 @@ void	interval(char *s)
 	}
 }
 
-int	is_comment(char *str)
+static	int	is_comment(char *str)
 {
 	char	*c_ptr;
 
@@ -109,10 +109,10 @@ int	is_comment(char *str)
 	return(0);
 }
 
-void	strip_path(char *filename,char *file)
+static	void	strip_path(char *filename,char *file)
 {
 	char	*f_ptr;
-char	temp[99];
+	static	char	temp[99];
 	stripcpy(temp,file);
 	if ((strcmp(&temp[strlen(temp)-4],".abc")) == 0)
 		temp[strlen(temp)-4] = '\0';

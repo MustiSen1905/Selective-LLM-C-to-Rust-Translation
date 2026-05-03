@@ -27,17 +27,17 @@ enum	results { FAILURE, SUCCESS, CONTINUE };
 
 #define	DEFAULT_FORMAT_SIZE "F<99X<99J<99O<99R<99C<99T<99M<99L<99K<99|<99"
 
-static	int	hash_compare(int *array1,int *array2)
+int	hash_compare(int *array1,int *array2)
 ;
 
-static	int	get_abc_entry(char *dflt_meter,char *dflt_origin,
+int	get_abc_entry(char *dflt_meter,char *dflt_origin,
 			char *dflt_rhythm,char *entry,Record *abc,int *x)
 ;
 
-static	int	str_compare(char *s,char *t)
+int	str_compare(char *s,char *t)
 ;
 
-static	int	str_search(char *s,char *t)
+int	str_search(char *s,char *t)
 ;
 
 int	main(int argc,char *argv[])

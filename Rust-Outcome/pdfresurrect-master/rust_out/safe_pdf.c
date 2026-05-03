@@ -76,42 +76,42 @@
  * Forwards
  */
 
-static int is_valid_xref(FILE *fp, pdf_t *pdf, xref_t *xref);
-static void load_xref_entries(FILE *fp, xref_t *xref);
-static void load_xref_from_plaintext(FILE *fp, xref_t *xref);
-static void load_xref_from_stream(FILE *fp, xref_t *xref);
-static void get_xref_linear_skipped(FILE *fp, xref_t *xref);
-static void resolve_linearized_pdf(pdf_t *pdf);
+int is_valid_xref(FILE *fp, pdf_t *pdf, xref_t *xref);
+void load_xref_entries(FILE *fp, xref_t *xref);
+void load_xref_from_plaintext(FILE *fp, xref_t *xref);
+void load_xref_from_stream(FILE *fp, xref_t *xref);
+void get_xref_linear_skipped(FILE *fp, xref_t *xref);
+void resolve_linearized_pdf(pdf_t *pdf);
 
-static pdf_creator_t *new_creator(int *n_elements);
-static void load_creator(FILE *fp, pdf_t *pdf);
-static void load_creator_from_buf(
+pdf_creator_t *new_creator(int *n_elements);
+void load_creator(FILE *fp, pdf_t *pdf);
+void load_creator_from_buf(
     FILE       *fp,
     xref_t     *xref,
     const char *buf,
     size_t      buf_size);
-static void load_creator_from_xml(xref_t *xref, const char *buf);
-static void load_creator_from_old_format(
+void load_creator_from_xml(xref_t *xref, const char *buf);
+void load_creator_from_old_format(
     FILE       *fp,
     xref_t     *xref,
     const char *buf,
     size_t      buf_size);
 
-static char *get_object_from_here(FILE *fp, size_t *size, int *is_stream);
+char *get_object_from_here(FILE *fp, size_t *size, int *is_stream);
 
-static char *get_object(
+char *get_object(
     FILE         *fp,
     int           obj_id,
     const xref_t *xref,
     size_t       *size,
     int          *is_stream);
 
-static const char *get_type(FILE *fp, int obj_id, const xref_t *xref);
+const char *get_type(FILE *fp, int obj_id, const xref_t *xref);
 /* static int get_page(int obj_id, const xref_t *xref); */
-static char *get_header(FILE *fp);
+char *get_header(FILE *fp);
 
-static char *decode_text_string(const char *str, size_t str_len);
-static int get_next_eof(FILE *fp);
+char *decode_text_string(const char *str, size_t str_len);
+int get_next_eof(FILE *fp);
 
 
 /*
@@ -221,7 +221,7 @@ void resolve_linearized_pdf(pdf_t *pdf)
 ;
 
 
-static pdf_creator_t *new_creator(int *n_elements)
+pdf_creator_t *new_creator(int *n_elements)
 {
     pdf_creator_t *daddy;
 
@@ -283,7 +283,7 @@ void load_creator_from_old_format(
 /* Returns object data at the start of the file pointer
  * This interfaces to 'get_object'
  */
-static char *get_object_from_here(FILE *fp, size_t *size, int *is_stream)
+char *get_object_from_here(FILE *fp, size_t *size, int *is_stream)
 {
     long         start;
     char         buf[256];
@@ -317,7 +317,7 @@ static char *get_object_from_here(FILE *fp, size_t *size, int *is_stream)
 }
 
 
-static char *get_object(
+char *get_object(
     FILE         *fp,
     int           obj_id,
     const xref_t *xref,
@@ -408,7 +408,7 @@ static char *get_object(
 }
 
 
-static const char *get_type(FILE *fp, int obj_id, const xref_t *xref)
+const char *get_type(FILE *fp, int obj_id, const xref_t *xref)
 {
     int          is_stream;
     char        *c, *obj, *endobj;
@@ -477,7 +477,7 @@ static const char *get_type(FILE *fp, int obj_id, const xref_t *xref)
 }
 
 
-static char *get_header(FILE *fp)
+char *get_header(FILE *fp)
 {
     /* First 1024 bytes of doc must be header (1.7 spec pg 1102) */
     char *header = safe_calloc(1024);
@@ -489,7 +489,7 @@ static char *get_header(FILE *fp)
 }
 
 
-static char *decode_text_string(const char *str, size_t str_len)
+char *decode_text_string(const char *str, size_t str_len)
 {
     int   idx, is_hex, is_utf16be, ascii_idx;
     char *ascii, hex_buf[5] = {0};

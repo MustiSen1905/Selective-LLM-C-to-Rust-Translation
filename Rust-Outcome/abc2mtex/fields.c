@@ -44,19 +44,19 @@ extern	int	nblanks;
 FILE	*Log;
 FILE	*Index;
 
-static	void	article(char *s,char *t)
+void	article(char *s,char *t)
 ;
 
-static	void	detex(char *s,char *t)
+void	detex(char *s,char *t)
 ;
 
-static	void	interval(char *s)
+void	interval(char *s)
 ;
 
-static	int	is_comment(char *str)
+int	is_comment(char *str)
 ;
 
-static	void	strip_path(char *filename,char *file)
+void	strip_path(char *filename,char *file)
 ;
 
 int	main(int argc,char **argv)

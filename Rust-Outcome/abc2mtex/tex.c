@@ -41,7 +41,7 @@ static	int	musix;
 static	const	char	*mtex ={"ABCDEFGHIJKLMNabcdefghijklmnopqrstuvwxyz"};
 static	const	char	*Accidental[] = { "", "<", "_", "=", "^", ">" };
 
-static	int	abclog2(int x)
+int	abclog2(int x)
 ;
 
 void	open_TeX(char *s, int musix_out)
@@ -62,31 +62,31 @@ void	open_TeX(char *s, int musix_out)
 	if (musix == 1) (void) fprintf(Out,"\\startmuflex%%\n");
 }
 
-static	void	open_grace(void)
+void	open_grace(void)
 ;
 
-static	void	open_music(void)
+void	open_music(void)
 ;
 
-static	void	close_grace(void)
+void	close_grace(void)
 ;
 
-static	void	close_music(void)
+void	close_music(void)
 ;
 
-static	void	open_tune(void)
+void	open_tune(void)
 ;
 
-static	char	q_plus(int pitch,int beam)
+char	q_plus(int pitch,int beam)
 ;
 
-static	char	n_plus(int pitch,int beam)
+char	n_plus(int pitch,int beam)
 ;
 
-static	char	L_minus(int pitch,int beam)
+char	L_minus(int pitch,int beam)
 ;
 
-static	void	draw_header(void)
+void	draw_header(void)
 ;
 
 void	draw_text(char *type,char *string)
@@ -110,73 +110,73 @@ void	draw_text(char *type,char *string)
 	}
 }
 
-static	void	draw_tempo(Field *tempo)
+void	draw_tempo(Field *tempo)
 ;
 
-static	void	close_open(void)
+void	close_open(void)
 ;
 
-static	void	next_stave(void)
+void	next_stave(void)
 ;
 
-static	void	draw_rest(int level)
+void	draw_rest(int level)
 ;
 
-static	void	draw_pt(Note note)
+void	draw_pt(Note note)
 ;
 
-static	void	draw_slur(Note note,char type,char ud, int change)
+void	draw_slur(Note note,char type,char ud, int change)
 ;
 
-static	void	draw_attributes(Note note,char ul,char lu,char ud,int beam)
+void	draw_attributes(Note note,char ul,char lu,char ud,int beam)
 ;
 
-static	void	draw_usercmd(char *s)
+void	draw_usercmd(char *s)
 ;
 
-static	void	draw_chord(Symbol *root)
+void	draw_chord(Symbol *root)
 ;
 
-static	void	draw_tie(Note note,char *str)
+void	draw_tie(Note note,char *str)
 ;
 
-static	void	draw_part(char *part)
+void	draw_part(char *part)
 ;
 
-static	void	draw_tex(char *line)
+void	draw_tex(char *line)
 ;
 
-static	void	draw_size(char *size)
+void	draw_size(char *size)
 ;
 
 void	close_TeX(void)
 ;
 
-static	void	draw_old_repeat(int repeat)
+void	draw_old_repeat(int repeat)
 ;
 
-static	void	draw_meter_new(Field *meter)
+void	draw_meter_new(Field *meter)
 ;
 
-static	void	key2tex(Field *f)
+void	key2tex(Field *f)
 ;
 
-static	void	staves(void)
+void	staves(void)
 ;
 
-static	void	scan_fields(Symbol *s, int scan)
+void	scan_fields(Symbol *s, int scan)
 ;
 
-static	void	beam2tex(int n, Symbol *first, int beam)
+void	beam2tex(int n, Symbol *first, int beam)
 ;
 
-static	void	bar2tex(Symbol *s)
+void	bar2tex(Symbol *s)
 ;
 
-static	void	fields2tex(Field *f)
+void	fields2tex(Field *f)
 ;
 
-static	void	end_tune(void)
+void	end_tune(void)
 ;
 
 void	tune2tex(char title[][99], int titles, Record *entry, int n_symbols,
