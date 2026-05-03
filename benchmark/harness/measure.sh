@@ -124,26 +124,21 @@ for PROJECT in "${PROJECTS[@]}"; do
       echo "  Workload: $WLABEL"
 
       # --- Wall-clock via hyperfine ---
+      # Build a single shell-quoted command string so hyperfine treats the
+      # binary + all its arguments as ONE command (not multiple competing ones).
       HYPERFINE_JSON="/tmp/_harness_hyperfine_${SHORT}_${LABEL}.json"
       if [[ ${#WARGS[@]} -gt 0 ]]; then
-        hyperfine \
-          --warmup "$WARMUP" \
-          --runs "$RUNS" \
-          --export-json "$HYPERFINE_JSON" \
-          --show-output 2>/dev/null \
-          -- "$BIN" "${WARGS[@]}" >/dev/null 2>&1 || \
-        hyperfine \
-          --warmup "$WARMUP" \
-          --runs "$RUNS" \
-          --export-json "$HYPERFINE_JSON" \
-          -- "$BIN" "${WARGS[@]}"
+        # printf %q produces shell-safe quoting even for paths with spaces.
+        CMD=$(printf '%q ' "$BIN" "${WARGS[@]}")
       else
-        hyperfine \
-          --warmup "$WARMUP" \
-          --runs "$RUNS" \
-          --export-json "$HYPERFINE_JSON" \
-          -- "$BIN"
+        CMD=$(printf '%q' "$BIN")
       fi
+      hyperfine \
+        --warmup "$WARMUP" \
+        --runs "$RUNS" \
+        --export-json "$HYPERFINE_JSON" \
+        --ignore-failure \
+        -- "$CMD"
 
       # Parse hyperfine JSON (python one-liner, no extra deps)
       python3 - "$HYPERFINE_JSON" "$PROJECT" "$LABEL" "$WLABEL" "$RUNS" "$PERF_CSV" << 'PYEOF'
@@ -170,7 +165,20 @@ PYEOF
         RSS=$(measure_rss "$BIN" 2>/dev/null || echo 0)
       fi
       echo "$PROJECT,$LABEL,$WLABEL,$RSS" >> "$MEM_CSV"
-      echo "    mean=$(python3 -c "print(f'{$(grep "$LABEL,$WLABEL" $PERF_CSV | tail -1 | cut -d, -f5) * 1000:.1f} ms')" 2>/dev/null || echo "?") | rss=${RSS} KB"
+      MEAN_MS=$(python3 - "$PERF_CSV" "$LABEL" "$WLABEL" << 'MEAN_PYEOF'
+import sys, csv
+pcsv, label, wlabel = sys.argv[1], sys.argv[2], sys.argv[3]
+with open(pcsv) as f:
+    for row in csv.reader(f):
+        if len(row) >= 6 and row[1] == label and row[2] == wlabel:
+            last = row
+try:
+    print(f"{float(last[4])*1000:.1f}")
+except Exception:
+    print("?")
+MEAN_PYEOF
+)
+      echo "    mean=${MEAN_MS} ms | rss=${RSS} KB"
     done
   done
 done

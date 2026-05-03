@@ -1,821 +1,291 @@
 {
-    "analysis_target": "abc2mtex",
+    "analysis_target": "pdfresurrect-master",
     "files": {
-        "abc.c": {
+        "main.c": {
             "functions": [
                 {
+                    "name": "usage",
+                    "args": "void",
+                    "has_pointers": false,
+                    "line": 26
+                },
+                {
+                    "name": "write_version",
+                    "args": "FILE       *fp,\n    const char *fname,\n    const char *dirname,\n    xref_t     *xref",
+                    "has_pointers": true,
+                    "line": 39
+                },
+                {
+                    "name": "scrub_document",
+                    "args": "FILE *fp, const pdf_t *pdf",
+                    "has_pointers": true,
+                    "line": 82
+                },
+                {
+                    "name": "display_creator",
+                    "args": "FILE *fp, const pdf_t *pdf",
+                    "has_pointers": true,
+                    "line": 166
+                },
+                {
                     "name": "main",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 195
-                },
-                {
-                    "name": "abc_warning",
-                    "args": "char *fmt, ...",
+                    "args": "int argc, char **argv",
                     "has_pointers": true,
-                    "line": 212
-                },
-                {
-                    "name": "abc_error",
-                    "args": "char *fmt, ...",
-                    "has_pointers": true,
-                    "line": 223
-                },
-                {
-                    "name": "closeIn",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 266
-                },
-                {
-                    "name": "read_settings",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 271
-                },
-                {
-                    "name": "hcf",
-                    "args": "int a, int b",
-                    "has_pointers": false,
-                    "line": 299
-                },
-                {
-                    "name": "add_frac",
-                    "args": "frac a, frac b, frac *ans",
-                    "has_pointers": true,
-                    "line": 314
-                },
-                {
-                    "name": "is_field",
-                    "args": "char *line",
-                    "has_pointers": true,
-                    "line": 329
-                },
-                {
-                    "name": "strip",
-                    "args": "char *str, char *comment",
-                    "has_pointers": true,
-                    "line": 337
-                },
-                {
-                    "name": "stripcpy",
-                    "args": "char *out_str, char *in_str",
-                    "has_pointers": true,
-                    "line": 353
-                },
-                {
-                    "name": "transpose_note",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 369
-                },
-                {
-                    "name": "end_beam",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 384
-                },
-                {
-                    "name": "new_symbol",
-                    "args": "int type",
-                    "has_pointers": false,
-                    "line": 410
-                },
-                {
-                    "name": "output_transpose",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 480
-                },
-                {
-                    "name": "output_transline",
-                    "args": "char *s",
-                    "has_pointers": true,
-                    "line": 492
-                },
-                {
-                    "name": "save_two_bars",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 498
-                },
-                {
-                    "name": "check_syntax",
-                    "args": "int new_token",
-                    "has_pointers": false,
-                    "line": 508
-                },
-                {
-                    "name": "set_base",
-                    "args": "Field *meter",
-                    "has_pointers": true,
-                    "line": 541
-                },
-                {
-                    "name": "get_dnl",
-                    "args": "Record *entry",
-                    "has_pointers": true,
-                    "line": 590
-                },
-                {
-                    "name": "set_dnl",
-                    "args": "char *dnl_str",
-                    "has_pointers": true,
-                    "line": 602
-                },
-                {
-                    "name": "ignore_space",
-                    "args": "char *s, int *c",
-                    "has_pointers": true,
-                    "line": 616
-                },
-                {
-                    "name": "ignore_alpha",
-                    "args": "char *s, int *c",
-                    "has_pointers": true,
-                    "line": 625
-                },
-                {
-                    "name": "transpose_accidental",
-                    "args": "int pitch",
-                    "has_pointers": false,
-                    "line": 635
-                },
-                {
-                    "name": "mystrncasecmp",
-                    "args": "char *s1, char *s2, int n",
-                    "has_pointers": true,
-                    "line": 646
-                },
-                {
-                    "name": "sharps_flats",
-                    "args": "Field *key",
-                    "has_pointers": true,
-                    "line": 662
-                },
-                {
-                    "name": "range",
-                    "args": "int *first,int *last,int *yfirst,int *ylast,char **input",
-                    "has_pointers": true,
-                    "line": 816
-                },
-                {
-                    "name": "process_field",
-                    "args": "char *str",
-                    "has_pointers": true,
-                    "line": 881
-                },
-                {
-                    "name": "process_trailing",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 931
-                },
-                {
-                    "name": "process_gchord",
-                    "args": "char *str",
-                    "has_pointers": true,
-                    "line": 938
-                },
-                {
-                    "name": "process_macro",
-                    "args": "char c",
-                    "has_pointers": false,
-                    "line": 979
-                },
-                {
-                    "name": "process_accent",
-                    "args": "char c",
-                    "has_pointers": false,
-                    "line": 991
-                },
-                {
-                    "name": "process_accidental",
-                    "args": "int accidental",
-                    "has_pointers": false,
-                    "line": 1007
-                },
-                {
-                    "name": "process_note",
-                    "args": "int pitch",
-                    "has_pointers": false,
-                    "line": 1023
-                },
-                {
-                    "name": "process_octaver",
-                    "args": "int octaver",
-                    "has_pointers": false,
-                    "line": 1073
-                },
-                {
-                    "name": "process_length",
-                    "args": "int length",
-                    "has_pointers": false,
-                    "line": 1088
-                },
-                {
-                    "name": "process_divisor",
-                    "args": "int length",
-                    "has_pointers": false,
-                    "line": 1104
-                },
-                {
-                    "name": "process_broken",
-                    "args": "int power",
-                    "has_pointers": false,
-                    "line": 1120
-                },
-                {
-                    "name": "process_bar",
-                    "args": "int bar_type",
-                    "has_pointers": false,
-                    "line": 1147
-                },
-                {
-                    "name": "process_repeat",
-                    "args": "int no",
-                    "has_pointers": false,
-                    "line": 1199
-                },
-                {
-                    "name": "process_space",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1222
-                },
-                {
-                    "name": "process_tie",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1233
-                },
-                {
-                    "name": "process_continuation",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1247
-                },
-                {
-                    "name": "process_newline",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1258
-                },
-                {
-                    "name": "process_open_chord",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1272
-                },
-                {
-                    "name": "process_close_chord",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1286
-                },
-                {
-                    "name": "process_open_close_chord",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1308
-                },
-                {
-                    "name": "process_open_grace",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1316
-                },
-                {
-                    "name": "process_close_grace",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1325
-                },
-                {
-                    "name": "process_open_slur",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1336
-                },
-                {
-                    "name": "process_close_slur",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1348
-                },
-                {
-                    "name": "process_open_close_slur",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1357
-                },
-                {
-                    "name": "process_tuplet",
-                    "args": "char *s",
-                    "has_pointers": true,
-                    "line": 1378
-                },
-                {
-                    "name": "process_justify",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1440
-                },
-                {
-                    "name": "process_ampersand",
-                    "args": "int level",
-                    "has_pointers": false,
-                    "line": 1449
-                },
-                {
-                    "name": "process_beams",
-                    "args": "int n, Symbol *s",
-                    "has_pointers": true,
-                    "line": 1465
-                },
-                {
-                    "name": "set_semitones",
-                    "args": "int s_f",
-                    "has_pointers": false,
-                    "line": 1511
-                },
-                {
-                    "name": "distance_from_C",
-                    "args": "Note *n",
-                    "has_pointers": true,
-                    "line": 1533
-                },
-                {
-                    "name": "tune2hash",
-                    "args": "Field *key, int *hash_array, int force",
-                    "has_pointers": true,
-                    "line": 1556
-                },
-                {
-                    "name": "process_abc",
-                    "args": "char title[][99], int titles, Record *entry,\n\t\tchar *key_comment, char *bars, char *tune, char *input,\n\t\tint output_type, int nbars, int force, int *hash_array",
-                    "has_pointers": true,
-                    "line": 1617
+                    "line": 216
                 }
             ],
             "allocations": [],
             "deallocations": [
                 {
-                    "variable": "s->u.note.gchord",
-                    "line": 1950
+                    "variable": "new_fname",
+                    "line": 62
                 },
                 {
-                    "variable": "s->u.field.string",
-                    "line": 1952
+                    "variable": "new_fname",
+                    "line": 76
                 },
                 {
-                    "variable": "block[i]",
-                    "line": 1955
+                    "variable": "new_name",
+                    "line": 107
                 },
                 {
-                    "variable": "line",
-                    "line": 1956
+                    "variable": "new_name",
+                    "line": 115
+                },
+                {
+                    "variable": "new_name",
+                    "line": 160
+                },
+                {
+                    "variable": "dname",
+                    "line": 310
+                },
+                {
+                    "variable": "dname",
+                    "line": 335
                 }
             ],
             "global_vars": [],
             "cppcheck_reports": []
         },
-        "fields.c": {
-            "functions": [
-                {
-                    "name": "article",
-                    "args": "char *s,char *t",
-                    "has_pointers": true,
-                    "line": 47
-                },
-                {
-                    "name": "detex",
-                    "args": "char *s,char *t",
-                    "has_pointers": true,
-                    "line": 74
-                },
-                {
-                    "name": "interval",
-                    "args": "char *s",
-                    "has_pointers": true,
-                    "line": 87
-                },
-                {
-                    "name": "is_comment",
-                    "args": "char *str",
-                    "has_pointers": true,
-                    "line": 100
-                },
-                {
-                    "name": "strip_path",
-                    "args": "char *filename,char *file",
-                    "has_pointers": true,
-                    "line": 112
-                },
-                {
-                    "name": "main",
-                    "args": "int argc,char **argv",
-                    "has_pointers": true,
-                    "line": 126
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "entry->fields[i]",
-                    "line": 550
-                },
-                {
-                    "variable": "entry->BARS",
-                    "line": 551
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "index.c": {
-            "functions": [
-                {
-                    "name": "g_error",
-                    "args": "const char *fmt, ...",
-                    "has_pointers": true,
-                    "line": 19
-                },
-                {
-                    "name": "get_index",
-                    "args": "char *fmt, char *fname",
-                    "has_pointers": true,
-                    "line": 30
-                },
-                {
-                    "name": "size_record",
-                    "args": "char *fmt, int *size, char *field",
-                    "has_pointers": true,
-                    "line": 71
-                },
-                {
-                    "name": "free_record",
-                    "args": "Record *entry, char *fmt",
-                    "has_pointers": true,
-                    "line": 108
-                },
-                {
-                    "name": "str_get",
-                    "args": "char *string, char *fmt, int *f, char *index, int *i",
-                    "has_pointers": true,
-                    "line": 121
-                },
-                {
-                    "name": "get_record",
-                    "args": "char *fmt, FILE *In, Record *entry",
-                    "has_pointers": true,
-                    "line": 155
-                },
-                {
-                    "name": "str_put",
-                    "args": "char *string, char *fmt, int *f, char *index, int *i",
-                    "has_pointers": true,
-                    "line": 194
-                },
-                {
-                    "name": "put_record",
-                    "args": "char *fmt, FILE *Out, Record *entry",
-                    "has_pointers": true,
-                    "line": 228
-                },
-                {
-                    "name": "lower",
-                    "args": "char c",
-                    "has_pointers": false,
-                    "line": 262
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "entry->fields[fmt[f]-'A']",
-                    "line": 114
-                },
-                {
-                    "variable": "entry->BARS",
-                    "line": 116
-                },
-                {
-                    "variable": "entry",
-                    "line": 118
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": [
-                "C-projects\\abc2mtex\\index.c:105:2: error: Memory leak: entry.bars [memleak]"
-            ]
-        },
-        "index.h": {
+        "main.h": {
             "functions": [],
             "allocations": [],
             "deallocations": [],
             "global_vars": [],
             "cppcheck_reports": []
         },
-        "search.c": {
+        "pdf.c": {
             "functions": [
                 {
-                    "name": "hash_compare",
-                    "args": "int *array1,int *array2",
+                    "name": "pdf_delete",
+                    "args": "pdf_t *pdf",
                     "has_pointers": true,
-                    "line": 30
+                    "line": 149
                 },
                 {
-                    "name": "get_abc_entry",
-                    "args": "char *dflt_meter,char *dflt_origin,\n\t\t\tchar *dflt_rhythm,char *entry,Record *abc,int *x",
+                    "name": "pdf_is_pdf",
+                    "args": "FILE *fp",
                     "has_pointers": true,
-                    "line": 39
+                    "line": 165
                 },
                 {
-                    "name": "str_compare",
-                    "args": "char *s,char *t",
+                    "name": "pdf_get_version",
+                    "args": "FILE *fp, pdf_t *pdf",
                     "has_pointers": true,
-                    "line": 112
+                    "line": 179
                 },
                 {
-                    "name": "str_search",
-                    "args": "char *s,char *t",
+                    "name": "pdf_load_xrefs",
+                    "args": "FILE *fp, pdf_t *pdf",
                     "has_pointers": true,
-                    "line": 123
+                    "line": 200
                 },
                 {
-                    "name": "main",
-                    "args": "int argc,char *argv[]",
+                    "name": "pdf_get_object_status",
+                    "args": "const pdf_t *pdf,\n    int          xref_idx,\n    int          entry_idx",
                     "has_pointers": true,
-                    "line": 141
-                }
-            ],
-            "allocations": [],
-            "deallocations": [],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "sort_in.c": {
-            "functions": [
+                    "line": 297
+                },
                 {
-                    "name": "str_cmp",
-                    "args": "char *s,char *t",
+                    "name": "pdf_zero_object",
+                    "args": "FILE        *fp,\n    const pdf_t *pdf,\n    int          xref_idx,\n    int          entry_idx",
                     "has_pointers": true,
-                    "line": 38
+                    "line": 349
                 },
                 {
-                    "name": "compare",
-                    "args": "Record **entry1,Record **entry2",
-                    "has_pointers": true,
-                    "line": 63
-                },
-                {
-                    "name": "main",
-                    "args": "int argc,char *argv[]",
-                    "has_pointers": true,
-                    "line": 88
-                }
-            ],
-            "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "list",
-                    "line": 174
-                }
-            ],
-            "global_vars": [],
-            "cppcheck_reports": []
-        },
-        "tex.c": {
-            "functions": [
-                {
-                    "name": "abclog2",
-                    "args": "int x",
-                    "has_pointers": false,
-                    "line": 44
-                },
-                {
-                    "name": "open_TeX",
-                    "args": "char *s, int musix_out",
-                    "has_pointers": true,
-                    "line": 54
-                },
-                {
-                    "name": "open_grace",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 72
-                },
-                {
-                    "name": "open_music",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 78
-                },
-                {
-                    "name": "close_grace",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 84
-                },
-                {
-                    "name": "close_music",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 90
-                },
-                {
-                    "name": "open_tune",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 96
-                },
-                {
-                    "name": "q_plus",
-                    "args": "int pitch,int beam",
-                    "has_pointers": false,
-                    "line": 108
-                },
-                {
-                    "name": "n_plus",
-                    "args": "int pitch,int beam",
-                    "has_pointers": false,
-                    "line": 118
-                },
-                {
-                    "name": "L_minus",
-                    "args": "int pitch,int beam",
-                    "has_pointers": false,
-                    "line": 128
-                },
-                {
-                    "name": "draw_header",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 138
-                },
-                {
-                    "name": "draw_text",
-                    "args": "char *type,char *string",
-                    "has_pointers": true,
-                    "line": 143
-                },
-                {
-                    "name": "draw_tempo",
-                    "args": "Field *tempo",
-                    "has_pointers": true,
-                    "line": 164
-                },
-                {
-                    "name": "close_open",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 217
-                },
-                {
-                    "name": "next_stave",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 223
-                },
-                {
-                    "name": "draw_rest",
-                    "args": "int level",
-                    "has_pointers": false,
-                    "line": 229
-                },
-                {
-                    "name": "draw_pt",
-                    "args": "Note note",
-                    "has_pointers": false,
-                    "line": 260
-                },
-                {
-                    "name": "draw_slur",
-                    "args": "Note note,char type,char ud, int change",
-                    "has_pointers": false,
-                    "line": 270
-                },
-                {
-                    "name": "draw_attributes",
-                    "args": "Note note,char ul,char lu,char ud,int beam",
-                    "has_pointers": false,
-                    "line": 300
-                },
-                {
-                    "name": "draw_usercmd",
-                    "args": "char *s",
+                    "name": "pdf_summarize",
+                    "args": "FILE        *fp,\n    const pdf_t *pdf,\n    const char  *name,\n    pdf_flag_t   flags",
                     "has_pointers": true,
                     "line": 382
                 },
                 {
-                    "name": "draw_chord",
-                    "args": "Symbol *root",
+                    "name": "pdf_display_creator",
+                    "args": "const pdf_t *pdf, int xref_idx",
                     "has_pointers": true,
-                    "line": 394
+                    "line": 512
                 },
                 {
-                    "name": "draw_tie",
-                    "args": "Note note,char *str",
+                    "name": "is_valid_xref",
+                    "args": "FILE *fp, pdf_t *pdf, xref_t *xref",
                     "has_pointers": true,
-                    "line": 412
+                    "line": 531
                 },
                 {
-                    "name": "draw_part",
-                    "args": "char *part",
+                    "name": "load_xref_entries",
+                    "args": "FILE *fp, xref_t *xref",
                     "has_pointers": true,
-                    "line": 427
+                    "line": 568
                 },
                 {
-                    "name": "draw_tex",
-                    "args": "char *line",
+                    "name": "load_xref_from_plaintext",
+                    "args": "FILE *fp, xref_t *xref",
                     "has_pointers": true,
-                    "line": 433
+                    "line": 577
                 },
                 {
-                    "name": "draw_size",
-                    "args": "char *size",
+                    "name": "load_xref_from_stream",
+                    "args": "FILE *fp, xref_t *xref",
                     "has_pointers": true,
-                    "line": 440
+                    "line": 664
                 },
                 {
-                    "name": "close_TeX",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 454
-                },
-                {
-                    "name": "draw_old_repeat",
-                    "args": "int repeat",
-                    "has_pointers": false,
-                    "line": 461
-                },
-                {
-                    "name": "draw_meter_new",
-                    "args": "Field *meter",
+                    "name": "get_xref_linear_skipped",
+                    "args": "FILE *fp, xref_t *xref",
                     "has_pointers": true,
-                    "line": 466
+                    "line": 684
                 },
                 {
-                    "name": "key2tex",
-                    "args": "Field *f",
+                    "name": "resolve_linearized_pdf",
+                    "args": "pdf_t *pdf",
                     "has_pointers": true,
-                    "line": 485
+                    "line": 732
                 },
                 {
-                    "name": "staves",
-                    "args": "void",
-                    "has_pointers": false,
+                    "name": "load_creator",
+                    "args": "FILE *fp, pdf_t *pdf",
+                    "has_pointers": true,
+                    "line": 795
+                },
+                {
+                    "name": "load_creator_from_buf",
+                    "args": "FILE       *fp,\n    xref_t     *xref,\n    const char *buf,\n    size_t      buf_size",
+                    "has_pointers": true,
+                    "line": 859
+                },
+                {
+                    "name": "load_creator_from_xml",
+                    "args": "xref_t *xref, const char *buf",
+                    "has_pointers": true,
+                    "line": 889
+                },
+                {
+                    "name": "load_creator_from_old_format",
+                    "args": "FILE       *fp,\n    xref_t     *xref,\n    const char *buf,\n    size_t      buf_size",
+                    "has_pointers": true,
+                    "line": 895
+                },
+                {
+                    "name": "get_next_eof",
+                    "args": "FILE *fp",
+                    "has_pointers": true,
+                    "line": 1280
+                }
+            ],
+            "allocations": [
+                {
+                    "target_var": "data",
+                    "method": "realloc",
+                    "line": 1111
+                }
+            ],
+            "deallocations": [
+                {
+                    "variable": "pdf->xrefs[i].creator",
+                    "line": 155
+                },
+                {
+                    "variable": "pdf->xrefs[i].entries",
+                    "line": 156
+                },
+                {
+                    "variable": "pdf->name",
+                    "line": 159
+                },
+                {
+                    "variable": "pdf->xrefs",
+                    "line": 160
+                },
+                {
+                    "variable": "pdf",
+                    "line": 161
+                },
+                {
+                    "variable": "header",
+                    "line": 174
+                },
+                {
+                    "variable": "header",
+                    "line": 196
+                },
+                {
+                    "variable": "obj",
+                    "line": 377
+                },
+                {
+                    "variable": "dst_name",
                     "line": 506
                 },
                 {
-                    "name": "scan_fields",
-                    "args": "Symbol *s, int scan",
-                    "has_pointers": true,
-                    "line": 540
+                    "variable": "c",
+                    "line": 560
                 },
                 {
-                    "name": "beam2tex",
-                    "args": "int n, Symbol *first, int beam",
-                    "has_pointers": true,
-                    "line": 561
+                    "variable": "stream",
+                    "line": 679
                 },
                 {
-                    "name": "bar2tex",
-                    "args": "Symbol *s",
-                    "has_pointers": true,
-                    "line": 949
+                    "variable": "buf",
+                    "line": 852
                 },
                 {
-                    "name": "fields2tex",
-                    "args": "Field *f",
-                    "has_pointers": true,
-                    "line": 1062
+                    "variable": "obj",
+                    "line": 1003
                 },
                 {
-                    "name": "end_tune",
-                    "args": "void",
-                    "has_pointers": false,
-                    "line": 1100
+                    "variable": "ascii",
+                    "line": 1013
                 },
                 {
-                    "name": "tune2tex",
-                    "args": "char title[][99], int titles, Record *entry, int n_symbols,\n\t\tSymbol *symbols, Field *key_field, Field *meter_field,\n\t\tField *tempo_field",
-                    "has_pointers": true,
-                    "line": 1118
+                    "variable": "data",
+                    "line": 1138
+                },
+                {
+                    "variable": "obj",
+                    "line": 1163
+                },
+                {
+                    "variable": "obj",
+                    "line": 1185
+                },
+                {
+                    "variable": "obj",
+                    "line": 1205
+                },
+                {
+                    "variable": "obj",
+                    "line": 1213
                 }
             ],
+            "global_vars": [],
+            "cppcheck_reports": [
+                "C-projects/pdfresurrect-master/pdf.c:1111:11: error: Common realloc mistake: 'data' nulled but not freed upon failure [memleakOnRealloc]"
+            ]
+        },
+        "pdf.h": {
+            "functions": [],
             "allocations": [],
-            "deallocations": [
-                {
-                    "variable": "old_beam",
-                    "line": 492
-                },
-                {
-                    "variable": "old_beam",
-                    "line": 1102
-                }
-            ],
+            "deallocations": [],
             "global_vars": [],
             "cppcheck_reports": []
         }

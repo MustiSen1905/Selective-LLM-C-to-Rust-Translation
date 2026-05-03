@@ -441,9 +441,18 @@ def inject_safe_default_derive(rust_src_dir: str):
         if manual_default_structs:
             impl_lines = ["\n// --- auto-generated manual Default impls (raw-pointer structs) ---"]
             for sname in manual_default_structs:
-                # Schon vorhanden? Dann ueberspringen.
-                if re.search(r'impl\s+Default\s+for\s+' + re.escape(sname) + r'\b', code):
-                    continue
+                # Schon vorhanden UND nicht leer? Dann ueberspringen.
+                # Leere `impl Default for X {}` (LLM-Artefakt ohne Methodenkoerper)
+                # werden durch den richtigen Block ersetzt, nicht uebersprungen.
+                existing = re.search(
+                    r'impl\s+Default\s+for\s+' + re.escape(sname) + r'\b\s*\{([^}]*)\}',
+                    code,
+                )
+                if existing and existing.group(1).strip():
+                    continue   # nicht leer -> behalten
+                if existing:
+                    # Leer -> raus, damit wir den richtigen unten anhaengen.
+                    code = code[:existing.start()] + code[existing.end():]
                 impl_lines.append(
                     f"impl Default for {sname} {{\n"
                     f"    fn default() -> Self {{\n"
@@ -488,10 +497,322 @@ def inject_safe_default_derive(rust_src_dir: str):
             code,
         )
 
+        # 2b. `..Default::default()` auch in `Self { ... }` Literalen ergaenzen,
+        #     wenn sie sich innerhalb eines `impl SafeX { ... }` Blocks befinden.
+        #     Fixt E0063 in from_ptr-Methoden die `Self { f1, f2 }` schreiben
+        #     statt `SafeX { f1, f2 }` (beides ist in Rust korrekt, aber der
+        #     SafeX-Name-Check oben erfasst Self nicht).
+        impl_self_re = re.compile(r'\bimpl\s+(Safe\w+)\s*\{', re.MULTILINE)
+        impl_self_edits = []
+        scan_pos = 0
+        while True:
+            ih = impl_self_re.search(code, scan_pos)
+            if not ih:
+                break
+            isname = ih.group(1)
+            ib_start = ih.end()
+            d, k = 1, ib_start
+            while k < len(code) and d > 0:
+                if code[k] == '{':
+                    d += 1
+                elif code[k] == '}':
+                    d -= 1
+                k += 1
+            ib_end = k
+            ib = code[ib_start:ib_end - 1]
+            scan_pos = k
+
+            ideclared = _ast_struct_field_count(original, isname)
+            if ideclared is None:
+                continue
+
+            self_lit_re = re.compile(r'\bSelf\s*\{([^{}]*)\}')
+            ib_edits = []
+            for sl in self_lit_re.finditer(ib):
+                sl_body = sl.group(1)
+                sl_no_comments = re.sub(r'//[^\n]*', '', sl_body)
+                if ".." in sl_no_comments:
+                    continue
+                ifilled = len(re.findall(r'^\s*\w+\s*:', sl_no_comments, flags=re.MULTILINE))
+                if ifilled >= ideclared:
+                    continue
+                sl_trimmed = sl_body.rstrip().rstrip(",")
+                sl_new = sl_trimmed + ",\n            ..Default::default()\n        "
+                ib_edits.append((sl.start(), sl.end(), f"Self {{{sl_new}}}"))
+
+            if ib_edits:
+                new_ib = ib
+                for s, e, r in sorted(ib_edits, key=lambda x: -x[0]):
+                    new_ib = new_ib[:s] + r + new_ib[e:]
+                impl_self_edits.append((ib_start, ib_end - 1, new_ib))
+
+        if impl_self_edits:
+            for s, e, r in sorted(impl_self_edits, key=lambda x: -x[0]):
+                code = code[:s] + r + code[e:]
+
         if code != original:
             with open(fpath, "w", encoding="utf-8") as f:
                 f.write(code)
             print(f"  [+] Default-Derive/rest-syntax in {fname}")
+
+
+def _safe_name_to_c_type(safe_name: str) -> str:
+    """Leitet den C-Originaltypnamen vom Safe-Struct-Namen ab.
+
+    Beispiele:
+        SafeXrefEntryT  ->  xref_entry_t
+        SafePdfCreatorT ->  pdf_creator_t
+        SafePdfT        ->  pdf_t
+        Safe_IO_FILE    ->  _IO_FILE
+        Safe__IO_FILE   ->  __IO_FILE
+    """
+    inner = re.sub(r'^Safe', '', safe_name)
+    # Bereits ein C-style Name mit fuehrendem Unterstrich -> unveraendert zurueck.
+    if inner.startswith('_'):
+        return inner
+    # CamelCase -> snake_case (MixColumns -> mix_columns, XrefEntryT -> xref_entry_t)
+    s1 = re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', inner)
+    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+
+def fill_empty_safe_impl_blocks(rust_src_dir: str):
+    """Fuellt leere `impl SafeX {}` Bloecke mit einem `from_ptr`-Stub, wenn
+    `SafeX::from_ptr(...)` anderswo aufgerufen wird (E0599 'method not found').
+
+    Entstehungsgrund: Der LLM-Struct-Refactorer generiert manchmal nur den
+    `impl`-Header ohne Methodenkoerper. Sobald from_ptr an Call-Sites benoetigt
+    wird, failt die Kompilierung mit E0599.
+
+    Strategie:
+        1. Alle SafeX-Typen sammeln, die via `SafeX::from_ptr(...)` aufgerufen werden.
+        2. Leere `impl SafeX {}` Bloecke (nur Whitespace im Body) finden.
+        3. C-Typ per _safe_name_to_c_type ableiten.
+        4. Minimalen compilier-faehigen `from_ptr`-Stub einfuegen.
+    """
+    if not os.path.isdir(rust_src_dir):
+        return
+
+    # 1. Welche Safe-Typen benoetigen from_ptr?
+    from_ptr_needed: set = set()
+    for _, fpath in _iter_rs_files(rust_src_dir):
+        try:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except OSError:
+            continue
+        for m in re.finditer(r'\b(Safe\w+)::from_ptr\s*\(', content):
+            from_ptr_needed.add(m.group(1))
+
+    if not from_ptr_needed:
+        print("  [i] fill_empty_safe_impl_blocks: keine from_ptr-Call-Sites gefunden.")
+        return
+
+    total_filled = 0
+    # Nur direkte Inherent-Impls (kein Trait davor): `impl SafeX {`
+    impl_re = re.compile(r'\bimpl\s+(Safe\w+)\s*\{', re.MULTILINE)
+
+    for fname, fpath in _iter_rs_files(rust_src_dir):
+        try:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                code = f.read()
+        except OSError:
+            continue
+        original = code
+
+        edits = []  # (abs_start, abs_end, replacement_str)
+        pos = 0
+        while True:
+            head = impl_re.search(code, pos)
+            if not head:
+                break
+            struct_name = head.group(1)
+
+            # Brace-Matching fuer den Impl-Block
+            body_start = head.end()
+            depth, i = 1, body_start
+            while i < len(code) and depth > 0:
+                if code[i] == '{':
+                    depth += 1
+                elif code[i] == '}':
+                    depth -= 1
+                i += 1
+            block_end = i  # zeigt auf das Zeichen NACH der schliessenden '}'
+            body = code[body_start:i - 1]
+            pos = i
+
+            # Nur leere Bloecke ohne from_ptr bearbeiten
+            if body.strip():
+                continue  # Nicht leer -> ueberspringen
+            if struct_name not in from_ptr_needed:
+                continue  # Kein from_ptr-Call-Site -> ueberspringen
+            if 'from_ptr' in body:
+                continue  # Bereits vorhanden (sollte nicht eintreten bei leerem Body)
+
+            # Sicherheits-Check: `impl Default for SafeX` wird von
+            # inject_safe_default_derive behandelt und darf hier nicht angefasst werden.
+            # Das Regex `impl\s+(Safe\w+)\s*\{` kann "Default for" nicht einfangen,
+            # aber wir pruefen zur Sicherheit trotzdem.
+            pre_context = code[max(0, head.start() - 25):head.start()]
+            if 'Default' in pre_context or pre_context.strip().endswith('for'):
+                continue
+
+            c_type = _safe_name_to_c_type(struct_name)
+            stub = (
+                f"\n    pub unsafe fn from_ptr(ptr: *mut {c_type}) -> Self {{\n"
+                f"        if ptr.is_null() {{ return Self::default(); }}\n"
+                f"        Self::default()\n"
+                f"    }}\n"
+            )
+            new_block = f"impl {struct_name} {{{stub}}}"
+            edits.append((head.start(), block_end, new_block))
+
+        if edits:
+            for s, e, r in sorted(edits, key=lambda x: -x[0]):
+                code = code[:s] + r + code[e:]
+            with open(fpath, 'w', encoding='utf-8') as f:
+                f.write(code)
+            total_filled += len(edits)
+            print(f"  [+] fill_empty_safe_impl_blocks in {fname}: "
+                  f"{len(edits)} from_ptr-Stub(s) eingefuegt.")
+
+    if total_filled == 0:
+        print("  [i] fill_empty_safe_impl_blocks: keine leeren impl-Bloecke mit from_ptr-Bedarf.")
+
+
+def fix_orig_fieldname_underscore_prefix(rust_src_dir: str):
+    """Korrigiert `orig.FIELD` -> `orig._FIELD` (oder `orig._IO_FIELD`) in
+    `from_ptr`-Methoden, wenn FIELD in der c2rust-Struct nicht existiert,
+    aber _FIELD oder _IO_FIELD schon (E0609 'no field `flags` on type `_IO_FILE`').
+
+    Ursache: c2rust behaelt fuehrende Unterstriche in C-Feldnamen (z.B. _flags,
+    _IO_read_ptr in _IO_FILE). Der LLM strippt diesen Prefix.
+
+    Strategie:
+        1. Alle Struct-Definitionen projektweite sammeln (struct_fields-Mapping).
+        2. Typ-Aliase aufloesen (pub type foo = bar).
+        3. In from_ptr-Methoden-Bodies: orig.FIELD pruefen; falls FIELD fehlt
+           aber _FIELD / _IO_FIELD existiert -> ersetzen.
+    """
+    if not os.path.isdir(rust_src_dir):
+        return
+
+    # --- Schritt 1: Struct-Feld-Mapping aufbauen ---
+    struct_fields: dict = {}   # struct_name -> set of field names
+    type_aliases:  dict = {}   # alias_name  -> concrete type name
+
+    for _, fpath in _iter_rs_files(rust_src_dir):
+        try:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except OSError:
+            continue
+
+        for m in re.finditer(r'\bpub\s+type\s+(\w+)\s*=\s*(\w+)\s*;', content):
+            type_aliases[m.group(1)] = m.group(2)
+
+        struct_re = re.compile(r'\bstruct\s+(\w+)\s*\{', re.MULTILINE)
+        for sm in struct_re.finditer(content):
+            sname = sm.group(1)
+            if sname.startswith('Safe'):
+                continue  # Safe-Structs haben keine Underscore-Prefix-Probleme
+            bs = sm.end()
+            d, j = 1, bs
+            while j < len(content) and d > 0:
+                if content[j] == '{':
+                    d += 1
+                elif content[j] == '}':
+                    d -= 1
+                j += 1
+            body = content[bs:j - 1]
+            fields: set = set()
+            for fm in re.finditer(r'^\s*pub\s+([A-Za-z_]\w*)\s*:', body, re.MULTILINE):
+                fields.add(fm.group(1))
+            if fields:
+                struct_fields[sname] = fields
+
+    # Typ-Aliase 1-stufig aufloesen
+    for alias, concrete in type_aliases.items():
+        if concrete in struct_fields and alias not in struct_fields:
+            struct_fields[alias] = struct_fields[concrete]
+
+    # --- Schritt 2: from_ptr-Methoden in jeder Datei korrigieren ---
+    # Signatur-Pattern: fn from_ptr(PARAM: *mut|*const TYPE...) -> Self {
+    sig_re = re.compile(
+        r'\bfn\s+from_ptr\s*\(\s*(\w+)\s*:\s*\*(?:mut|const)\s+(\w+)[^)]*\)\s*->\s*Self\s*\{',
+        re.MULTILINE,
+    )
+
+    total_files_fixed = 0
+
+    for fname, fpath in _iter_rs_files(rust_src_dir):
+        try:
+            with open(fpath, 'r', encoding='utf-8') as f:
+                code = f.read()
+        except OSError:
+            continue
+        if 'from_ptr' not in code:
+            continue
+
+        original = code
+        replacements = []  # (body_start, body_end_excl_closing_brace, new_fn_body)
+
+        for sig in sig_re.finditer(code):
+            param    = sig.group(1)   # e.g., "ptr"
+            ptr_type = sig.group(2)   # e.g., "xref_entry_t"
+
+            concrete = type_aliases.get(ptr_type, ptr_type)
+            fields   = struct_fields.get(concrete) or struct_fields.get(ptr_type)
+            if not fields:
+                continue
+
+            # Methoden-Body via Brace-Matching (sig.end() zeigt NACH das '{')
+            body_start = sig.end()
+            d, k = 1, body_start
+            while k < len(code) and d > 0:
+                if code[k] == '{':
+                    d += 1
+                elif code[k] == '}':
+                    d -= 1
+                k += 1
+            body_end = k  # zeigt NACH die schliessende '}'
+            fn_body = code[body_start:body_end - 1]
+
+            # Eindeutige Feld-Korrekturen sammeln: orig.FIELD -> orig._FIELD
+            access_pat = re.compile(
+                r'\b(?:orig|' + re.escape(param) + r')\.([A-Za-z_]\w*)\b'
+            )
+            unique_fixes: dict = {}
+            for am in access_pat.finditer(fn_body):
+                field = am.group(1)
+                if field in fields or field in unique_fixes:
+                    continue
+                if '_' + field in fields:
+                    unique_fixes[field] = '_' + field
+                elif '_IO_' + field in fields:
+                    unique_fixes[field] = '_IO_' + field
+
+            if not unique_fixes:
+                continue
+
+            new_fn_body = fn_body
+            for old_f, new_f in unique_fixes.items():
+                new_fn_body = re.sub(
+                    r'\b((?:orig|' + re.escape(param) + r'))\.' + re.escape(old_f) + r'\b',
+                    lambda m2, nf=new_f: m2.group(1) + '.' + nf,
+                    new_fn_body,
+                )
+            replacements.append((body_start, body_end - 1, new_fn_body))
+
+        if replacements:
+            for s, e, r in sorted(replacements, key=lambda x: -x[0]):
+                code = code[:s] + r + code[e:]
+            with open(fpath, 'w', encoding='utf-8') as f:
+                f.write(code)
+            total_files_fixed += 1
+            print(f"  [+] fix_orig_fieldname in {fname}: _-Prefix-Korrekturen angewandt.")
+
+    if total_files_fixed == 0:
+        print("  [i] fix_orig_fieldname: keine Korrekturen noetig.")
 
 
 def inject_cross_module_safe_imports(rust_src_dir: str):
@@ -1145,6 +1466,31 @@ def sanitize_rust_code(code, strip_items=True):
         flags=re.MULTILINE | re.IGNORECASE,
     )
 
+    # 7c-pre. FIX: LLM-Transmute-Antipattern in from_ptr-Methoden.
+    #   Pattern: `core::mem::transmute::<&T, T>(*ptr)` (gleicher Typ, aber falsche
+    #   Dereferenzierung statt Referenz). Fix: `&*ptr`.
+    #   Korrekte Schreibweise in from_ptr: `let orig = &*ptr;`
+    code = re.sub(
+        r'\bcore::mem::transmute::<&(\w+),\s*\1>\s*\(\s*\*\s*(\w+)\s*\)',
+        r'&*\2',
+        code,
+    )
+
+    # 7d-pre. FIX: Stray `}` after empty `impl ...` blocks that involve Safe types
+    #   (LLM generation artifact from refactor_structs_in_file). Patterns:
+    #       impl SafeX {                       impl Default for SafeX {
+    #       }                                  }
+    #       }   <- stray brace                 }  <- stray brace
+    #   Auch generische Traits wie `impl From<frac> for SafeFrac { }` werden
+    #   eingefangen (Optional-Pattern (?:<[^>]+>)? nach dem Trait-Namen).
+    #   Nur leere Bodies (Whitespace-only) werden korrigiert -> nicht-leere
+    #   Impl-Bloecke mit echten Methoden werden nie angefasst.
+    code = re.sub(
+        r'(impl\s+(?:\w+(?:<[^>]+>)?\s+for\s+)?Safe\w+[^{]*\{)\s*\n\s*\}\n\}',
+        r'\1\n\n}',
+        code,
+    )
+
     # 7d. FIX E0308 (isize): `.offset(i)`, `.add(i)`, `.sub(i)`, `.wrapping_offset(i)`,
     #   `.wrapping_add(i)`, `.wrapping_sub(i)`, `.offset_from(...)` brauchen isize/usize.
     #   LLM nutzt oft eine i32-Loop-Variable `i` direkt -> E0308. Wir fuegen
@@ -1334,6 +1680,112 @@ def process_single_function(func_name, file_path, project_name, cargo_root,safe_
                         print(f"      -> Splice: Original-Signatur + LLM-Body (keine Bridge noetig).")
                     safe_snippet = original_signature + " " + new_body
 
+        # ----------------------------------------------------------------
+        # Post-Splice Sanitizer: haeufige LLM-Fehler im Snippet beheben
+        # ----------------------------------------------------------------
+        # 7e-i: `libc::<fn>` -> `<fn>` fuer Funktionen, die via
+        #        `extern "C" { fn <fn>(...); }` bereits im Scope sind.
+        #        c2rust deklariert alle C-Funktionen lokal; LLM verwendet
+        #        fälschlicherweise das externe `libc`-Crate (nicht in
+        #        Cargo.toml) -> E0433 'use of undeclared crate libc'.
+        _ext_c_blk_re = re.compile(r'\bextern\s+"C"\s*\{([^}]*)\}', re.DOTALL)
+        _local_c_fns: set = set()
+        for _em in _ext_c_blk_re.finditer(file_content):
+            for _fm in re.finditer(r'\bfn\s+(\w+)\s*\(', _em.group(1)):
+                _local_c_fns.add(_fm.group(1))
+        # Längste Namen zuerst → verhindert Teilersatz (z.B. 'free' vor 'freeaddrinfo')
+        for _fn in sorted(_local_c_fns, key=len, reverse=True):
+            safe_snippet = re.sub(r'\blibc::' + re.escape(_fn) + r'\b', _fn, safe_snippet)
+        # 7e-ii: libc Typ-Aliases -> core::ffi-Äquivalente (kein libc-Crate nötig)
+        _libc_type_map = [
+            (r'\blibc::c_int\b',    'core::ffi::c_int'),
+            (r'\blibc::c_uint\b',   'core::ffi::c_uint'),
+            (r'\blibc::c_char\b',   'core::ffi::c_char'),
+            (r'\blibc::c_uchar\b',  'core::ffi::c_uchar'),
+            (r'\blibc::c_long\b',   'core::ffi::c_long'),
+            (r'\blibc::c_ulong\b',  'core::ffi::c_ulong'),
+            (r'\blibc::c_short\b',  'core::ffi::c_short'),
+            (r'\blibc::c_ushort\b', 'core::ffi::c_ushort'),
+            (r'\blibc::c_void\b',   'core::ffi::c_void'),
+            (r'\blibc::size_t\b',   'usize'),
+            (r'\blibc::ssize_t\b',  'isize'),
+            (r'\blibc::off_t\b',    'i64'),
+        ]
+        for _pat, _repl in _libc_type_map:
+            safe_snippet = re.sub(_pat, _repl, safe_snippet)
+        # 7e-iii: CString::from_raw(ptr) als freistehende Anweisung ->
+        #         free(ptr as *mut _)  (CString::from_raw auf C-malloc-Zeigern ist UB)
+        safe_snippet = re.sub(
+            r'\bCString::from_raw\s*\(([^)]+)\)\s*;',
+            lambda m: f'free({m.group(1).strip()} as *mut _);',
+            safe_snippet,
+        )
+        # 7e-iv: use-Deklarationen entfernen, die das libc-Crate referenzieren
+        #        (falls LLM `use libc::...;` schreibt)
+        safe_snippet = re.sub(r'^\s*use\s+libc::.*;\n', '', safe_snippet, flags=re.MULTILINE)
+        # 7e-v: C-Zeichenklassifizierungs-Funktionen -> sichere Rust-Äquivalente.
+        #       isdigit/isspace/... sind nicht in c2rust's extern "C" Blöcken, da
+        #       GLibC sie als Inline/Makro implementiert.
+        _ctype_map = [
+            (r'\bisdigit\s*\(([^)]+)\)',  r'((\1) as u8).is_ascii_digit() as core::ffi::c_int'),
+            (r'\bisspace\s*\(([^)]+)\)',  r'((\1) as u8).is_ascii_whitespace() as core::ffi::c_int'),
+            (r'\bisalpha\s*\(([^)]+)\)',  r'((\1) as u8).is_ascii_alphabetic() as core::ffi::c_int'),
+            (r'\bisalnum\s*\(([^)]+)\)',  r'((\1) as u8).is_ascii_alphanumeric() as core::ffi::c_int'),
+            (r'\bisupper\s*\(([^)]+)\)',  r'((\1) as u8).is_ascii_uppercase() as core::ffi::c_int'),
+            (r'\bislower\s*\(([^)]+)\)',  r'((\1) as u8).is_ascii_lowercase() as core::ffi::c_int'),
+            (r'\btolower\s*\(([^)]+)\)',  r'((\1) as u8).to_ascii_lowercase() as core::ffi::c_int'),
+            (r'\btoupper\s*\(([^)]+)\)',  r'((\1) as u8).to_ascii_uppercase() as core::ffi::c_int'),
+        ]
+        for _cpat, _crepl in _ctype_map:
+            safe_snippet = re.sub(_cpat, _crepl, safe_snippet)
+        # 7e-vi: Undefinierte Safe-Typen durch zugehörige Raw-Pointer-Typen ersetzen.
+        #        LLM erfindet manchmal Safe-Typen die gar nicht existieren (z.B. SafePdfT,
+        #        SafeXref). Wenn der Typ nicht in file_content definiert ist, ersetze
+        #        - `SafeXxx::from_ptr(ptr)` → `ptr` (Bridge entfernen, Raw-Ptr behalten)
+        #        - `&SafeXxx` / `&mut SafeXxx` → entfernen (kein unnötiger Wrap)
+        _defined_safe_types: set = set(re.findall(r'\bpub struct (Safe\w+)\b', file_content))
+        _defined_safe_types |= set(re.findall(r'\bpub type (Safe\w+)\b', file_content))
+        for _invented in set(re.findall(r'\b(Safe[A-Z_]\w+)\b', safe_snippet)):
+            if _invented in _defined_safe_types:
+                continue  # Typ existiert -> nicht anfassen
+            # `SafeXxx::from_ptr(EXPR)` -> `EXPR` (entferne die Bridge)
+            safe_snippet = re.sub(
+                r'\b' + re.escape(_invented) + r'::from_ptr\s*\(([^)]+)\)',
+                lambda m: m.group(1).strip(),
+                safe_snippet,
+            )
+            # `SafeXxx { ... }` Struct-Literal -> `return Default::default()` (Fallback)
+            safe_snippet = re.sub(
+                r'\b' + re.escape(_invented) + r'\s*\{[^{}]*\}',
+                'unsafe { std::mem::zeroed() }',
+                safe_snippet,
+            )
+            # `let x: SafeXxx` Typ-Annot -> entfernen (wird unannotiert)
+            safe_snippet = re.sub(
+                r':\s*' + re.escape(_invented) + r'\b',
+                '',
+                safe_snippet,
+            )
+            # `-> SafeXxx` Rückgabetyp -> entfernen (Signatur-Guard hat schon die
+            #  Original-Signatur gesetzt; diese Annotation im Body ist redundant/falsch)
+            safe_snippet = re.sub(
+                r'\s*->\s*' + re.escape(_invented) + r'\b',
+                '',
+                safe_snippet,
+            )
+            # `as SafeXxx` Casts -> entfernen
+            safe_snippet = re.sub(
+                r'\bas\s+' + re.escape(_invented) + r'\b',
+                '',
+                safe_snippet,
+            )
+            # `Vec<SafeXxx>` / `Option<SafeXxx>` etc -> remove generic arg
+            safe_snippet = re.sub(
+                r'\b(Vec|Option|Box|Rc|Arc)<' + re.escape(_invented) + r'>',
+                r'\1<_>',
+                safe_snippet,
+            )
+
         # Nur den Funktions-Teil in der Datei ersetzen
         updated_content = file_content[:start_idx] + safe_snippet + file_content[end_idx:]
         
@@ -1387,9 +1839,44 @@ def main(project_dir, function_order=None):
             new_content = remove_duplicate_structs(new_content) # Doppelte Structs entfernen, um E0119 zu verhindern
             # Whole-File-Sanitize: NUR Markdown/Geplapper raeumen, Structs/Types erhalten!
             new_content = sanitize_rust_code(new_content, strip_items=False)
-            # Extrahiere die neuen Structs für den Prompt-Kontext
-            # (In einer echten Pipeline könntest du sie hier separat speichern)
-            struct_defs = new_content.split("\n\n")[0] 
+            # Extrahiere Safe-Struct-Definitionen und C-Typ-Verfügbarkeit für den LLM-Prompt.
+            # Das ursprüngliche `split("\n\n")[0]` lieferte nur den ersten Absatz (oft leer).
+            # Jetzt: vollständige Safe-Struct-Blöcke + Hinweis auf nicht-gewrappte C-Typen.
+            _ctx_parts: list = []
+            # 1. Alle Safe-Struct-Blöcke (struct + impl)
+            for _sn in re.findall(r'\bpub struct (Safe\w+)', new_content):
+                _sm = re.search(
+                    r'pub struct ' + re.escape(_sn) + r'\s*\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}',
+                    new_content, re.DOTALL)
+                if _sm:
+                    _ctx_parts.append(_sm.group(0)[:800])  # Auf 800 Zeichen begrenzen
+            # 2. Safe-Typ-Aliase
+            _safe_aliases = re.findall(r'pub type (Safe\w+)\s*=\s*[^;]+;', new_content)
+            if _safe_aliases:
+                _ctx_parts.append("// Safe type aliases: " + ", ".join(_safe_aliases))
+            # 3. Nicht-gewrappte C-Typen (kein Safe-Pendant) -> LLM soll Raw-Pointer nutzen
+            _all_c_types = re.findall(r'pub type (\w+)\s*=', new_content)
+            _all_safe = set(re.findall(r'\bSafe(\w+)\b', new_content))
+            _unwrapped = [t for t in _all_c_types if not t.startswith('Safe')
+                          and t not in ('FILE',) and t.replace('_t','').replace('_','').title() not in _all_safe]
+            if _unwrapped:
+                _ctx_parts.append(
+                    "// These C types have NO Safe wrapper — use as raw pointers (*mut T): "
+                    + ", ".join(_unwrapped[:15]))
+            # 4. Struct-Definitionen der nicht-gewrappten C-Typen hinzufügen.
+            #    Das LLM erfindet sonst Safe-Wrapper, weil es die Felder nicht kennt.
+            #    Z.B.: pdf_t.xrefs ist *mut xref_t (kein Vec!), n_xrefs ist die Länge.
+            for _ut in _unwrapped[:12]:
+                # Finde den Backing-Typ (pub type xref_t = _xref_t;)
+                _alias_m = re.search(r'pub type ' + re.escape(_ut) + r'\s*=\s*(\w+)\s*;', new_content)
+                _backing = _alias_m.group(1) if _alias_m else _ut
+                # Finde die struct-Definition des Backing-Typs
+                _sdef_m = re.search(
+                    r'(?:#\[.*?\]\s*)*pub struct ' + re.escape(_backing) + r'\s*\{[^{}]*\}',
+                    new_content, re.DOTALL)
+                if _sdef_m:
+                    _ctx_parts.append(_sdef_m.group(0)[:700])
+            struct_defs = "\n\n".join(_ctx_parts) if _ctx_parts else new_content.split("\n\n")[0]
             file_struct_registry[file_path] = struct_defs
             
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -1424,6 +1911,18 @@ def main(project_dir, function_order=None):
     # in struct-Initializern (E0063 missing fields).
     print("--- Injiziere Default-Derive fuer Safe-Structs ---")
     inject_safe_default_derive(rust_src)
+
+    # Leere `impl SafeX {}` Bloecke mit from_ptr-Stubs befuellen.
+    # Fixt E0599 ('method not found') wenn der LLM nur den impl-Header
+    # ohne Methodenkoerper generiert hat, aber Call-Sites existieren.
+    print("--- Fuell leere Safe-Impl-Bloecke mit from_ptr-Stub ---")
+    fill_empty_safe_impl_blocks(rust_src)
+
+    # `orig.FIELD` -> `orig._FIELD` in from_ptr-Methoden korrigieren.
+    # Fixt E0609 ('no field X on type Y') wenn der LLM den fuehrenden
+    # Unterstrich aus c2rust-Feldnamen wie _flags, _IO_read_ptr entfernt hat.
+    print("--- Korrigiere orig._-Prefix in from_ptr-Methoden ---")
+    fix_orig_fieldname_underscore_prefix(rust_src)
 
     # Reihenfolge festlegen
     order = function_order if function_order else list(func_to_file.keys())

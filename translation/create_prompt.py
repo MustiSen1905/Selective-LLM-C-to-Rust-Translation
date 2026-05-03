@@ -208,6 +208,7 @@ Refactor the function `{function_name}`.
 18. **C-INT CASTING FOR CHARACTERS (CRITICAL)**: Many legacy C functions (like `strchr`, `isalpha`, `toupper`) take characters as `int`. If you extract a `c_char` (which is `i8`) and pass it to such a function, you MUST cast it: `my_char as core::ffi::c_int`. Never pass an `i8` directly to a function expecting `i32` or `c_int`.
 19. **PRESERVE FUNCTION NAME (CRITICAL)**: The Rust function name MUST be BYTE-IDENTICAL to `{function_name}`. Do NOT rename to snake_case (e.g., `MixColumns` stays `MixColumns`, NOT `mix_columns`; `XorWithIv` stays `XorWithIv`). Callers in other translation units still use the original name. Rust's `#[allow(non_snake_case)]` handles the convention warning.
 20. **PRESERVE FUNCTION SIGNATURE (CRITICAL)**: The parameter types and return type MUST match the original c2rust-generated signature EXACTLY. Do NOT change `*mut u8` to `&mut [u8]`, `*const c_char` to `&str`, or `*mut T` to `Box<T>`. Legacy callers in other translation units still pass raw pointers — changing the signature breaks them with E0308. Keep `unsafe extern "C" fn` where present, keep raw-pointer parameters. Do all Safe-wrapping INTERNALLY by calling `SafeX::from_ptr(ptr)` in the FIRST LINE of the function body and operating on the Safe-Shadow from there. The signature is the public boundary; only the body changes.
+21. **ONLY USE SAFE TYPES LISTED ABOVE (CRITICAL)**: You may ONLY use `SafeX::from_ptr()` for Safe types that appear in the `### SAFE STRUCT DEFINITIONS` section above. If a type like `pdf_t`, `xref_t`, or `kv_t` has NO listed Safe wrapper, do NOT invent `SafePdf`, `SafeXref`, `SafeKv` etc. Instead, access those types directly via raw pointer dereferencing: `(*ptr).field`. For C-style arrays (e.g., `xrefs: *mut xref_t`, count: `n_xrefs: c_int`), use index-based loops: `for i in 0..(*ptr).n_xrefs {{ let entry = &*(*ptr).xrefs.offset(i as isize); ... }}`.
 
 ### MEMORY & LOGIC RULES
 - **Ownership**: Use `Box<T>` for heap allocation instead of raw pointers. Let Rust's RAII handle deallocation (no explicit `free`).
@@ -236,6 +237,25 @@ pub fn process_user(u_ptr: *mut User) {{
     // 2. PURE SAFE LOGIC: No more raw pointers below this line!
     if safe_u.is_admin != 0 {{
         println!("Admin state active.");
+    }}
+}}
+
+### EXAMPLE: RAW-POINTER STRUCT (NO Safe WRAPPER EXISTS)
+When `pdf_t`, `xref_t` etc. have no Safe wrapper listed above, access their fields directly:
+
+[BAD — SafePdf does not exist, will cause E0422]
+pub unsafe extern "C" fn show_pdf(pdf: *const pdf_t) {{
+    let safe = SafePdf::from_ptr(pdf);  // ERROR: SafePdf undefined
+    for xref in safe.xrefs.iter() {{ ... }}  // ERROR: xrefs is *mut, not Vec
+}}
+
+[GOOD — use raw pointer dereferencing]
+pub unsafe extern "C" fn show_pdf(pdf: *const pdf_t) {{
+    if pdf.is_null() {{ return; }}
+    let n = unsafe {{ (*pdf).n_xrefs }};
+    for i in 0..n {{
+        let xref = unsafe {{ &*(*pdf).xrefs.offset(i as isize) }};
+        // use xref.start, xref.end, etc.
     }}
 }}
 

@@ -1,22 +1,299 @@
 === LOG-DATEI FÜR MEHRERE PROJEKTE ===
 
 --- Projekt: abc2mtex | Status: ERFOLGREICH ---
+Transpiling abc.c
+Transpiling fields.c
+Transpiling index.c
+Transpiling search.c
+Transpiling sort_in.c
+Transpiling tex.c
 Successfully opened project at: abc2mtex
 Project files: ['abc.c', 'fields.c', 'index.c', 'index.h', 'search.c', 'sort_in.c', 'tex.c']
 Erfolgreich erstellt: unsafe_functions.json mit 6 Dateien.
 Starting code analysis...
 Translating C code to unsafe Rust...
-Error opening project: [WinError 5] Zugriff verweigert: 'C:\\Users\\musti\\OneDrive\\Dokumente\\Uni\\Bachelorarbeit\\Project\\Selective-LLM-C-to-Rust-Translation\\.claude\\worktrees\\blissful-chandrasekhar-b26b47\\Rust-Outcome\\abc2mtex\\rust_out\\target\\release\\.fingerprint\\cc-f6091edd978731db'
+>> Starte c2rust Transpilation mit Kontext-Erhalt...
 
-========================================
-
---- Projekt: pdfresurrect-master | Status: ERFOLGREICH ---
-Successfully opened project at: pdfresurrect-master
-Project files: ['main.c', 'main.h', 'pdf.c', 'pdf.h']
-Erfolgreich erstellt: unsafe_functions.json mit 2 Dateien.
-Starting code analysis...
-Translating C code to unsafe Rust...
-Error opening project: [WinError 5] Zugriff verweigert: 'C:\\Users\\musti\\OneDrive\\Dokumente\\Uni\\Bachelorarbeit\\Project\\Selective-LLM-C-to-Rust-Translation\\.claude\\worktrees\\blissful-chandrasekhar-b26b47\\Rust-Outcome\\pdfresurrect-master\\rust_out\\target\\debug\\.fingerprint\\cc-5db50e7595d135e1'
+Migration erfolgreich! Projekt: /mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out
+V-c2rust checkpoint saved → Rust-Outcome/abc2mtex/rust_out_c2rust_checkpoint
+Translating unsafe Rust code to safe Rust...
+Test
+{'abc_error': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'abc_warning': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'g_error': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/index.rs', 'draw_text': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/tex.rs', 'free_record': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/index.rs', 'is_field': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'set_dnl': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'strip': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'tune2tex': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/tex.rs', 'process_abc': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'stripcpy': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'get_dnl': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'get_index': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/index.rs', 'get_record': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/index.rs', 'open_TeX': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/tex.rs', 'output_transline': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'put_record': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/index.rs', 'range': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'read_settings': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/abc.rs', 'main': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/sort_in.rs', 'size_record': '/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/src/index.rs'}
+--- Sanitize Legacy-Dateien ---
+  [+] Legacy-Sanitizer: 1 Dateien bereinigt (core::std, .offset-Cast).
+--- Injiziere Cross-Modul-Safe-Imports ---
+--- Injiziere Safe-Stub-Types ---
+  [+] Stub-Types in abc.rs: SafeVoid, Safe_IO_codecvt, Safe_IO_marker, Safe_IO_wide_data
+  [+] Stub-Types in sort_in.rs: Safe_IO_codecvt, Safe_IO_marker, Safe_IO_wide_data
+  [+] Stub-Types in tex.rs: SafeIOMarker
+--- Korrigiere Safe-char-Felder zu i8 ---
+  [i] Safe-char-Fix: keine Aenderungen noetig.
+--- Korrigiere from_ptr Null-Branch Args ---
+  [i] from_ptr-Arg-Fix: keine Treffer.
+--- Injiziere Default-Derive fuer Safe-Structs ---
+  [+] Default-Derive/rest-syntax in abc.rs
+  [+] Default-Derive/rest-syntax in index.rs
+  [+] Default-Derive/rest-syntax in sort_in.rs
+  [+] Default-Derive/rest-syntax in tex.rs
+--- Fuell leere Safe-Impl-Bloecke mit from_ptr-Stub ---
+  [i] fill_empty_safe_impl_blocks: keine leeren impl-Bloecke mit from_ptr-Bedarf.
+--- Korrigiere orig._-Prefix in from_ptr-Methoden ---
+  [+] fix_orig_fieldname in tex.rs: _-Prefix-Korrekturen angewandt.
+--- Starte Übersetzung von 23 Funktionen ---
+[*] Analyse: abc_error in abc.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn abc_error(mut fmt: *mut core::ffi::c_char, mut args: ...)
+      LLM      : #[no_mangle] pub extern "C" fn abc_error(fmt: *const core::ffi::c_char)
+      -> Splice: Original-Signatur + RawPtr-Rewrite(fmt) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: abc_warning in abc.rs
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn abc_warning(mut fmt: *mut core::ffi::c_char, mut args: ...)
+      LLM      : #[no_mangle] pub extern "C" fn abc_warning(fmt: *mut core::ffi::c_char)
+      -> Splice: Original-Signatur + RawPtr-Rewrite(fmt) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: g_error in index.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn g_error(mut fmt: *const core::ffi::c_char, mut args: ...)
+      LLM      : #[no_mangle] pub extern "C" fn g_error(fmt: *const core::ffi::c_char, mut args: ::core::ffi::VaListImpl)
+      -> Splice: Original-Signatur + RawPtr-Rewrite(fmt) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn g_error(mut fmt: *const core::ffi::c_char, mut args: ...)
+      LLM      : #[no_mangle] pub extern "C" fn g_error(fmt: &str, args: ...)
+      -> Splice: Original-Signatur + Safe-Bridge + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn g_error(mut fmt: *const core::ffi::c_char, mut args: ...)
+      LLM      : #[no_mangle] pub extern "C" fn g_error(mut fmt: *const core::ffi::c_char)
+      -> Splice: Original-Signatur + RawPtr-Rewrite(fmt) + LLM-Body.
+  [-] Fehler in Versuch 3.
+[*] Analyse: draw_text in tex.rs
+  [-] Fehler in Versuch 1.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: free_record in index.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn free_record( mut entry: *mut Record, mut fmt: *mut core::ffi::c_char, )
+      LLM      : #[no_mangle] pub extern "C" fn free_record(safe_entry: &mut SafeRecord, fmt: &str)
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(safe_entry) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn free_record( mut entry: *mut Record, mut fmt: *mut core::ffi::c_char, )
+      LLM      : #[no_mangle] pub unsafe extern "C" fn free_record(entry: &mut SafeRecord, fmt: *const core::ffi::c_char)
+      -> Splice: Original-Signatur + RawPtr-Rewrite(entry,fmt) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn free_record( mut entry: *mut Record, mut fmt: *mut core::ffi::c_char, )
+      LLM      : #[no_mangle] pub unsafe extern "C" fn free_record(entry: *mut Record, fmt: *const core::ffi::c_char)
+      -> Splice: Original-Signatur + RawPtr-Rewrite(entry,fmt) + LLM-Body.
+  [-] Fehler in Versuch 3.
+[*] Analyse: is_field in abc.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn is_field(mut line: *mut core::ffi::c_char) -> core::ffi::c_int
+      LLM      : #[no_mangle] pub unsafe extern "C" fn is_field(line: *mut core::ffi::c_char) -> i32
+      -> Splice: Original-Signatur + RawPtr-Rewrite(line) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn is_field(mut line: *mut core::ffi::c_char) -> core::ffi::c_int
+      LLM      : pub fn from_ptr(ptr: *mut core::ffi::c_char) -> Self
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(ptr) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn is_field(mut line: *mut core::ffi::c_char) -> core::ffi::c_int
+      LLM      : #[no_mangle] pub unsafe extern "C" fn is_field(mut line: *mut core::ffi::c_char) -> i32
+      -> Splice: Original-Signatur + RawPtr-Rewrite(line) + LLM-Body.
+  [-] Fehler in Versuch 3.
+[*] Analyse: set_dnl in abc.rs
+  [-] Fehler in Versuch 1.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: strip in abc.rs
+  [-] Fehler in Versuch 1.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: tune2tex in tex.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn tune2tex( mut title: *mut [core::ffi::c_char; 99], mut titles: core::ffi::c_int, mut entry: *mut Record, mut n_symbols: core::ffi::c_int, mut symbols: *mut Symbol, mut key_field: *mut Field, mut meter_field: *mut Field, mut tempo_field: *mut Field, )
+      LLM      : #[no_mangle] pub unsafe extern "C" fn tune2tex(title: *mut [[core::ffi::c_char; 99]; 1], titles: core::ffi::c_int, entry: *mut Record, n_symbols: core::ffi::c_int, symbols: *mut Symbol, key_field: *mut Field, meter_field: *mut Field, tempo_field: *mut Field)
+      -> Splice: Original-Signatur + RawPtr-Rewrite(entry,key_field,meter_field,symbols,tempo_field,title) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn tune2tex( mut title: *mut [core::ffi::c_char; 99], mut titles: core::ffi::c_int, mut entry: *mut Record, mut n_symbols: core::ffi::c_int, mut symbols: *mut Symbol, mut key_field: *mut Field, mut meter_field: *mut Field, mut tempo_field: *mut Field, )
+      LLM      : pub unsafe fn from_ptr(ptr: *mut [core::ffi::c_char; 99]) -> Self
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(ptr) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn tune2tex( mut title: *mut [core::ffi::c_char; 99], mut titles: core::ffi::c_int, mut entry: *mut Record, mut n_symbols: core::ffi::c_int, mut symbols: *mut Symbol, mut key_field: *mut Field, mut meter_field: *mut Field, mut tempo_field: *mut Field, )
+      LLM      : #[no_mangle] pub extern "C" fn tune2tex( title: &mut [[core::ffi::c_char; 99]], titles: core::ffi::c_int, entry: *mut Record, n_symbols: core::ffi::c_int, symbols: *mut Symbol, key_field: *mut Field, meter_field: *mut Field, tempo_field: *mut Field, )
+      -> Splice: Original-Signatur + RawPtr-Rewrite(entry,key_field,meter_field,symbols,tempo_field,title) + LLM-Body.
+  [-] Fehler in Versuch 3.
+[*] Analyse: process_abc in abc.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn process_abc( mut title: *mut [core::ffi::c_char; 99], mut titles: core::ffi::c_int, mut entry: *mut Record, mut key_comment: *mut core::ffi::c_char, mut bars: *mut core::ffi::c_char, mut tune: *mut core::ffi::c_char, mut input: *mut core::ffi::c_char, mut output_type: core::ffi::c_int, mut nbars: core::ffi::c_int, mut force: core::ffi::c_int, mut hash_array: *mut core::ffi::c_int, )
+      LLM      : unsafe fn process_abc() -> i32
+      -> Splice: Original-Signatur + LLM-Body (keine Bridge noetig).
+  [+] Erfolg: process_abc (Versuch 1)
+[*] Analyse: stripcpy in abc.rs
+  [-] Fehler in Versuch 1.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: get_dnl in abc.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn get_dnl(mut entry: *mut Record)
+      LLM      : #[no_mangle] pub unsafe extern "C" fn get_dnl(entry: &mut Record)
+      -> Splice: Original-Signatur + Safe-Bridge + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn get_dnl(mut entry: *mut Record)
+      LLM      : pub fn from_ptr(ptr: *mut Record) -> Self
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(ptr) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [+] Erfolg: get_dnl (Versuch 3)
+[*] Analyse: get_index in index.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn get_index( mut fmt: *mut core::ffi::c_char, mut fname: *mut core::ffi::c_char, )
+      LLM      : pub fn get_index(mut fmt: &mut String, fname: &str) -> io::Result<()>
+      -> Splice: Original-Signatur + Safe-Bridge + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn get_index( mut fmt: *mut core::ffi::c_char, mut fname: *mut core::ffi::c_char, )
+      LLM      : pub fn from_ptr(ptr: *mut FILE) -> Self
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(ptr) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [!] KI hat keine gültige Funktion generiert (möglicherweise ein Refusal). Verwerfe Output.
+[*] Analyse: get_record in index.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn get_record( mut fmt: *mut core::ffi::c_char, mut In: *mut FILE, mut entry: *mut Record, ) -> core::ffi::c_int
+      LLM      : #[no_mangle] pub extern "C" fn get_record(fmt: &mut [i8], In: *mut c_void, entry: &mut Record) -> i32
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(In,fmt) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn get_record( mut fmt: *mut core::ffi::c_char, mut In: *mut FILE, mut entry: *mut Record, ) -> core::ffi::c_int
+      LLM      : #[no_mangle] pub unsafe extern "C" fn get_record(fmt: *mut core::ffi::c_char, In: *mut FILE, entry: &mut SafeRecord) -> core::ffi::c_int
+      -> Splice: Original-Signatur + RawPtr-Rewrite(In,entry,fmt) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: open_TeX in tex.rs
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn open_TeX( mut s: *mut core::ffi::c_char, mut musix_out: core::ffi::c_int, )
+      LLM      : #[no_mangle] pub unsafe extern "C" fn open_TeX(s: *mut core::ffi::c_char, musix_out: i32)
+      -> Splice: Original-Signatur + RawPtr-Rewrite(s) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn open_TeX( mut s: *mut core::ffi::c_char, mut musix_out: core::ffi::c_int, )
+      LLM      : pub fn from_ptr(u_ptr: *mut User) -> Option<SafeUser>
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(u_ptr) + LLM-Body.
+  [-] Fehler in Versuch 3.
+[*] Analyse: output_transline in abc.rs
+  [-] Fehler in Versuch 1.
+  [!] KI hat keine gültige Funktion generiert (möglicherweise ein Refusal). Verwerfe Output.
+  [-] Fehler in Versuch 3.
+[*] Analyse: put_record in index.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn put_record( mut fmt: *mut core::ffi::c_char, mut Out: *mut FILE, mut entry: *mut Record, ) -> core::ffi::c_int
+      LLM      : #[no_mangle] pub unsafe extern "C" fn put_record(fmt: *mut u8, Out: *mut std::os::raw::c_void, entry: &mut SafeRecord) -> i32
+      -> Splice: Original-Signatur + RawPtr-Rewrite(Out,entry,fmt) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn put_record( mut fmt: *mut core::ffi::c_char, mut Out: *mut FILE, mut entry: *mut Record, ) -> core::ffi::c_int
+      LLM      : #[no_mangle] pub extern "C" fn put_record(mut fmt: *const core::ffi::c_char, mut out: *mut std::fs::File, entry: &mut Record) -> i32
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(fmt,out) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn put_record( mut fmt: *mut core::ffi::c_char, mut Out: *mut FILE, mut entry: *mut Record, ) -> core::ffi::c_int
+      LLM      : #[no_mangle] pub unsafe extern "C" fn put_record(fmt: *mut core::ffi::c_char, Out: *mut FILE, entry: &SafeRecord) -> core::ffi::c_int
+      -> Splice: Original-Signatur + RawPtr-Rewrite(Out,entry,fmt) + LLM-Body.
+  [-] Fehler in Versuch 3.
+[*] Analyse: range in abc.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn range( mut first: *mut core::ffi::c_int, mut last: *mut core::ffi::c_int, mut yfirst: *mut core::ffi::c_int, mut ylast: *mut core::ffi::c_int, mut input: *mut *mut core::ffi::c_char, ) -> core::ffi::c_int
+      LLM      : #[no_mangle] pub fn range(first_ptr: &mut core::ffi::c_int, last_ptr: &mut core::ffi::c_int, yfirst_ptr: &mut core::ffi::c_int, ylast_ptr: &mut core::ffi::c_int, input_ptr: &mut *const *mut u8) -> core::ffi::c_int
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(input_ptr) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: read_settings in abc.rs
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn read_settings()
+      LLM      : pub fn new() -> Self
+      -> Splice: Original-Signatur + LLM-Body (keine Bridge noetig).
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+  [*] Spezieller Fall: Main ersetzen mit main_0, um die ursprüngliche main-Funktion zu erhalten.
+[*] Analyse: main_0 in sort_in.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : unsafe fn main_0( mut argc: core::ffi::c_int, mut argv: *mut *mut core::ffi::c_char, ) -> core::ffi::c_int
+      LLM      : #[allow(non_snake_case)] pub fn main_0(argc: core::ffi::c_int, argv: *mut *const *const core::ffi::c_char) -> core::ffi::c_int
+      -> Splice: Original-Signatur + LLM-Body (keine Bridge noetig).
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : unsafe fn main_0( mut argc: core::ffi::c_int, mut argv: *mut *mut core::ffi::c_char, ) -> core::ffi::c_int
+      LLM      : pub fn main_0(mut argc: core::ffi::c_int, mut argv: *const *mut core::ffi::c_char) -> core::ffi::c_int
+      -> Splice: Original-Signatur + RawPtr-Rewrite(argv) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+[*] Analyse: size_record in index.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn size_record( mut fmt: *mut core::ffi::c_char, mut size: *mut core::ffi::c_int, mut field: *mut core::ffi::c_char, )
+      LLM      : #[no_mangle] pub extern "C" fn size_record(mut fmt: *mut core::ffi::c_char) -> i32
+      -> Splice: Original-Signatur + RawPtr-Rewrite(fmt) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : #[no_mangle] pub unsafe extern "C" fn size_record( mut fmt: *mut core::ffi::c_char, mut size: *mut core::ffi::c_int, mut field: *mut core::ffi::c_char, )
+      LLM      : #[no_mangle] pub extern "C" fn size_record(fmt: *mut core::ffi::c_char, size: &mut [core::ffi::c_int; 32], field: &mut [core::ffi::c_char; 128]) -> ()
+      -> Splice: Original-Signatur + Safe-Bridge+RawPtr-Rewrite(fmt) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [-] Fehler in Versuch 3.
+  [*] Spezieller Fall: Main ersetzen mit main_0, um die ursprüngliche main-Funktion zu erhalten.
+[*] Analyse: main_0 in sort_in.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : unsafe fn main_0( mut argc: core::ffi::c_int, mut argv: *mut *mut core::ffi::c_char, ) -> core::ffi::c_int
+      LLM      : pub fn from_ptr(ptr: *mut User) -> Option<Box<SafeUser>>
+      -> Splice: Original-Signatur + Safe-Bridge + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [+] Erfolg: main_0 (Versuch 2)
+  [*] Spezieller Fall: Main ersetzen mit main_0, um die ursprüngliche main-Funktion zu erhalten.
+[*] Analyse: main_0 in sort_in.rs
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : fn main_0(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char) -> core::ffi::c_int
+      LLM      : pub fn main_0(argc: core::ffi::c_int, argv: &[*mut core::ffi::c_char]) -> core::ffi::c_int
+      -> Splice: Original-Signatur + RawPtr-Rewrite(argv) + LLM-Body.
+  [-] Fehler in Versuch 1.
+  [!] Signature-Drift: LLM hat Signatur geaendert.
+      Original : fn main_0(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char) -> core::ffi::c_int
+      LLM      : pub fn main_0(argc: core::ffi::c_int, argv: *mut *mut core::ffi::c_char) -> i32
+      -> Splice: Original-Signatur + RawPtr-Rewrite(argv) + LLM-Body.
+  [-] Fehler in Versuch 2.
+  [!] KI hat keine gültige Funktion generiert (möglicherweise ein Refusal). Verwerfe Output.
+--- Repariere Funktionsnamen-Inkonsistenzen ---
+--- Dedup doppelter Funktions-Definitionen ---
+  [+] Dedup: zweite Definition von `fn from` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from_ptr` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from_ptr` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from_ptr` in abc.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn default` in index.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from_ptr` in index.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from_ptr` in index.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from_ptr` in sort_in.rs entfernt (kuerzere Variante)
+  [+] Dedup: zweite Definition von `fn from_ptr` in tex.rs entfernt (kuerzere Variante)
+--- FFI Auto-Export fuer C-Caller ---
+  [+] FFI: 0 Funktionen exportiert, 0 mit idiomatischer Signatur (manueller Wrapper noetig).
+--- GuardStats: 3 accepted (7.9%), 35 reverted-sig (92.1%), 0 reverted-placeholder (0.0%), total 38 (CSV: /mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/abc2mtex/rust_out/guard_stats.csv) ---
+Merging translations into final Rust project...
+Running tests on the final Rust project...
+Project translation and testing completed successfully.
 
 ========================================
 

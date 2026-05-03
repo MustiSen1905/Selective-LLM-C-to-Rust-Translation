@@ -1,40 +1,68 @@
 {
   "unsafe": {
-    "abc.c": [
+    "main.c": [
+      "usage",
+      "write_version",
+      "scrub_document",
+      "for",
+      "display_creator",
+      "for",
+      "if",
       "main",
-      "abc_warning",
-      "abc_error",
-      "read_settings",
-      "is_field",
-      "strip",
-      "stripcpy",
-      "output_transline",
-      "get_dnl",
-      "set_dnl",
-      "range",
-      "process_abc"
+      "for",
+      "if",
+      "if",
+      "if"
     ],
-    "fields.c": [
-      "main"
-    ],
-    "index.c": [
-      "g_error",
-      "get_index",
-      "size_record",
-      "free_record",
-      "get_record",
-      "put_record"
-    ],
-    "search.c": [
-      "main"
-    ],
-    "sort_in.c": [
-      "main"
-    ],
-    "tex.c": [
-      "open_TeX",
-      "draw_text",
-      "tune2tex"
+    "pdf.c": [
+      "if",
+      "pdf_delete",
+      "for",
+      "pdf_is_pdf",
+      "pdf_get_version",
+      "pdf_load_xrefs",
+      "for",
+      "pdf_get_object_status",
+      "if",
+      "if",
+      "pdf_zero_object",
+      "pdf_summarize",
+      "if",
+      "for",
+      "for",
+      "if",
+      "pdf_display_creator",
+      "is_valid_xref",
+      "if",
+      "load_xref_entries",
+      "load_xref_from_plaintext",
+      "for",
+      "if",
+      "if",
+      "load_xref_from_stream",
+      "get_xref_linear_skipped",
+      "if",
+      "resolve_linearized_pdf",
+      "load_creator",
+      "for",
+      "load_creator_from_buf",
+      "load_creator_from_xml",
+      "load_creator_from_old_format",
+      "for",
+      "if",
+      "if",
+      "if",
+      "if",
+      "if",
+      "for",
+      "if",
+      "if",
+      "if",
+      "if",
+      "if",
+      "if",
+      "for",
+      "get_next_eof"
     ]
   }
 }

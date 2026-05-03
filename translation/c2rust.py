@@ -96,16 +96,21 @@ def create_context_split(src: str, funcs_info: dict, target_names: list, is_unsa
     current_src = src
     for name, (start, brace_open, end) in sorted_items:
         if name not in target_names:
-            # Body removed -> Funktion ist jetzt in Rust definiert.
-            # Strip alle Whitespace-Varianten von `static `: `static ` (Space),
-            # `static\t` (Tab), Tabbed im Original-K&R-Stil.
+            # Body removed -> function is now defined in Rust.
+            # Strip `static` so the extern declaration is globally visible.
             header = current_src[start:brace_open]
             header = re.sub(r'^\s*static\s+', '', header)
-            # Innerhalb des headers (z.B. nach Attributen) ggf. weitere static
-            # entfernen — selten, aber defensiv.
             header = re.sub(r'\bstatic\s+', '', header)
-
             current_src = current_src[:start] + header + ";" + current_src[end+1:]
+        else:
+            # Body kept in safe_*.c -> Rust calls this via extern "C".
+            # Strip `static` so the symbol is globally visible to the linker.
+            # (C `static` = TU-local; Rust extern "C" needs a global symbol.)
+            header = current_src[start:brace_open]
+            if re.search(r'\bstatic\b', header):
+                new_header = re.sub(r'^\s*static\s+', '', header)
+                new_header = re.sub(r'\bstatic\s+', '', new_header)
+                current_src = current_src[:start] + new_header + current_src[brace_open:]
     return current_src
 
 # --- Management ---
@@ -228,6 +233,45 @@ def main(args_list=None):
     rust_out.mkdir()
     print(">> Starte c2rust Transpilation mit Kontext-Erhalt...")
     subprocess.run(["c2rust", "transpile","--emit-build-files" ,"--output-dir", str(rust_out), "compile_commands.json"], cwd=work, check=True)
+
+    # 4b. Post-process generated lib.rs: if any module exposes `main_0` (i.e.
+    #     main.c was translated), inject a #[no_mangle] C `main` entry point so
+    #     the staticlib can be linked by a plain C `gcc` invocation without a
+    #     Rust runtime `main()`.  Without this, `ld` reports "undefined reference
+    #     to `main`" when linking safe_main.c (which has `int main(...);` removed)
+    #     against the staticlib.
+    lib_rs = rust_out / "lib.rs"
+    if lib_rs.exists():
+        lib_content = lib_rs.read_text(encoding="utf-8")
+        # Check if any translated Rust source defines `main_0`
+        has_main_0 = any(
+            "fn main_0(" in (rust_out / "src" / f).read_text(encoding="utf-8", errors="ignore")
+            for f in ["main.rs"]
+            if (rust_out / "src" / f).exists()
+        )
+        no_mangle_marker = "#[no_mangle]"
+        if has_main_0 and no_mangle_marker not in lib_content:
+            # Make main_0 pub if it isn't already (needed for the wrapper to call it)
+            for rs_file in (rust_out / "src").rglob("*.rs"):
+                rs_text = rs_file.read_text(encoding="utf-8", errors="ignore")
+                if "fn main_0(" in rs_text and "pub unsafe fn main_0(" not in rs_text:
+                    rs_file.write_text(
+                        rs_text.replace("unsafe fn main_0(", "pub unsafe fn main_0("),
+                        encoding="utf-8"
+                    )
+            # Append the no_mangle C entry point to lib.rs
+            lib_content += (
+                "\n/// C-compatible entry point exported as `main` for hybrid/c2rust linking.\n"
+                "#[no_mangle]\n"
+                "pub unsafe extern \"C\" fn main(\n"
+                "    argc: core::ffi::c_int,\n"
+                "    argv: *mut *mut core::ffi::c_char,\n"
+                ") -> core::ffi::c_int {\n"
+                "    src::main::main_0(argc, argv)\n"
+                "}\n"
+            )
+            lib_rs.write_text(lib_content, encoding="utf-8")
+            print(">> Injected #[no_mangle] main entry into lib.rs")
 
     # 5. Cargo Setup
     (rust_out / "src").mkdir(exist_ok=True)

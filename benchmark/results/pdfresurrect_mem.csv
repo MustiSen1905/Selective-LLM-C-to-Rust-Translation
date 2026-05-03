@@ -1,13 +1,16 @@
-binary,input,size_bytes,max_rss_kb
-pdfresurrect_c,01-assignment-bomblab.pdf,229787,1788
-pdfresurrect_hybrid,01-assignment-bomblab.pdf,229787,2340
-pdfresurrect_c,02-assignment-cachelab.pdf,315776,2032
-pdfresurrect_hybrid,02-assignment-cachelab.pdf,315776,2348
-pdfresurrect_c,machines-11-00677.pdf,6049935,2352
-pdfresurrect_hybrid,machines-11-00677.pdf,6049935,2876
-pdfresurrect_c,978-3-031-37709-9.pdf,15422963,2300
-pdfresurrect_hybrid,978-3-031-37709-9.pdf,15422963,2788
-pdfresurrect_c,Analysis.pdf,20169587,3504
-pdfresurrect_hybrid,Analysis.pdf,20169587,3812
-pdfresurrect_c,Norman Welz - Tradingpsychologie-1.pdf,88744210,1704
-pdfresurrect_hybrid,Norman Welz - Tradingpsychologie-1.pdf,88744210,2196
+project,variant,workload,max_rss_kb
+pdfresurrect-master,c,/mnt/c/Users/musti/Downloads/01-assignment-bomblab.pdf,1884
+pdfresurrect-master,c,/mnt/c/Users/musti/Downloads/02-assignment-cachelab.pdf,1876
+pdfresurrect-master,c,/mnt/c/Users/musti/Downloads/machines-11-00677.pdf,2460
+pdfresurrect-master,c,/mnt/c/Users/musti/Downloads/978-3-031-37709-9.pdf,2400
+pdfresurrect-master,c,/mnt/c/Users/musti/Downloads/Analysis.pdf,3416
+pdfresurrect-master,c2rust,/mnt/c/Users/musti/Downloads/01-assignment-bomblab.pdf,2240
+pdfresurrect-master,c2rust,/mnt/c/Users/musti/Downloads/02-assignment-cachelab.pdf,2408
+pdfresurrect-master,c2rust,/mnt/c/Users/musti/Downloads/machines-11-00677.pdf,2920
+pdfresurrect-master,c2rust,/mnt/c/Users/musti/Downloads/978-3-031-37709-9.pdf,2860
+pdfresurrect-master,c2rust,/mnt/c/Users/musti/Downloads/Analysis.pdf,3820
+pdfresurrect-master,hybrid,/mnt/c/Users/musti/Downloads/01-assignment-bomblab.pdf,2352
+pdfresurrect-master,hybrid,/mnt/c/Users/musti/Downloads/02-assignment-cachelab.pdf,2432
+pdfresurrect-master,hybrid,/mnt/c/Users/musti/Downloads/machines-11-00677.pdf,2916
+pdfresurrect-master,hybrid,/mnt/c/Users/musti/Downloads/978-3-031-37709-9.pdf,2868
+pdfresurrect-master,hybrid,/mnt/c/Users/musti/Downloads/Analysis.pdf,4024
