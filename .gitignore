@@ -4,3 +4,4 @@ C-projects/
 .venv/bin/python3.12
 .venv/
 .claude/
+analysis/__pycache__/
