@@ -53,9 +53,20 @@ build_staticlib_variant() {
     return 0
   fi
 
+  # Require lib.rs — if absent, c2rust produced no Rust output (empty project)
+  if [[ ! -f "$src_dir/lib.rs" ]]; then
+    echo "  SKIP: no lib.rs in $src_dir (c2rust produced no Rust output)."
+    skipped=$((skipped + 1))
+    return 0
+  fi
+
+  # Force a fresh Linux build: remove any stale lib.a that may have been
+  # compiled by the Windows MSVC toolchain (incompatible with WSL gcc).
+  rm -f "$src_dir/target/release/libhybrid_project.a"
+
   # Build Rust staticlib
   echo "  cargo build --release --lib  in $src_dir"
-  if ! (cd "$src_dir" && cargo build --release --lib 2>&1 | tail -4); then
+  if ! (cd "$src_dir" && cargo build --release --lib 2>&1 | tail -5); then
     echo "  FAILED: cargo build exited non-zero"
     fail=$((fail + 1))
     return 0
@@ -75,8 +86,19 @@ build_staticlib_variant() {
   done < <(find "$src_dir" -maxdepth 1 -name 'safe_*.c' | sort)
 
   if [[ ${#safe_c_files[@]} -eq 0 ]]; then
-    echo "  FAILED: no safe_*.c shims found in $src_dir"
-    fail=$((fail + 1))
+    # All functions translated to Rust — lib.rs exports #[no_mangle] main.
+    # Link with --whole-archive so the Rust main symbol is found by the linker.
+    echo "  No safe_*.c shims (fully-Rust project) — linking with --whole-archive"
+    if gcc -O2 -DNDEBUG \
+          -o "$BIN/$out_name" \
+          -Wl,--whole-archive "$lib" -Wl,--no-whole-archive \
+          -lpthread -ldl -lm 2>&1; then
+      echo "  Built: $BIN/$out_name"
+      ok=$((ok + 1))
+    else
+      echo "  FAILED: gcc linking (--whole-archive)"
+      fail=$((fail + 1))
+    fi
     return 0
   fi
 

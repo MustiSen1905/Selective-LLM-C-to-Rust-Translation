@@ -235,31 +235,36 @@ def main(args_list=None):
     subprocess.run(["c2rust", "transpile","--emit-build-files" ,"--output-dir", str(rust_out), "compile_commands.json"], cwd=work, check=True)
 
     # 4b. Post-process generated lib.rs: if any module exposes `main_0` (i.e.
-    #     main.c was translated), inject a #[no_mangle] C `main` entry point so
-    #     the staticlib can be linked by a plain C `gcc` invocation without a
-    #     Rust runtime `main()`.  Without this, `ld` reports "undefined reference
-    #     to `main`" when linking safe_main.c (which has `int main(...);` removed)
-    #     against the staticlib.
+    #     the C main was translated to Rust), inject a #[no_mangle] C `main`
+    #     entry point so the staticlib can be linked by a plain C `gcc`
+    #     invocation.  Without this, `ld` reports "undefined reference to `main`".
+    #
+    #     Bug fix: previously only src/main.rs was checked.  Projects like
+    #     qsort_small or sha have main in src/qsort_small.rs / src/sha_driver.rs.
+    #     Now we scan ALL .rs files under src/ and record the module path.
     lib_rs = rust_out / "lib.rs"
     if lib_rs.exists():
         lib_content = lib_rs.read_text(encoding="utf-8")
-        # Check if any translated Rust source defines `main_0`
-        has_main_0 = any(
-            "fn main_0(" in (rust_out / "src" / f).read_text(encoding="utf-8", errors="ignore")
-            for f in ["main.rs"]
-            if (rust_out / "src" / f).exists()
-        )
-        no_mangle_marker = "#[no_mangle]"
-        if has_main_0 and no_mangle_marker not in lib_content:
-            # Make main_0 pub if it isn't already (needed for the wrapper to call it)
-            for rs_file in (rust_out / "src").rglob("*.rs"):
+        # Find which src/*.rs file contains main_0 and build its Rust module path
+        main_0_module = None
+        src_dir_rs = rust_out / "src"
+        if src_dir_rs.is_dir():
+            for rs_file in sorted(src_dir_rs.rglob("*.rs")):
                 rs_text = rs_file.read_text(encoding="utf-8", errors="ignore")
-                if "fn main_0(" in rs_text and "pub unsafe fn main_0(" not in rs_text:
-                    rs_file.write_text(
-                        rs_text.replace("unsafe fn main_0(", "pub unsafe fn main_0("),
-                        encoding="utf-8"
+                if "fn main_0(" in rs_text:
+                    rel_parts = list(
+                        rs_file.relative_to(src_dir_rs).with_suffix("").parts
                     )
-            # Append the no_mangle C entry point to lib.rs
+                    main_0_module = "::".join(["src"] + rel_parts)
+                    # Make main_0 pub so the lib.rs wrapper can call it
+                    if "pub unsafe fn main_0(" not in rs_text:
+                        rs_file.write_text(
+                            rs_text.replace("unsafe fn main_0(", "pub unsafe fn main_0("),
+                            encoding="utf-8",
+                        )
+                    break
+
+        if main_0_module and "#[no_mangle]" not in lib_content:
             lib_content += (
                 "\n/// C-compatible entry point exported as `main` for hybrid/c2rust linking.\n"
                 "#[no_mangle]\n"
@@ -267,11 +272,21 @@ def main(args_list=None):
                 "    argc: core::ffi::c_int,\n"
                 "    argv: *mut *mut core::ffi::c_char,\n"
                 ") -> core::ffi::c_int {\n"
-                "    src::main::main_0(argc, argv)\n"
+                f"    {main_0_module}::main_0(argc, argv)\n"
                 "}\n"
             )
             lib_rs.write_text(lib_content, encoding="utf-8")
-            print(">> Injected #[no_mangle] main entry into lib.rs")
+            print(f">> Injected #[no_mangle] main entry into lib.rs (module: {main_0_module})")
+
+    # 4c. Detect external crates declared in lib.rs (e.g. f128, num_traits)
+    #     and record them so Cargo.toml gets the right [dependencies].
+    extra_crate_deps: dict[str, str] = {}
+    known_crate_versions = {"f128": "0.2", "num_traits": "0.2", "libc": "0.2"}
+    if lib_rs.exists():
+        for m in re.finditer(r'extern\s+crate\s+(\w+)', lib_rs.read_text(encoding="utf-8", errors="ignore")):
+            crate = m.group(1)
+            if crate in known_crate_versions:
+                extra_crate_deps[crate] = known_crate_versions[crate]
 
     # 5. Cargo Setup
     (rust_out / "src").mkdir(exist_ok=True)
@@ -301,7 +316,25 @@ def main(args_list=None):
         build_script_content = "fn main() {}"
 
     (rust_out / "build.rs").write_text(build_script_content, encoding="utf-8")
-    (rust_out / "Cargo.toml").write_text("""[package]\nname = "hybrid_project"\nversion = "0.1.0"\nedition = "2021"\nbuild = "build.rs"\n[build-dependencies]\ncc = "1"\n[lib]\nname="hybrid_project"\npath= "lib.rs"\ncrate-type = ["staticlib", "rlib"]\n """, encoding="utf-8")
+    deps_section = ""
+    if extra_crate_deps:
+        deps_lines = "\n".join(f'{k} = "{v}"' for k, v in sorted(extra_crate_deps.items()))
+        deps_section = f"[dependencies]\n{deps_lines}\n\n"
+    (rust_out / "Cargo.toml").write_text(
+        "[package]\n"
+        'name = "hybrid_project"\n'
+        'version = "0.1.0"\n'
+        'edition = "2021"\n'
+        'build = "build.rs"\n'
+        "[build-dependencies]\n"
+        'cc = "1"\n\n'
+        + deps_section +
+        "[lib]\n"
+        'name="hybrid_project"\n'
+        'path= "lib.rs"\n'
+        'crate-type = ["staticlib", "rlib"]\n',
+        encoding="utf-8",
+    )
 
     # Copy safe_*.c files into rust_out, preserving subdirectory layout.
     for f in safe_files:
