@@ -1,14 +1,21 @@
 #!/usr/bin/env bash
 # Benchmark MiBench programs: hyperfine (wall time) + /usr/bin/time -v (peak RSS).
-# Prerequisites: run build_mibench.sh and gen_mibench_inputs.sh first.
+# Measures all available variants per program: V-C, V-c2rust, V-hybrid.
+#
+# Prerequisites:
+#   1. bash benchmark/harness/build_mibench.sh         (builds V-C binaries)
+#   2. bash benchmark/harness/gen_mibench_inputs.sh    (generates input files)
+#   3. python3 translation/mibench_pipeline.py --all   (translation pipeline)
+#   4. bash benchmark/harness/build_mibench_hybrid.sh  (builds V-c2rust / V-hybrid)
+#
 # Run from WSL:  bash benchmark/harness/measure_mibench.sh
 #
 # If you get "pipefail: invalid option" the file has Windows CRLF endings. Fix:
 #   sed -i 's/\r//' benchmark/harness/measure_mibench.sh
 #
 # Output:
-#   benchmark/results/mibench_perf.csv   — wall-time statistics per program
-#   benchmark/results/mibench_mem.csv    — peak RSS per program
+#   benchmark/results/mibench_perf.csv   — wall-time statistics (all variants)
+#   benchmark/results/mibench_mem.csv    — peak RSS (all variants)
 set -uo pipefail
 
 WT=$(cd "$(dirname "$0")/../.." && pwd)
@@ -25,21 +32,22 @@ RUNS=10
 TMP_JSON="/tmp/mibench_hf.json"
 TMP_TIME="/tmp/mibench_time.txt"
 
-# CSV headers
-echo "program,workload,runs,mean_s,stddev_s,median_s,min_s,max_s" > "$PERF_CSV"
-echo "program,workload,rss_kb"                                     > "$MEM_CSV"
+# CSV headers — 'variant' column: c | c2rust | hybrid
+echo "program,variant,workload,runs,mean_s,stddev_s,median_s,min_s,max_s" > "$PERF_CSV"
+echo "program,variant,workload,rss_kb"                                     > "$MEM_CSV"
 
 # ---------------------------------------------------------------------------
-# run_bench NAME WORKLOAD_LABEL CMD [ARGS...]
+# run_bench NAME VARIANT WORKLOAD_LABEL CMD [ARGS...]
 #   Runs hyperfine + time -v and appends one row to each CSV.
+#   Silently skips if the binary does not exist.
 # ---------------------------------------------------------------------------
 run_bench() {
-  local name="$1" workload="$2"
-  shift 2
+  local name="$1" variant="$2" workload="$3"
+  shift 3
   local -a cmd=("$@")
 
   echo ""
-  echo "--- $name  [$workload] ---"
+  echo "--- $name  [$variant]  [$workload] ---"
 
   # Skip if binary not built
   if [[ ! -x "${cmd[0]}" ]]; then
@@ -60,13 +68,13 @@ run_bench() {
     -- "$hf_cmd"
 
   # Parse JSON → CSV row
-  python3 - "$TMP_JSON" "$name" "$workload" "$RUNS" << 'PYEOF' | tee -a "$PERF_CSV"
+  python3 - "$TMP_JSON" "$name" "$variant" "$workload" "$RUNS" << 'PYEOF' | tee -a "$PERF_CSV"
 import sys, json
-jf, prog, wl, runs = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+jf, prog, variant, wl, runs = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
 with open(jf) as f:
     r = json.load(f)["results"][0]
 print(
-    f"{prog},{wl},{runs},"
+    f"{prog},{variant},{wl},{runs},"
     f"{r['mean']:.6f},{r['stddev']:.6f},{r['median']:.6f},"
     f"{r['min']:.6f},{r['max']:.6f}"
 )
@@ -77,8 +85,23 @@ PYEOF
   { /usr/bin/time -v "${cmd[@]}" >/dev/null ; } 2>"$TMP_TIME" || true
   local rss
   rss=$(grep -oP '(?<=Maximum resident set size \(kbytes\): )\d+' "$TMP_TIME" || echo "0")
-  echo "$name,$workload,$rss" | tee -a "$MEM_CSV"
+  echo "$name,$variant,$workload,$rss" | tee -a "$MEM_CSV"
   echo "  rss  = $rss KB"
+}
+
+# ---------------------------------------------------------------------------
+# all_variants NAME WORKLOAD [ARGS...]
+#   Runs V-C, V-c2rust, V-hybrid for the same program + arguments.
+#   V-c2rust and V-hybrid are silently skipped if not yet built.
+# ---------------------------------------------------------------------------
+all_variants() {
+  local name="$1" workload="$2"
+  shift 2
+  local -a args=("$@")
+
+  run_bench "$name" "c"      "$workload" "$BIN/$name"         "${args[@]+"${args[@]}"}"
+  run_bench "$name" "c2rust" "$workload" "$BIN/${name}_c2rust" "${args[@]+"${args[@]}"}"
+  run_bench "$name" "hybrid" "$workload" "$BIN/${name}_hybrid" "${args[@]+"${args[@]}"}"
 }
 
 # ---------------------------------------------------------------------------
@@ -87,7 +110,6 @@ PYEOF
 QSORT_IN="$INPUT/qsort_small_input.txt"
 DIJKSTRA_IN="$INPUT/dijkstra_input.dat"
 
-# Number of strings / nodes = line count of the respective input files
 QSORT_N=1000
 DIJKSTRA_N=100
 [[ -f "$QSORT_IN"    ]] && QSORT_N=$(wc -l    < "$QSORT_IN")
@@ -105,32 +127,32 @@ BLOWFISH_OUT="/tmp/mibench_blowfish_bench.enc"
 # ---------------------------------------------------------------------------
 echo ""
 echo "================================="
-echo " MiBench Measurement"
+echo " MiBench Measurement (all variants)"
 echo "================================="
-printf "  Warmup : %d   Runs: %d\n"   "$WARMUP" "$RUNS"
-printf "  Perf   : %s\n"              "$PERF_CSV"
-printf "  Memory : %s\n"              "$MEM_CSV"
+printf "  Warmup : %d   Runs: %d\n" "$WARMUP" "$RUNS"
+printf "  Perf   : %s\n"            "$PERF_CSV"
+printf "  Memory : %s\n"            "$MEM_CSV"
 
 # ---- Automotive ----
-run_bench "basicmath"    "runs=5"      "$BIN/basicmath"    5
-run_bench "bitcount"     "iter=5M"     "$BIN/bitcount"     5000000
-run_bench "qsort_small"  "small_dat"   "$BIN/qsort_small"  "$QSORT_N"    "$QSORT_IN"
-run_bench "susan"        "smooth"      "$BIN/susan"        "$SUSAN_IN"   /dev/null  -s
+all_variants "basicmath"   "runs=5"     5
+all_variants "bitcount"    "iter=5M"    5000000
+all_variants "qsort_small" "small_dat"  "$QSORT_N"    "$QSORT_IN"
+all_variants "susan"       "smooth"     "$SUSAN_IN"   /dev/null  -s
 
 # ---- Network ----
-run_bench "dijkstra"     "small_dat"   "$BIN/dijkstra"     "$DIJKSTRA_N" "$DIJKSTRA_IN"
-run_bench "patricia"     "small_udp"   "$BIN/patricia"     "$PATRICIA_IN"
+all_variants "dijkstra"    "small_dat"  "$DIJKSTRA_N" "$DIJKSTRA_IN"
+all_variants "patricia"    "small_udp"  "$PATRICIA_IN"
 
 # ---- Office ----
-run_bench "stringsearch" "iter=100"    "$BIN/stringsearch" 100
+all_variants "stringsearch" "iter=100"  100
 
 # ---- Security ----
-run_bench "blowfish"     "enc_small"   "$BIN/blowfish"     e  "$BLOWFISH_IN"  "$BLOWFISH_OUT"  "$BLOWFISH_KEY"
-run_bench "sha"          "small_asc"   "$BIN/sha"          "$SHA_IN"
+all_variants "blowfish"    "enc_small"  e  "$BLOWFISH_IN"  "$BLOWFISH_OUT"  "$BLOWFISH_KEY"
+all_variants "sha"         "small_asc"  "$SHA_IN"
 
 # ---- Telecomm ----
-run_bench "crc"          "50MB"        "$BIN/crc"          "$CRC_IN"
-run_bench "fft"          "256x4096"    "$BIN/fft"          256 4096
+all_variants "crc"         "50MB"       "$CRC_IN"
+all_variants "fft"         "256x4096"   256 4096
 
 # ---------------------------------------------------------------------------
 echo ""
