@@ -25,6 +25,12 @@ import os
 import sys
 import shutil
 from pathlib import Path
+from analysis.unsafe_functions import main as get_unsafe_functions
+from analysis.klee import analyze_ownership as collect_ownership_info
+from analysis.graph import run_analysis
+from translation.c2rust import main as c2rust_main
+from translation.translation import main as translate_unsafe_to_safe
+
 
 # ---------------------------------------------------------------------------
 # Source-file manifest for each project
@@ -118,14 +124,13 @@ def stage_copy(name: str) -> Path:
 
 def stage_unsafe_functions(c_dir: str):
     """Stage 1 — heuristic unsafe-function classification."""
-    from analysis.unsafe_functions import main as get_unsafe_functions
     get_unsafe_functions(c_dir + "/")
 
 
 def stage_ownership(c_dir: str):
     """Stage 2 — KLEE ownership analysis (optional, silently skipped)."""
     try:
-        from analysis.klee import analyze_ownership as collect_ownership_info
+        
         collect_ownership_info(c_dir)
     except Exception as e:
         print(f"  [WARN] Ownership analysis skipped: {e}")
@@ -133,13 +138,13 @@ def stage_ownership(c_dir: str):
 
 def stage_graph(c_dir: str):
     """Stage 3 — call-graph + topological order."""
-    from analysis.graph import run_analysis
+    
     return run_analysis(c_dir)
 
 
 def stage_c2rust(c_dir: str, out_dir: str):
     """Stage 4 — split C files + c2rust transpilation + checkpoint."""
-    from translation.c2rust import main as c2rust_main
+    
     c2rust_main([
         "--input-dir", c_dir,
         "--config",    "unsafe_functions.json",
@@ -159,7 +164,7 @@ def stage_c2rust(c_dir: str, out_dir: str):
 
 def stage_llm(out_dir: str, order):
     """Stage 5 — LLM rewrite (requires ollama + deepseek-coder:33b)."""
-    from translation.translation import main as translate_unsafe_to_safe
+    
     translate_unsafe_to_safe(out_dir, order)
 
 
@@ -246,8 +251,8 @@ def main():
     stop = "--stop-after-c2rust" in args
     args = [a for a in args if a != "--stop-after-c2rust"]
 
-    # Ensure we run from the project root
-    script_dir = Path(__file__).resolve().parent.parent
+    # Ensure we run from the project root regardless of call location
+    script_dir = Path(__file__).resolve().parent
     os.chdir(script_dir)
 
     if args[0] == "--all":
