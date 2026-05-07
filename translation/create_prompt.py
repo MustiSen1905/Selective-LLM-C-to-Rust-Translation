@@ -191,6 +191,10 @@ Refactor the function `{function_name}`.
    - Convert `*mut c_char` to `&str` or `String`.
 3. **NO RE-DEFINITIONS**: DO NOT output `struct`, `type`, or `extern` blocks. Assume they exist or are handled by safe wrappers.
 4. **IMPORTS**: Do NOT use `use` statements. Use absolute paths (e.g., `std::collections::HashMap`).
+   **CONSTANT EXCEPTION**: If your function body references a constant (e.g. `UCHAR_MAX`, `BUFSIZ`)
+   that is not defined in the c2rust snippet you received, define it locally as a `const` immediately
+   before the function: `const UCHAR_MAX: core::ffi::c_int = 255;`
+   Never assume a constant is visible from another file — Rust module visibility is explicit.
 5. **CONST & STATICS**: If a global variable is used as a lookup table (like an S-Box), convert it to a `const` or an immutable `static`. DO NOT use `static mut`.
 6. **ITERATOR PREFERENCE**: Instead of `for i in 0..len {{ slice[i] = ... }}`, prefer using `.iter_mut()`, `.chunks_exact()`, or `.zip()`. This is CRITICAL for performance as it eliminates bounds checks.
 7. **FIXED SIZES**: If the C-code uses a fixed-size block (e.g., AES_BLOCKLEN), use fixed-size array references `&mut [u8; 16]` to assist the compiler with optimizations.
@@ -208,7 +212,15 @@ Refactor the function `{function_name}`.
 18. **C-INT CASTING FOR CHARACTERS (CRITICAL)**: Many legacy C functions (like `strchr`, `isalpha`, `toupper`) take characters as `int`. If you extract a `c_char` (which is `i8`) and pass it to such a function, you MUST cast it: `my_char as core::ffi::c_int`. Never pass an `i8` directly to a function expecting `i32` or `c_int`.
 19. **PRESERVE FUNCTION NAME (CRITICAL)**: The Rust function name MUST be BYTE-IDENTICAL to `{function_name}`. Do NOT rename to snake_case (e.g., `MixColumns` stays `MixColumns`, NOT `mix_columns`; `XorWithIv` stays `XorWithIv`). Callers in other translation units still use the original name. Rust's `#[allow(non_snake_case)]` handles the convention warning.
 20. **PRESERVE FUNCTION SIGNATURE (CRITICAL)**: The parameter types and return type MUST match the original c2rust-generated signature EXACTLY. Do NOT change `*mut u8` to `&mut [u8]`, `*const c_char` to `&str`, or `*mut T` to `Box<T>`. Legacy callers in other translation units still pass raw pointers — changing the signature breaks them with E0308. Keep `unsafe extern "C" fn` where present, keep raw-pointer parameters. Do all Safe-wrapping INTERNALLY by calling `SafeX::from_ptr(ptr)` in the FIRST LINE of the function body and operating on the Safe-Shadow from there. The signature is the public boundary; only the body changes.
-21. **ONLY USE SAFE TYPES LISTED ABOVE (CRITICAL)**: You may ONLY use `SafeX::from_ptr()` for Safe types that appear in the `### SAFE STRUCT DEFINITIONS` section above. If a type like `pdf_t`, `xref_t`, or `kv_t` has NO listed Safe wrapper, do NOT invent `SafePdf`, `SafeXref`, `SafeKv` etc. Instead, access those types directly via raw pointer dereferencing: `(*ptr).field`. For C-style arrays (e.g., `xrefs: *mut xref_t`, count: `n_xrefs: c_int`), use index-based loops: `for i in 0..(*ptr).n_xrefs {{ let entry = &*(*ptr).xrefs.offset(i as isize); ... }}`.
+21. **ONLY USE SAFE TYPES LISTED ABOVE (CRITICAL)**: You may ONLY use `SafeX::from_ptr()` for Safe types that appear in the `### SAFE STRUCT DEFINITIONS` section above.
+22. **PRESERVE ALL CAST TARGETS (CRITICAL)**: Never change the target type in a cast expression.
+    If the c2rust code says `x as LONG`, keep exactly `x as LONG`. If it says `y as u32`, keep `y as u32`.
+    Do NOT substitute `usize`, `u64`, `i64`, or any other type for a named typedef like `LONG`, `WORD`,
+    `DWORD`, etc. Their sizes are target-defined; changing them silently breaks arithmetic (e.g. SHA-1
+    needs 32-bit wrapping, but `usize` is 64-bit on x86_64).
+23. **NO EXTRA CLOSING BRACES (CRITICAL)**: Your output is injected into an existing Rust source file.
+    Do NOT add any `}}` that closes a scope you did not open yourself.
+    Balance: count your own `{{` openings — write exactly that many `}}` closings. Nothing more. If a type like `pdf_t`, `xref_t`, or `kv_t` has NO listed Safe wrapper, do NOT invent `SafePdf`, `SafeXref`, `SafeKv` etc. Instead, access those types directly via raw pointer dereferencing: `(*ptr).field`. For C-style arrays (e.g., `xrefs: *mut xref_t`, count: `n_xrefs: c_int`), use index-based loops: `for i in 0..(*ptr).n_xrefs {{ let entry = &*(*ptr).xrefs.offset(i as isize); ... }}`.
 
 ### MEMORY & LOGIC RULES
 - **Ownership**: Use `Box<T>` for heap allocation instead of raw pointers. Let Rust's RAII handle deallocation (no explicit `free`).
@@ -286,18 +298,27 @@ Additionally, implement a bridge function `from_unsafe` to convert the raw C-poi
 1. **NAMING**: `User` -> `SafeUser`.
 1. **NAMING**: Prefix the EXACT original struct name with 'Safe'. Do NOT change the capitalization of the original name. (e.g., `frac` -> `Safefrac`, `User` -> `SafeUser`).
 2. **FIELDS**: Replace `*mut c_char` with `String`, `*mut T` with `Box<SafeT>` or `Vec<SafeT>`.
-3. **BRIDGE FUNCTION**: For each struct, implement:
+3. **BRIDGE FUNCTION**: For each struct, ALWAYS implement a `from_ptr` method:
    `impl SafeUser {{ pub unsafe fn from_ptr(ptr: *const User) -> Self {{ ... }} }}`
    Inside this function:
    - Handle null pointers (provide defaults or use Option).
    - Convert C-strings to Rust Strings using `CStr::from_ptr(...).to_string_lossy().into_owned()`.
    - Deep-copy any nested pointers into their 'Safe' versions.
+   - **STUB FALLBACK (CRITICAL)**: If you cannot safely implement `from_ptr` (e.g. recursive
+     type, opaque pointer, unknown layout), you MUST still output the method body as a stub:
+     `pub unsafe fn from_ptr(_ptr: *const X) -> Self {{ unimplemented!("from_ptr stub") }}`
+     NEVER leave an `impl` block empty. An empty `impl SafeX {{}}` followed by a call to
+     `SafeX::from_ptr(...)` will cause a compile error.
 4. **NO DERIVE ON ALIASES**: Do not put #[derive] on 'type' definitions.
 5. **SMART CLONE**: Use `#[derive(Debug, Clone)]`. Do NOT use `Copy` for structs with heap data.
 6. **SYSTEM & OPAQUE TYPES**: Do NOT create safe versions or bridge functions for system structs like `_IO_FILE`, `FILE`, `va_list`, or `__va_list_tag`. If a struct contains a pointer to a system type, leave it as a raw pointer `*mut T` or use an opaque wrapper. Deep-copying file handles or va_lists is invalid.
 7. **ABSOLUTE PATHS ONLY**: When using `CStr`, `String`, or `Vec` inside the bridge function, use fully qualified absolute paths (e.g., `std::ffi::CStr`). No `use` statements are allowed.
 8. **NEVER USE `char` FOR C BYTE FIELDS (CRITICAL)**: Rust's `char` is a 32-bit Unicode scalar and is NOT compatible with C's `c_char`/`i8`/`u8` byte fields. If a C struct field is `c_char` (byte tag, flag character, etc.), the Safe field MUST be `i8` (or `u8` for unsigned). Example: C `char f_or_n;` -> Safe `pub f_or_n: i8,` (NOT `char`). Reason: `orig.f_or_n` is `i8`; assigning it to a `char` field causes E0308 "expected `char`, found `i8`".
 9. **NULL-BRANCH ISOLATION IN from_ptr (CRITICAL)**: Inside `impl SafeA {{ pub unsafe fn from_ptr(ptr: *const A) -> Self }}`, if you need a fallback `SafeB` value (e.g. for a nullable nested field), NEVER pass the outer `ptr` to `SafeB::from_ptr(ptr)` -- `ptr` has type `*const A`, not `*const B`, and this causes E0308. Always pass a NULL pointer of the correct type: `SafeB::from_ptr(std::ptr::null::<B>())` or equivalently `SafeB::from_ptr(core::ptr::null())`. The inner `from_ptr` handles null internally.
+10. **NO EXTRA CLOSING BRACES (CRITICAL)**: Your output is pasted into an existing Rust file.
+    Do NOT add any `}}` that closes a scope you did not open in your own output.
+    Every `{{` you write must be closed by exactly one `}}` you write.
+    Concretely: after `impl SafeX {{ ... }}` write nothing else. No trailing `}}`.
 
 ### INPUT
 {unsafe_structs_snippet}

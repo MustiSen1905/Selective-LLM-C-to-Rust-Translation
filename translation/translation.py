@@ -1816,6 +1816,99 @@ def process_single_function(func_name, file_path, project_name, cargo_root,safe_
         f.write(file_content)
     return False
 
+def deduplicate_crate_wide_struct_defs(rust_src_dir: str):
+    """Crate-weiter Struct/Enum/Type-Dedup (P5): entfernt Definitionen die bereits
+    in einer anderen Datei des Crates vorkommen (E0255 'defined multiple times').
+
+    Entstehungsgrund: Der LLM generiert manchmal identische Safe-Struct-Definitionen
+    in mehreren Dateien (z.B. `Safe_IO_FILE` in jedem der 8 bitcount-Module weil
+    jede C-Datei `_IO_FILE` im Header referenziert). Die erste Datei (alphabetisch)
+    behaelt die Definition; alle weiteren verlieren sie — Stub-Typen werden ggf.
+    von inject_safe_stub_types ergaenzt.
+    """
+    if not os.path.isdir(rust_src_dir):
+        return
+
+    # --- 1. Erster Pass: pro Datei alle Struct/Enum/Type-Namen sammeln ----------
+    seen: dict = {}           # name -> erste Datei (abs_path) die es definiert
+    file_data: list = []      # [(fname, fpath, code, defs)] fuer zweiten Pass
+
+    for fname, fpath in sorted(_iter_rs_files(rust_src_dir)):
+        try:
+            with open(fpath, "r", encoding="utf-8") as fh:
+                code = fh.read()
+        except OSError:
+            continue
+        defs = ast_extract_struct_defs(code)  # [(name, fulltext), ...]
+        for name, _ in defs:
+            if name not in seen:
+                seen[name] = fpath
+        file_data.append((fname, fpath, code, defs))
+
+    # --- 2. Zweiter Pass: Duplikate aus allen ausser der Erstdatei entfernen ----
+    total_removed = 0
+    for fname, fpath, code, defs in file_data:
+        to_remove = [name for name, _ in defs if seen.get(name) != fpath]
+        if not to_remove:
+            continue
+
+        # tree-sitter-Entfernung: ast_remove_duplicate_structs entfernt Duplikate
+        # INNERHALB einer Datei (behaelt erste Definition). Wir wollen hier statt-
+        # dessen spezifische Namen entfernen. Strategie: Datei temporaer mit den
+        # zu entfernenden Definitionen NOCHMAL voranstellen, dann dedup aufrufen —
+        # so wird die urspruengliche Definition als "zweite" markiert und geloescht.
+        # Einfacher: direkt per Regex/tree-sitter loeschen.
+        new_code = code
+        if _TS_AVAILABLE:
+            try:
+                source_bytes = new_code.encode("utf-8")
+                tree = _ts_parser().parse(source_bytes)
+                targets = {"struct_item", "enum_item", "union_item", "type_item"}
+                ranges = []
+                for n in _ts_walk(tree.root_node):
+                    if n.type not in targets:
+                        continue
+                    name_node = n.child_by_field_name("name")
+                    if name_node is None:
+                        continue
+                    if name_node.text.decode("utf-8") in to_remove:
+                        ranges.append((_ts_node_start_with_attrs(n), n.end_byte))
+                new_code = _ts_delete_byte_ranges(source_bytes, ranges).decode(
+                    "utf-8", errors="replace"
+                )
+            except Exception as e:
+                print(f"  [!] Crate-dedup tree-sitter Fehler ({e}); Regex-Fallback.")
+                for name in to_remove:
+                    # Regex: optionale derive-Attribute + pub struct/enum/type NAME ... { ... }
+                    pat = re.compile(
+                        r'(?:#\[[^\]]*\]\s*\n)*'
+                        r'pub\s+(?:struct|enum|union|type)\s+' + re.escape(name) +
+                        r'\b(?:[^{};]*\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}|[^;]*;)\s*\n?',
+                        re.DOTALL,
+                    )
+                    new_code = pat.sub("", new_code)
+        else:
+            for name in to_remove:
+                pat = re.compile(
+                    r'(?:#\[[^\]]*\]\s*\n)*'
+                    r'pub\s+(?:struct|enum|union|type)\s+' + re.escape(name) +
+                    r'\b(?:[^{};]*\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}|[^;]*;)\s*\n?',
+                    re.DOTALL,
+                )
+                new_code = pat.sub("", new_code)
+
+        if new_code != code:
+            with open(fpath, "w", encoding="utf-8") as fh:
+                fh.write(new_code)
+            total_removed += len(to_remove)
+            print(f"  [+] Crate-dedup {fname}: removed {', '.join(to_remove)}")
+
+    if total_removed:
+        print(f"  [+] Crate-wide struct-dedup: {total_removed} Duplikate entfernt.")
+    else:
+        print("  [i] Crate-wide struct-dedup: keine Cross-File-Duplikate gefunden.")
+
+
 def main(project_dir, function_order=None):
     target_path = os.path.abspath(project_dir)
     project_name = os.path.basename(target_path.rstrip(os.sep))
@@ -1952,6 +2045,11 @@ def main(project_dir, function_order=None):
     n_dedup = dedup_function_definitions(rust_src)
     if n_dedup == 0:
         print("  [i] Dedup: keine Duplikate gefunden.")
+
+    # Crate-weiter Struct/Enum/Type-Dedup (P5): entfernt identische Safe-Struct-
+    # Definitionen die der LLM in mehrere Dateien geschrieben hat (E0255).
+    print("--- Crate-weiter Struct-Dedup ---")
+    deduplicate_crate_wide_struct_defs(rust_src)
 
     # FFI-Auto-Export: Rust-Funktionen, die aus zurueck-gestrippten C-Helpern
     # (safe_*.c forward decls ohne Body) gerufen werden, brauchen
