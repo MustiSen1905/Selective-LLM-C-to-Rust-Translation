@@ -1,0 +1,37 @@
+[
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_bitcount",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c bitcnts.c",
+    "file": "bitcnts.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_bitcount",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c bitcnt_1.c",
+    "file": "bitcnt_1.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_bitcount",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c bitcnt_3.c",
+    "file": "bitcnt_3.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_bitcount",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c bitcnt_4.c",
+    "file": "bitcnt_4.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_bitcount",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c bitfiles.c",
+    "file": "bitfiles.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_bitcount",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c bitstrng.c",
+    "file": "bitstrng.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_bitcount",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c bstr_i.c",
+    "file": "bstr_i.c"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_sha",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c sha.c",
+    "file": "sha.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_sha",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c sha_driver.c",
+    "file": "sha_driver.c"
+  }
+]

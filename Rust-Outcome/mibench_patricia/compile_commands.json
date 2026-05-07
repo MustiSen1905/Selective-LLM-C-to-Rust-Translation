@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_patricia",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c patricia.c",
+    "file": "patricia.c"
+  },
+  {
+    "directory": "/mnt/c/Users/musti/OneDrive/Dokumente/Uni/Bachelorarbeit/Project/Selective-LLM-C-to-Rust-Translation/Rust-Outcome/mibench_patricia",
+    "command": "clang -I.  -I\".\" -std=gnu89 -fcommon -Wno-everything -c patricia_test.c",
+    "file": "patricia_test.c"
+  }
+]

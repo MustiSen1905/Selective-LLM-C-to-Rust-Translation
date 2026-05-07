@@ -5,3 +5,5 @@ C-projects/
 .venv/
 .claude/
 analysis/__pycache__/
+Rust-Outcome/*/rust_out/target/
+Rust-Outcome/*/rust_out_c2rust_checkpoint/target/

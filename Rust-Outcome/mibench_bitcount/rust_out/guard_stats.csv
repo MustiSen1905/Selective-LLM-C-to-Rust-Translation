@@ -1,0 +1,64 @@
+project,function,outcome,original_signature,llm_signature
+mibench_basicmath,SolveCubic,ACCEPTED,,
+mibench_basicmath,deg2rad,ACCEPTED,,
+mibench_basicmath,usqrt,ACCEPTED,,
+mibench_basicmath,main_0,ACCEPTED,,
+mibench_basicmath,rad2deg,ACCEPTED,,
+mibench_bitcount,AR_btbl_bitcount,ACCEPTED,,
+mibench_bitcount,BW_btbl_bitcount,ACCEPTED,,
+mibench_bitcount,bfclose,ACCEPTED,,
+mibench_bitcount,bfwrite,ACCEPTED,,
+mibench_bitcount,bit_count,ACCEPTED,,
+mibench_bitcount,bit_shifter,ACCEPTED,,
+mibench_bitcount,bitstring,ACCEPTED,,
+mibench_bitcount,bstr_i,ACCEPTED,,
+mibench_bitcount,btbl_bitcnt,ACCEPTED,,
+mibench_bitcount,ntbl_bitcnt,ACCEPTED,,
+mibench_bitcount,ntbl_bitcount,ACCEPTED,,
+mibench_basicmath,SolveCubic,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn SolveCubic(
+    mut a: core::ffi::c_double,
+    mut b: core::ffi::c_double,
+    mut c: core::ffi::c_double,
+    mut d: core::ffi::c_double,
+    mut solutions: *mut core::ffi::c_int,
+    mut x: *mut core::ffi::c_double,
+)","#[no_mangle]
+pub extern ""C"" fn SolveCubic(
+    a: f64,
+    b: f64,
+    c: f64,
+    d: f64,
+    solutions: &mut i32,
+    x: &mut [f64; 3],
+)"
+mibench_basicmath,deg2rad,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn deg2rad(mut deg: core::ffi::c_double) -> core::ffi::c_double","#[no_mangle]
+pub extern ""C"" fn deg2rad(deg: f64) -> f64"
+mibench_basicmath,usqrt,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn usqrt(mut x: core::ffi::c_ulong, mut q: *mut int_sqrt)","#[no_mangle]
+pub unsafe extern ""C"" fn usqrt(x: core::ffi::c_ulong, q_ptr: *mut SafeIntSqrt)"
+mibench_basicmath,main_0,REVERTED_SIG_DRIFT,"pub unsafe fn main_0(
+    mut argc: core::ffi::c_int,
+    mut argv: *mut *mut core::ffi::c_char,
+) -> core::ffi::c_int","pub fn main_0(argc: i32, argv: &mut [*const u8]) -> i32"
+mibench_bitcount,bfclose,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn bfclose(mut bf: *mut bfile)",pub fn from_ptr(bfile_ptr: *mut bfile) -> Self
+mibench_bitcount,bfread,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn bfread(mut bf: *mut bfile) -> core::ffi::c_int","#[no_mangle]
+pub fn bfread(bf_ptr: *mut SafeBfile) -> i32"
+mibench_bitcount,bfread,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn bfread(mut bf: *mut bfile) -> core::ffi::c_int","#[no_mangle]
+pub fn bfread(mut bf: &mut Safefile) -> i32"
+mibench_bitcount,bfread,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn bfread(mut bf: *mut bfile) -> core::ffi::c_int","#[no_mangle]
+pub unsafe extern ""C"" fn bfread(bf: &mut Safefile) -> core::ffi::c_int"
+mibench_bitcount,bit_shifter,REVERTED_SIG_DRIFT,"unsafe extern ""C"" fn bit_shifter(mut x: core::ffi::c_long) -> core::ffi::c_int","#[allow(non_snake_case)]
+pub unsafe extern ""C"" fn bit_shifter(mut x: core::ffi::c_long) -> core::ffi::c_int"
+mibench_bitcount,main_0,REVERTED_SIG_DRIFT,"pub unsafe fn main_0(
+    mut argc: core::ffi::c_int,
+    mut argv: *mut *mut core::ffi::c_char,
+) -> core::ffi::c_int",pub fn main_0(argv: &[&str]) -> i32
+mibench_bitcount,ntbl_bitcnt,REVERTED_SIG_DRIFT,"#[no_mangle]
+pub unsafe extern ""C"" fn ntbl_bitcnt(mut x: core::ffi::c_long) -> core::ffi::c_int","#[no_mangle]
+pub unsafe extern ""C"" fn ntbl_bitcnt(x: *mut core::ffi::c_long) -> core::ffi::c_int"
